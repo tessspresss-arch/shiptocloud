@@ -1,0 +1,52 @@
+Route::get('/fix-admin', function() {
+    $user = \App\Models\User::firstOrCreate(
+        ['email' => 'admin@cabinet.com'],
+        [
+            'name' => 'Administrateur',
+            'password' => \Illuminate\Support\Facades\Hash::make('Cabinet2024!'),
+            'email_verified_at' => now()
+        ]
+    );
+    
+    // Si existe déjà, mettre à jour le mot de passe
+    if ($user->wasRecentlyCreated) {
+        return '✅ Utilisateur créé ! Email: admin@cabinet.com | Mot de passe: Cabinet2024!';
+    } else {
+        $user->password = \Illuminate\Support\Facades\Hash::make('Cabinet2024!');
+        $user->save();
+        return '✅ Mot de passe mis à jour ! Email: admin@cabinet.com | Nouveau mot de passe: Cabinet2024!';
+    }
+});
+=======
+// === ROUTE URGENCE - À SUPPRIMER APRÈS ===
+Route::get('/urgence-admin', function() {
+    try {
+        $user = \App\Models\User::updateOrCreate(
+            ['email' => 'admin@cabinet.com'],
+            [
+                'name' => 'Admin Cabinet',
+                'password' => \Illuminate\Support\Facades\Hash::make('Admin2024!'),
+                'email_verified_at' => \Carbon\Carbon::now()
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Administrateur créé/récupéré',
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'created_at' => $user->created_at,
+            'credentials' => [
+                'email' => 'admin@cabinet.com',
+                'password' => 'Admin2024!',
+                'note' => 'Utilisez ces identifiants pour vous connecter'
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+// === FIN ROUTE URGENCE ===

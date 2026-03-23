@@ -1,0 +1,101 @@
+name: Medisys AI Test Agent
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: medisys_test
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, pdo, pdo_mysql, dom, fileinfo
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare testing env
+        run: |
+          cp .env.testing.example .env.testing
+          php -r "file_put_contents('.env.testing', preg_replace('/^DB_HOST=.*/m', 'DB_HOST=127.0.0.1', file_get_contents('.env.testing')));"
+          php -r "file_put_contents('.env.testing', preg_replace('/^DB_PORT=.*/m', 'DB_PORT=3306', file_get_contents('.env.testing')));"
+          php -r "file_put_contents('.env.testing', preg_replace('/^DB_DATABASE=.*/m', 'DB_DATABASE=medisys_test', file_get_contents('.env.testing')));"
+          php -r "file_put_contents('.env.testing', preg_replace('/^DB_USERNAME=.*/m', 'DB_USERNAME=root', file_get_contents('.env.testing')));"
+          php -r "file_put_contents('.env.testing', preg_replace('/^DB_PASSWORD=.*/m', 'DB_PASSWORD=root', file_get_contents('.env.testing')));"
+          php artisan key:generate --env=testing
+
+      - name: Migrate and seed testing DB
+        run: |
+          php artisan migrate --force --env=testing
+          php artisan db:seed --class="Database\Seeders\Testing\MedisysTestingSeeder" --force --env=testing
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Run backend tests
+        run: php artisan test --testsuite=Unit,Feature --log-junit=storage/test-reports/phpunit.junit.xml
+        env:
+          APP_ENV: testing
+
+      - name: Start app server
+        run: php artisan serve --host=127.0.0.1 --port=8000 --env=testing > /tmp/laravel-server.log 2>&1 &
+
+      - name: Run E2E tests
+        run: npx playwright test
+        env:
+          E2E_BASE_URL: http://127.0.0.1:8000
+          E2E_ADMIN_EMAIL: admin@medisys.test
+          E2E_ADMIN_PASSWORD: password
+          E2E_MEDECIN_EMAIL: medecin@medisys.test
+          E2E_MEDECIN_PASSWORD: password
+          E2E_RECEPTION_EMAIL: reception@medisys.test
+          E2E_RECEPTION_PASSWORD: password
+
+      - name: Analyze with AI test agent
+        run: node tools/test-agent/analyze-results.mjs
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: medisys-test-reports
+          path: |
+            storage/test-reports
+            /tmp/laravel-server.log

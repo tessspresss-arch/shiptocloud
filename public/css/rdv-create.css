@@ -1,0 +1,601 @@
+:root {
+    --bg: #f3f6fb;
+    --card: #ffffff;
+    --border: #d6e1f1;
+    --text: #11203a;
+    --muted: #64748b;
+    --primary: #2563eb;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --ring: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+html.dark,
+body.dark-mode,
+body.theme-dark {
+    --bg: #101826;
+    --card: #162133;
+    --border: #2d3b52;
+    --text: #e5edf8;
+    --muted: #94a3b8;
+    --primary: #3b82f6;
+    --danger: #f87171;
+    --success: #34d399;
+    --shadow: 0 14px 28px rgba(2, 6, 23, 0.5);
+}
+
+.rdv-create-page,
+.rdv-create-page * {
+    box-sizing: border-box;
+}
+
+.rdv-create-page {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.25rem 0;
+    overflow-x: hidden;
+    color: var(--text);
+}
+
+.rdv-page {
+    display: grid;
+    grid-template-columns: 420px minmax(0, 1fr);
+    gap: 20px;
+    width: 100%;
+    min-width: 0;
+    align-items: start;
+}
+
+.rdv-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.rdv-left-panel,
+.rdv-main-panel,
+.rdv-workflow,
+.rdv-main-grid {
+    min-width: 0;
+}
+
+.rdv-slot-picker {
+    padding: 14px;
+    position: sticky;
+    top: 86px;
+}
+
+.rdv-slot-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.rdv-slot-head h3 {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 800;
+    text-transform: capitalize;
+}
+
+.rdv-icon-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text);
+}
+
+.rdv-icon-btn:hover,
+.rdv-icon-btn:focus-visible {
+    border-color: var(--primary);
+    color: var(--primary);
+    outline: none;
+}
+
+.rdv-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.rdv-weekday {
+    text-align: center;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    padding: 3px 0;
+}
+
+.rdv-day-btn {
+    border: 1px solid transparent;
+    border-radius: 9px;
+    min-height: 34px;
+    background: transparent;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.rdv-day-btn.outside {
+    color: var(--muted);
+    opacity: 0.55;
+}
+
+.rdv-day-btn:hover:not(:disabled),
+.rdv-day-btn:focus-visible:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+    outline: none;
+}
+
+.rdv-day-btn.selected {
+    background: var(--primary);
+    color: #fff;
+}
+
+.rdv-day-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.rdv-slot-tools {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+}
+
+.rdv-period-filter {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.rdv-chip-filter {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.rdv-chip-filter.is-active {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.rdv-slot-grid {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.rdv-slot-btn {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    min-height: 42px;
+    background: transparent;
+    color: var(--text);
+    font-weight: 700;
+}
+
+.rdv-slot-btn.available:hover,
+.rdv-slot-btn.available:focus-visible {
+    border-color: var(--primary);
+    color: var(--primary);
+    outline: none;
+}
+
+.rdv-slot-btn.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+}
+
+.rdv-slot-btn.disabled {
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+.rdv-main-panel {
+    display: grid;
+    gap: 14px;
+}
+
+.rdv-header-card {
+    padding: 16px;
+}
+
+.rdv-header-card h1 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.rdv-header-card h1 i {
+    color: var(--primary);
+}
+
+.rdv-header-card p {
+    margin: 6px 0 0;
+    color: var(--muted);
+}
+
+.rdv-main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+}
+
+.rdv-workflow {
+    display: grid;
+    gap: 12px;
+}
+
+.rdv-step {
+    overflow: hidden;
+}
+
+.rdv-step-toggle {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 800;
+}
+
+.rdv-step-toggle span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rdv-step-toggle i:first-child {
+    color: var(--primary);
+}
+
+.rdv-step-body {
+    padding: 14px;
+}
+
+.rdv-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.rdv-input,
+.rdv-select,
+.rdv-textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text);
+    min-height: 44px;
+    padding: 0.62rem 0.72rem;
+}
+
+.rdv-textarea {
+    resize: vertical;
+    min-height: 92px;
+}
+
+.rdv-input:focus,
+.rdv-select:focus,
+.rdv-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+    outline: none;
+}
+
+.rdv-link-btn {
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.rdv-patient-mini {
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.rdv-patient-mini.is-hidden {
+    display: none;
+}
+
+.rdv-patient-mini h4 {
+    margin: 0 0 8px;
+    font-size: 0.92rem;
+}
+
+.rdv-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.rdv-mini-grid .k {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--muted);
+}
+
+.rdv-mini-grid .v {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.rdv-doctor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.rdv-doctor-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 9px;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.rdv-doctor-card.selected {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.rdv-doctor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--primary) 20%, transparent);
+    color: var(--primary);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+}
+
+.rdv-doctor-body {
+    display: grid;
+    gap: 2px;
+}
+
+.rdv-doctor-body small {
+    color: var(--muted);
+}
+
+.rdv-doctor-state {
+    grid-column: 1 / -1;
+    color: var(--success);
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+.rdv-doctor-state i {
+    font-size: 0.52rem;
+}
+
+.rdv-doctor-input,
+.rdv-motif-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.rdv-doctor-input:focus-visible + .rdv-doctor-avatar,
+.rdv-motif-input:focus-visible + .rdv-motif-icon {
+    box-shadow: var(--ring);
+}
+
+.rdv-motif-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.rdv-motif-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.rdv-motif-card.selected {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.rdv-motif-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.rdv-motif-text {
+    font-weight: 700;
+}
+
+.rdv-inline-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.rdv-actions-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.rdv-btn {
+    min-height: 46px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    padding: 0.7rem 1rem;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+}
+
+.rdv-btn.primary {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.rdv-btn.primary:hover:not(:disabled),
+.rdv-btn.primary:focus-visible:not(:disabled) {
+    filter: brightness(1.03);
+    outline: none;
+}
+
+.rdv-btn.secondary {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.rdv-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.submit-loading {
+    display: none;
+}
+
+.rdv-btn.is-loading .submit-label {
+    display: none;
+}
+
+.rdv-btn.is-loading .submit-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rdv-field-error {
+    margin-top: 7px;
+    color: var(--danger);
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+.is-invalid {
+    border-color: var(--danger) !important;
+}
+
+@media (max-width: 1199.98px) {
+    .rdv-page {
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .rdv-slot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991.98px) {
+    .rdv-page {
+        grid-template-columns: 1fr;
+    }
+
+    .rdv-slot-picker {
+        position: static;
+    }
+
+    .rdv-main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .rdv-create-page {
+        padding-bottom: 104px;
+    }
+
+    .rdv-slot-picker {
+        padding: 10px;
+    }
+
+    .rdv-step-toggle {
+        padding: 11px 12px;
+    }
+
+    .rdv-step[data-collapsed="true"] .rdv-step-body {
+        display: none;
+    }
+
+    .rdv-step[data-collapsed="true"] .rdv-step-toggle .fa-chevron-down {
+        transform: rotate(-90deg);
+    }
+
+    .rdv-doctor-grid,
+    .rdv-motif-grid,
+    .rdv-mini-grid,
+    .rdv-inline-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .rdv-actions-wrap {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1060;
+        padding: 10px 12px;
+        border-top: 1px solid var(--border);
+        background: var(--card);
+        grid-template-columns: 1fr 1fr;
+        box-shadow: 0 -8px 18px rgba(2, 6, 23, 0.18);
+    }
+
+}

@@ -1,0 +1,2094 @@
+@import './layout-shell.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--font-sans: "Plus Jakarta Sans", "Segoe UI", Roboto, Arial, sans-serif;
+	--font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	--color-primary: #2c7be5;
+	--color-primary-strong: #2368c6;
+	--color-sidebar: #1f6fa3;
+	--color-sidebar-strong: #174f75;
+	--color-success: #00a389;
+	--color-warning: #f0ad4e;
+	--color-danger: #e5533d;
+	--color-app-bg: #f8fafb;
+	--color-card: #ffffff;
+	--text-h1: clamp(2.15rem, 3vw, 2.5rem);
+	--text-h2: clamp(1.0625rem, 1.45vw, 1.125rem);
+	--text-h3: clamp(1rem, 1.2vw, 1.0625rem);
+	--text-h4: clamp(0.9375rem, 1vw, 1rem);
+	--widget-title-size: var(--text-h3);
+	--widget-title-weight: 600;
+	--widget-title-line-height: 1.24;
+	--widget-title-tracking: -0.018em;
+	--widget-title-gap: 0.45rem;
+	--text-body: 0.9375rem;
+	--text-small: 0.8125rem;
+	--text-secondary: 0.875rem;
+	--text-label: 0.8125rem;
+	--text-button: 0.875rem;
+	--text-badge: 0.75rem;
+	--text-kpi-value: clamp(2.5rem, 3.4vw, 3rem);
+	--text-kpi-subtle: 0.875rem;
+	--leading-tight: 1.12;
+	--leading-body: 1.55;
+	--tracking-title: -0.025em;
+	--tracking-body: -0.01em;
+	--bg: var(--color-app-bg);
+	--card: var(--color-card);
+	--text: #132a45;
+	--muted: #5f738a;
+	--border: #d7e3f2;
+	--primary: var(--color-primary);
+	--primary-soft: #eaf2ff;
+	--success: var(--color-success);
+	--success-soft: #ddf5f0;
+	--warning: var(--color-warning);
+	--warning-soft: #fdf0dd;
+	--danger: var(--color-danger);
+	--danger-soft: #fbe4df;
+	--row-zebra: #f9fbff;
+	--row-hover: #f1f6ff;
+	--info-bg: #dff2f8;
+	--info-text: #0f5f76;
+}
+
+body.theme-dark,
+body.dark-mode {
+	--bg: linear-gradient(135deg, #1a1f26 0%, #161d24 100%);
+	--card: #1a2430;
+	--text: #e6edf6;
+	--muted: #9eb1c7;
+	--border: #2f4358;
+	--primary: #4f8dff;
+	--primary-soft: #1a3050;
+	--success: #19b49a;
+	--warning: #f1b762;
+	--danger: #f06c58;
+	--row-zebra: #16202b;
+	--row-hover: #1d2a38;
+	--info-bg: #173549;
+	--info-text: #bde6ff;
+}
+
+html {
+	font-size: 16px;
+	-webkit-text-size-adjust: 100%;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	font-family: var(--font-sans);
+	font-size: var(--text-body);
+	font-weight: 400;
+	line-height: var(--leading-body);
+	letter-spacing: var(--tracking-body);
+	font-optical-sizing: auto;
+	font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	color: var(--text);
+	background: linear-gradient(135deg, #f8fafb 0%, #f0f4f8 100%);
+}
+
+.main-content {
+	background: linear-gradient(135deg, #f8fafb 0%, #f0f4f8 100%);
+	min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+	font-family: var(--font-sans);
+	color: var(--text);
+	letter-spacing: var(--tracking-title);
+}
+
+h1 {
+	font-size: var(--text-h1);
+	font-weight: 600;
+	line-height: 1.1;
+	color: #2563eb;
+}
+
+h2 {
+	font-size: var(--text-h2);
+	font-weight: 600;
+	line-height: 1.25;
+	color: #0f172a;
+}
+
+h3 {
+	font-size: var(--text-h3);
+	font-weight: 600;
+	line-height: 1.24;
+}
+
+h4,
+h5,
+h6 {
+	font-size: var(--text-h4);
+	font-weight: 600;
+	line-height: 1.28;
+}
+
+p,
+li,
+td,
+th,
+input,
+select,
+textarea,
+button,
+label {
+	font-family: var(--font-sans);
+}
+
+p,
+li,
+td {
+	font-size: var(--text-body);
+	line-height: var(--leading-body);
+}
+
+small,
+.small,
+.text-muted,
+.form-text,
+.table th,
+.form-label {
+	font-size: var(--text-small);
+}
+
+.form-label,
+label {
+	font-size: var(--text-label);
+	font-weight: 600;
+	line-height: 1.35;
+	color: #475569;
+	letter-spacing: 0.01em;
+}
+
+.btn,
+button,
+input,
+select,
+textarea {
+	font-size: var(--text-body);
+}
+
+::placeholder {
+	color: #94a3b8 !important;
+	font-weight: 400;
+	opacity: 1;
+}
+
+.page-title,
+.page-title h1,
+.page-header h1,
+.page-heading h1,
+.topbar-heading-title {
+	font-family: var(--font-sans);
+	font-size: var(--text-h1);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: -0.035em;
+}
+
+.page-subtitle,
+.page-title p,
+.page-header p,
+.page-description,
+.page-intro,
+.topbar-heading-subtitle,
+.table-head-copy p {
+	font-size: 0.96875rem;
+	font-weight: 400;
+	line-height: 1.6;
+	color: var(--muted);
+}
+
+.section-title,
+.card-title,
+.table-head-copy h2,
+.form-section-header h2,
+.widget-title {
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.02em;
+	color: var(--text);
+}
+
+:where(
+	.badge,
+	.status-badge,
+	.gender-badge,
+	.table-head-badge,
+	.topbar-heading-badge,
+	.page-eyebrow,
+	.badge-standard
+) {
+	font-size: var(--text-badge);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: 0.01em;
+}
+
+:where(
+	.kpi-value,
+	.consult-kpi-value,
+	.billing-kpi-value,
+	.ord-kpi-value,
+	.med-kpi-value,
+	.contact-stat-value,
+	.settings-stat-value,
+	.exam-kpi-value,
+	.exam-results-kpi-value,
+	.stat-value,
+	.rx-kpi-value,
+	.medecin-stat-value,
+	.summary-value,
+	.ce-summary-value,
+	.exam-show-kpi-value
+) {
+	font-size: var(--text-kpi-value);
+	font-weight: 700;
+	line-height: 1.05;
+	letter-spacing: -0.035em;
+	color: var(--text);
+}
+
+:where(
+	.kpi-label,
+	.contact-stat-label,
+	.settings-stat-label,
+	.stat-label,
+	.medecin-stat-label,
+	.summary-label,
+	.ce-summary-label,
+	.rx-hero-stat-label,
+	.exam-show-kpi-label
+) {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.35;
+	color: var(--muted);
+}
+
+:where(
+	.kpi-subtitle,
+	.kpi-meta,
+	.summary-meta,
+	.kpi-card small,
+	.stat-card small,
+	.contact-stat-card small,
+	.template-stat-card small
+) {
+	font-size: var(--text-kpi-subtle);
+	font-weight: 500;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+:where(
+	.table-medical,
+	.table,
+	.patients-table,
+	.consult-table,
+	.billing-table,
+	.ord-table,
+	.med-table,
+	.contacts-table,
+	.permissions-table,
+	.archives-table,
+	.exam-table,
+	.exam-results-table,
+	.prestations-table,
+	.rx-table
+) {
+	font-family: var(--font-sans);
+	font-size: 0.9375rem;
+	font-weight: 400;
+	color: var(--text);
+}
+
+:where(
+	.table-medical,
+	.table,
+	.patients-table,
+	.consult-table,
+	.billing-table,
+	.ord-table,
+	.med-table,
+	.contacts-table,
+	.permissions-table,
+	.archives-table,
+	.exam-table,
+	.exam-results-table,
+	.prestations-table,
+	.rx-table
+) thead th {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.35;
+	color: var(--muted);
+	letter-spacing: 0.01em;
+	vertical-align: middle;
+}
+
+:where(
+	.table-medical,
+	.table,
+	.patients-table,
+	.consult-table,
+	.billing-table,
+	.ord-table,
+	.med-table,
+	.contacts-table,
+	.permissions-table,
+	.archives-table,
+	.exam-table,
+	.exam-results-table,
+	.prestations-table,
+	.rx-table
+) tbody td {
+	padding: 18px 24px;
+	border-bottom-color: var(--border);
+	vertical-align: middle;
+	line-height: 1.5;
+}
+
+:where(
+	.table-medical,
+	.table,
+	.patients-table,
+	.consult-table,
+	.billing-table,
+	.ord-table,
+	.med-table,
+	.contacts-table,
+	.permissions-table,
+	.archives-table,
+	.exam-table,
+	.exam-results-table,
+	.prestations-table,
+	.rx-table
+) tbody tr:hover {
+	background: var(--row-hover);
+}
+
+:where(
+	.table-medical,
+	.table,
+	.patients-table,
+	.consult-table,
+	.billing-table,
+	.ord-table,
+	.med-table,
+	.contacts-table,
+	.permissions-table,
+	.archives-table,
+	.exam-table,
+	.exam-results-table,
+	.prestations-table,
+	.rx-table
+) .text-muted,
+:where(
+	.table-medical,
+	.table,
+	.patients-table,
+	.consult-table,
+	.billing-table,
+	.ord-table,
+	.med-table,
+	.contacts-table,
+	.permissions-table,
+	.archives-table,
+	.exam-table,
+	.exam-results-table,
+	.prestations-table,
+	.rx-table
+) small,
+.patient-subtle,
+.patient-muted,
+.contact-subtle,
+.table-secondary-text {
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+:where(.form-control, .form-select, .form-input, .form-textarea, textarea, select, input:not([type="checkbox"]):not([type="radio"])) {
+	min-height: 46px;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--text);
+}
+
+:where(.form-textarea, textarea) {
+	line-height: 1.55;
+}
+
+:where(.btn, .btn-custom, .header-back-btn, .action-btn) {
+	font-size: var(--text-button);
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: 0;
+}
+
+code,
+kbd,
+pre,
+samp,
+.font-mono {
+	font-family: var(--font-mono);
+}
+
+.focus-ring:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.btn:focus-visible,
+a:focus-visible,
+button:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.35);
+}
+
+:where(.btn, .btn-custom) {
+	transition: all 0.2s ease;
+}
+
+:where(.btn, .btn-custom):not(:disabled):not(.disabled):hover {
+	transform: translateY(-1px);
+}
+
+.actions-cell,
+.consult-actions-cell,
+.billing-actions,
+.ord-actions-cell,
+.rdv-actions,
+.exam-actions,
+.exam-results-actions-cell,
+.dossiers-actions-cell,
+.med-actions-cell,
+.med-actions-inline,
+.doc-actions {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: flex-end !important;
+	gap: 0.5rem !important;
+	flex-wrap: wrap !important;
+}
+
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) form {
+	margin: 0 !important;
+	display: inline-flex !important;
+}
+
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > a,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > button,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > form > button {
+	width: 36px !important;
+	min-width: 36px !important;
+	height: 36px !important;
+	min-height: 36px !important;
+	padding: 0 !important;
+	border-radius: 11px !important;
+	border: 1px solid var(--border) !important;
+	background: linear-gradient(180deg, #ffffff 0%, #f6faff 100%) !important;
+	color: #5b738c !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 0 !important;
+	line-height: 1 !important;
+	text-decoration: none !important;
+	box-shadow: 0 14px 24px -24px rgba(15, 23, 42, 0.45) !important;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease !important;
+}
+
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > a:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > a:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > button:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > button:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > form > button:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) > form > button:focus {
+	transform: translateY(-1px) !important;
+	border-color: #bfd1e4 !important;
+	background: linear-gradient(180deg, #ffffff 0%, #edf5ff 100%) !important;
+	box-shadow: 0 16px 30px -24px rgba(15, 23, 42, 0.52) !important;
+}
+
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(i, svg) {
+	font-size: 0.95rem !important;
+}
+
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).view:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).view:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).print:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).print:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).rdv:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).rdv:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).ordonnance:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).ordonnance:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).download:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).download:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).btn-add:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).btn-add:focus {
+	color: var(--primary) !important;
+	border-color: rgba(44, 123, 229, 0.22) !important;
+	background: rgba(44, 123, 229, 0.08) !important;
+}
+
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).edit:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).edit:focus {
+	color: #c98212 !important;
+	border-color: rgba(201, 130, 18, 0.22) !important;
+	background: rgba(201, 130, 18, 0.08) !important;
+}
+
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).delete:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).delete:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).danger:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).danger:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).archive:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).archive:focus,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).btn-remove:hover,
+:where(
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions
+) :is(a, button).btn-remove:focus {
+	color: var(--danger) !important;
+	border-color: rgba(229, 83, 61, 0.22) !important;
+	background: rgba(229, 83, 61, 0.08) !important;
+}
+
+.ord-actions-cell > a span,
+.ord-actions-cell > form > button span {
+	display: none !important;
+}
+
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > a,
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > button,
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > form > button,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > a,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > button,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > form > button {
+	background: linear-gradient(180deg, #13263f 0%, #102033 100%) !important;
+	border-color: #35506a !important;
+	color: #c8dbef !important;
+}
+
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > a:hover,
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > a:focus,
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > button:hover,
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > button:focus,
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > form > button:hover,
+body.theme-dark :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > form > button:focus,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > a:hover,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > a:focus,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > button:hover,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > button:focus,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > form > button:hover,
+body.dark-mode :where(.actions-cell, .consult-actions-cell, .billing-actions, .ord-actions-cell, .rdv-actions, .exam-actions, .exam-results-actions-cell, .dossiers-actions-cell, .med-actions-cell, .med-actions-inline, .doc-actions) > form > button:focus {
+	background: #183556 !important;
+	border-color: #4f74a3 !important;
+}
+
+@media (max-width: 991.98px) {
+	.actions-cell,
+	.consult-actions-cell,
+	.billing-actions,
+	.ord-actions-cell,
+	.rdv-actions,
+	.exam-actions,
+	.exam-results-actions-cell,
+	.dossiers-actions-cell,
+	.med-actions-cell,
+	.med-actions-inline,
+	.doc-actions {
+		justify-content: flex-start !important;
+	}
+}
+
+.archives-page {
+	color: var(--text);
+}
+
+.app-nav-loader {
+	position: fixed;
+	inset: 0 0 auto 0;
+	height: 3px;
+	z-index: 2200;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.18s ease;
+}
+
+.app-nav-loader-bar {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transform: scaleX(0);
+	transform-origin: left center;
+	background: linear-gradient(90deg, #2c7be5 0%, #00a389 100%);
+	box-shadow: 0 0 18px rgba(44, 123, 229, 0.32);
+	transition: transform 0.28s ease;
+}
+
+body.nav-loading {
+	cursor: progress;
+}
+
+body.nav-loading .app-nav-loader {
+	opacity: 1;
+}
+
+body.nav-loading .app-nav-loader-bar {
+	transform: scaleX(1);
+}
+
+.archives-shell {
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 20px;
+	padding: 1rem;
+	box-shadow: 0 14px 30px -28px rgba(15, 23, 42, 0.24);
+}
+
+.archives-header {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 0.7rem;
+	padding-bottom: 0.9rem;
+	border-bottom: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+}
+
+.archives-header-main {
+	min-width: 0;
+	display: grid;
+	gap: 0.3rem;
+}
+
+.archives-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	width: fit-content;
+	padding: 0.26rem 0.62rem;
+	border-radius: 999px;
+	border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary));
+	background: color-mix(in srgb, #ffffff 84%, var(--primary-soft));
+	color: var(--color-sidebar);
+	font-size: 0.72rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.archives-title {
+	margin: 0;
+	font-size: 1.4rem;
+	font-weight: 800;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	color: var(--text);
+}
+
+.archives-subtitle {
+	margin: 0;
+	color: var(--muted);
+	font-size: 0.92rem;
+	max-width: 64ch;
+}
+
+.archives-header-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	min-height: 100%;
+}
+
+.archives-action-btn,
+.archives-reset-btn {
+	min-height: 42px;
+	padding: 0.68rem 1rem;
+	border-radius: 14px;
+	border-color: #cfe0f4;
+	background: linear-gradient(180deg, #ffffff 0%, #f4f8fd 100%);
+	color: #245b95;
+	font-weight: 700;
+	box-shadow: 0 14px 24px -24px rgba(37, 99, 235, 0.28);
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.archives-action-btn:hover,
+.archives-action-btn:focus,
+.archives-reset-btn:hover,
+.archives-reset-btn:focus {
+	transform: translateY(-1px);
+	border-color: #a9c8eb;
+	background: linear-gradient(180deg, #f8fbff 0%, #ebf3ff 100%);
+	color: #174f86;
+}
+
+.archives-note {
+	margin: 0 0 0.9rem;
+	color: var(--muted);
+	font-size: 0.88rem;
+	line-height: 1.5;
+}
+
+.archives-filterbar {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	padding: 0.6rem;
+	border: 1px solid var(--border);
+	border-radius: 14px;
+	background: #ffffff;
+	margin-bottom: 1rem;
+}
+
+.archives-filter {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.archives-filter-search {
+	flex: 1 1 340px;
+}
+
+.archives-filter-status,
+.archives-filter-date {
+	flex: 0 1 180px;
+}
+
+.archives-filter .form-label {
+	color: var(--muted);
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin-bottom: 0.3rem;
+}
+
+.archives-filter .form-control,
+.archives-filter .form-select {
+	min-height: 40px;
+	border-radius: 12px;
+	border-color: var(--border);
+	background: #ffffff;
+	color: var(--text);
+	box-shadow: none;
+}
+
+.archives-filter-actions {
+	flex: 0 0 auto;
+	align-self: auto;
+}
+
+.archives-search-btn {
+	min-height: 40px;
+	padding-inline: 1.15rem;
+	border-radius: 14px;
+	font-weight: 700;
+	box-shadow: 0 18px 30px -24px rgba(37, 99, 235, 0.46);
+	transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.archives-search-btn:hover,
+.archives-search-btn:focus {
+	transform: translateY(-1px);
+	box-shadow: 0 22px 34px -24px rgba(37, 99, 235, 0.54);
+	filter: saturate(1.05);
+}
+
+.archives-table-wrap {
+	border: 1px solid var(--border);
+	border-radius: 14px;
+	overflow: auto;
+	background: var(--card);
+}
+
+.archives-table {
+	min-width: 760px;
+	margin-bottom: 0;
+	color: var(--text);
+}
+
+.archives-table thead th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background: color-mix(in srgb, var(--card) 86%, var(--primary-soft));
+	color: var(--text);
+	font-size: 0.76rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	border-bottom: 1px solid var(--border);
+	padding: 0.78rem 1rem;
+	white-space: nowrap;
+}
+
+.archives-table tbody td {
+	border-bottom: 1px solid var(--border);
+	padding: 0.82rem 1rem;
+	vertical-align: middle;
+	transition: background 0.18s ease, color 0.18s ease;
+}
+
+.archives-table tbody tr:hover {
+	background: color-mix(in srgb, var(--card) 82%, var(--primary-soft));
+}
+
+.archives-table .col-patient { width: 32%; }
+.archives-table .col-date { width: 18%; }
+.archives-table .col-reason { width: 26%; }
+.archives-table .col-status { width: 14%; }
+.archives-table .col-actions { width: 10%; }
+
+.archives-patient-cell {
+	color: var(--text);
+}
+
+.archives-date-cell {
+	font-weight: 700;
+	color: var(--text);
+	white-space: nowrap;
+}
+
+.archives-reason-cell {
+	max-width: 420px;
+}
+
+.archives-actions {
+	justify-content: flex-end !important;
+}
+
+.archives-actions > a,
+.archives-actions > button[disabled] {
+	width: 40px;
+	height: 40px;
+	border-radius: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #cfe0f4;
+	background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
+	color: #245b95;
+	box-shadow: 0 12px 20px -22px rgba(37, 99, 235, 0.32);
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.archives-actions > a:hover,
+.archives-actions > a:focus {
+	transform: translateY(-1px);
+	border-color: #a9c8eb;
+	background: linear-gradient(180deg, #f8fbff 0%, #eaf3ff 100%);
+	color: #174f86;
+}
+
+.archives-actions > button[disabled] {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	min-height: 30px;
+	padding: 0.2rem 0.62rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+	border: 1px solid transparent;
+}
+
+.status-archived {
+	background: rgba(47, 111, 237, 0.1);
+	color: #315fbe;
+	border-color: rgba(47, 111, 237, 0.18);
+}
+
+.status-restored {
+	background: rgba(14, 159, 110, 0.12);
+	color: #147254;
+	border-color: rgba(14, 159, 110, 0.22);
+}
+
+.status-history {
+	background: rgba(157, 92, 255, 0.12);
+	color: #6d53ab;
+	border-color: rgba(157, 92, 255, 0.18);
+}
+
+body.theme-dark .status-archived,
+body.dark-mode .status-archived {
+	color: #bad0ff;
+	background: rgba(79, 141, 255, 0.2);
+	border-color: rgba(79, 141, 255, 0.38);
+}
+
+body.theme-dark .status-restored,
+body.dark-mode .status-restored {
+	color: #98eac9;
+	background: rgba(14, 159, 110, 0.24);
+	border-color: rgba(14, 159, 110, 0.4);
+}
+
+body.theme-dark .status-history,
+body.dark-mode .status-history {
+	color: #d7c1ff;
+	background: rgba(157, 92, 255, 0.23);
+	border-color: rgba(157, 92, 255, 0.42);
+}
+
+.archives-empty-cell {
+	padding: 1.3rem 0.9rem !important;
+}
+
+.archives-empty-state {
+	text-align: center;
+	color: var(--muted);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.archives-empty-icon {
+	font-size: 1.7rem;
+	color: var(--primary);
+	margin-bottom: 0.15rem;
+}
+
+.archives-empty-title {
+	margin: 0;
+	font-weight: 700;
+	color: var(--text);
+}
+
+.archives-empty-text {
+	margin: 0 0 0.3rem;
+	font-size: 0.9rem;
+}
+
+.archives-pagination {
+	padding-top: 0.9rem;
+}
+
+@media (max-width: 1279.98px) {
+	.archives-filterbar {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.archives-filter,
+	.archives-filter-search,
+	.archives-filter-status,
+	.archives-filter-date {
+		flex: initial;
+	}
+
+	.archives-filter-actions {
+		grid-column: span 2;
+		justify-self: end;
+		width: auto;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.archives-shell {
+		padding: 0.85rem;
+	}
+
+	.archives-header {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.archives-header-actions {
+		justify-content: flex-start;
+	}
+
+	.archives-filterbar {
+		grid-template-columns: 1fr;
+	}
+
+	.archives-filter-actions {
+		grid-column: auto;
+		width: 100%;
+	}
+
+	.archives-search-btn {
+		width: 100%;
+	}
+
+	.archives-action-btn,
+	.archives-reset-btn {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+.ordonnance-form-page {
+	padding: 18px 10px 22px;
+	background: linear-gradient(135deg, color-mix(in srgb, var(--bg) 94%, #eef4ff), var(--bg));
+	min-height: calc(100vh - 120px);
+	color: var(--text);
+}
+
+.ordonnance-form-page .form-container {
+	max-width: none;
+	width: 100%;
+	margin: 0 auto;
+}
+
+.ordonnance-form-page .form-wrapper {
+	background: var(--card);
+	border-radius: 14px;
+	border: 1px solid var(--border);
+	padding: 20px;
+	box-shadow: 0 18px 32px -30px rgba(15, 23, 42, 0.75);
+}
+
+.ordonnance-form-page .form-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 14px;
+	margin-bottom: 18px;
+}
+
+.ordonnance-form-page .ordonnance-title-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	font-size: clamp(1.6rem, 2vw, 2rem);
+	font-weight: 800;
+	margin: 0;
+}
+
+.ordonnance-form-page .ordonnance-title-icon {
+	font-size: 2rem;
+	line-height: 1;
+}
+
+.ordonnance-form-page .ordonnance-title-badge {
+	background: linear-gradient(135deg, #10b981, #0284c7);
+	color: #fff;
+	padding: 4px 12px;
+	border-radius: 999px;
+	font-size: .85rem;
+	font-weight: 700;
+}
+
+.ordonnance-form-page .ordonnance-subtitle {
+	color: var(--muted);
+	margin: 4px 0 0;
+	font-size: 1rem;
+}
+
+.ordonnance-form-page .form-error-summary {
+	margin-bottom: 14px;
+	padding: 12px 14px;
+	border-radius: 10px;
+	border: 1px solid #f4c7cc;
+	background: #fff5f6;
+	color: #7f1d1d;
+}
+
+.ordonnance-form-page .form-error-title {
+	font-weight: 700;
+	margin: 0 0 6px;
+}
+
+.ordonnance-form-page .field-error {
+	margin-top: 6px;
+	font-size: .82rem;
+	color: #dc2626;
+}
+
+.ordonnance-form-page .ordonnance-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 340px;
+	gap: 16px;
+}
+
+.ordonnance-form-page .ordonnance-summary {
+	position: sticky;
+	top: 92px;
+	height: fit-content;
+}
+
+.ordonnance-form-page .summary-card {
+	background: color-mix(in srgb, var(--card) 92%, var(--primary-soft));
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 14px;
+	display: grid;
+	gap: 10px;
+}
+
+.ordonnance-form-page .summary-title {
+	margin: 0;
+	font-size: 1rem;
+	font-weight: 800;
+	color: var(--text);
+}
+
+.ordonnance-form-page .summary-item {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+	border-bottom: 1px dashed var(--border);
+	padding-bottom: 8px;
+}
+
+.ordonnance-form-page .summary-label {
+	font-size: .76rem;
+	text-transform: uppercase;
+	font-weight: 700;
+	color: var(--muted);
+	letter-spacing: .04em;
+}
+
+.ordonnance-form-page .summary-value {
+	font-weight: 700;
+	font-size: .86rem;
+	max-width: 55%;
+	text-align: right;
+	word-break: break-word;
+}
+
+.ordonnance-form-page .summary-warning-box {
+	border: 1px solid #f0c7cf;
+	border-radius: 10px;
+	background: #fff7f8;
+	padding: 10px;
+	margin-top: 4px;
+}
+
+.ordonnance-form-page .summary-warning-box.is-valid {
+	border-color: #9ad9bd;
+	background: #edf9f2;
+}
+
+.ordonnance-form-page .summary-warning-title {
+	font-weight: 700;
+	font-size: .84rem;
+	color: #7f1d1d;
+	margin-bottom: 6px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.ordonnance-form-page .summary-warning-box.is-valid .summary-warning-title {
+	color: #115e3a;
+}
+
+.ordonnance-form-page .summary-warning-list {
+	margin: 0;
+	padding-left: 18px;
+	font-size: .82rem;
+	color: var(--text);
+}
+
+.ordonnance-form-page .form-section {
+	margin-bottom: 24px;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 14px;
+	background: color-mix(in srgb, var(--card) 95%, var(--primary-soft));
+}
+
+.ordonnance-form-page .form-section-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--border);
+	margin-bottom: 14px;
+}
+
+.ordonnance-form-page .form-section-header h2 {
+	margin: 0;
+	font-size: 1.15rem;
+	font-weight: 800;
+	color: color-mix(in srgb, var(--text) 88%, #0e5ea8);
+}
+
+.ordonnance-form-page .form-section-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 999px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-size: 19px;
+}
+
+.ordonnance-form-page .form-section-icon.icon-main {
+	background: linear-gradient(135deg, #0284c7, #10b981);
+}
+
+.ordonnance-form-page .form-section-icon.icon-notes {
+	background: linear-gradient(135deg, #a21caf, #6366f1);
+}
+
+.ordonnance-form-page .form-section-icon.icon-meds {
+	background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+
+.ordonnance-form-page .form-section-icon.icon-options {
+	background: linear-gradient(135deg, #0284c7, #f59e0b);
+}
+
+.ordonnance-form-page .section-toggle {
+	margin-left: auto;
+	border: 1px solid var(--border);
+	background: var(--card);
+	color: var(--muted);
+	border-radius: 8px;
+	width: 32px;
+	height: 32px;
+	display: none;
+	align-items: center;
+	justify-content: center;
+}
+
+.ordonnance-form-page .form-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.ordonnance-form-page .ordonnance-main-grid {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ordonnance-form-page .two-col-grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ordonnance-form-page .form-grid.full {
+	grid-template-columns: 1fr;
+}
+
+.ordonnance-form-page .form-group {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.ordonnance-form-page .form-label {
+	font-size: .74rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+	color: var(--muted);
+	margin-bottom: 8px;
+}
+
+.ordonnance-form-page .form-label .required {
+	color: #ef4444;
+}
+
+.ordonnance-form-page .form-input,
+.ordonnance-form-page .form-select,
+.ordonnance-form-page .form-textarea {
+	min-height: 44px;
+	padding: 10px 14px;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	font-size: .95rem;
+	color: var(--text);
+	background: var(--card);
+	font-family: inherit;
+	width: 100%;
+	min-width: 0;
+}
+
+.ordonnance-form-page .form-textarea {
+	min-height: 92px;
+	resize: vertical;
+}
+
+.ordonnance-form-page .medicament-grid-head {
+	display: grid;
+	grid-template-columns: 1.5fr 1fr 1fr .8fr 1.4fr;
+	gap: 10px;
+	padding: 0 6px 8px;
+	font-size: .72rem;
+	color: var(--muted);
+	text-transform: uppercase;
+	font-weight: 700;
+	letter-spacing: .04em;
+}
+
+.ordonnance-form-page .medicament-row {
+	position: relative;
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 12px;
+	margin-bottom: 10px;
+	background: var(--card);
+}
+
+.ordonnance-form-page .medicament-row-grid {
+	display: grid;
+	grid-template-columns: 1.5fr 1fr 1fr .8fr 1.4fr;
+	gap: 10px;
+	align-items: start;
+}
+
+.ordonnance-form-page .form-group-wide {
+	grid-column: auto;
+}
+
+.ordonnance-form-page .medicament-row-enter {
+	opacity: 0;
+	transform: translateY(8px);
+}
+
+.ordonnance-form-page .medicament-row-enter.medicament-row-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: opacity .35s ease, transform .35s ease;
+}
+
+.ordonnance-form-page .medicament-row-removing {
+	opacity: 0;
+	transform: translateY(-5px);
+	transition: opacity .3s ease, transform .3s ease;
+}
+
+.ordonnance-form-page .remove-btn {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	border: 1px solid rgba(239, 68, 68, .45);
+	background: #ef4444;
+	color: #fff;
+	border-radius: 9px;
+	height: 32px;
+	padding: 0 10px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	font-size: .8rem;
+	font-weight: 700;
+}
+
+.ordonnance-form-page .remove-btn span {
+	display: none;
+}
+
+.ordonnance-form-page .add-btn {
+	margin-top: 12px;
+	background: linear-gradient(135deg, #10b981, #059669);
+	color: #fff;
+	border: none;
+	padding: 10px 14px;
+	border-radius: 10px;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	cursor: pointer;
+}
+
+.ordonnance-form-page .form-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 18px;
+	padding-top: 16px;
+	border-top: 1px solid var(--border);
+}
+
+.ordonnance-form-page .form-actions .btn,
+.ordonnance-form-page .ordonnance-mobile-actions .btn {
+	border: 1px solid transparent;
+	border-radius: 10px;
+	min-height: 44px;
+	padding: 10px 14px;
+	font-size: .94rem;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.ordonnance-form-page .form-actions .btn {
+	flex: 1;
+}
+
+.ordonnance-form-page .btn-submit {
+	background: linear-gradient(135deg, var(--primary), #0e5ea8);
+	color: #fff;
+}
+
+.ordonnance-form-page .btn-secondary-action {
+	background: color-mix(in srgb, var(--primary-soft) 65%, var(--card));
+	color: var(--text);
+	border-color: var(--border);
+}
+
+.ordonnance-form-page .btn-cancel {
+	background: color-mix(in srgb, var(--card) 80%, #dbe7f7);
+	color: var(--text);
+	border-color: var(--border);
+}
+
+.ordonnance-form-page .checkbox-group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.ordonnance-form-page .checkbox-group input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+}
+
+.ordonnance-form-page .ordonnance-mobile-actions {
+	display: none;
+}
+
+.ordonnance-form-page .mobile-actions-menu {
+	display: none;
+}
+
+.ordonnance-form-page .mobile-actions-menu.open {
+	display: grid;
+	gap: 8px;
+	position: absolute;
+	right: 0;
+	bottom: calc(100% + 8px);
+	padding: 8px;
+	width: min(260px, 90vw);
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	box-shadow: 0 16px 28px -20px rgba(0, 0, 0, .65);
+}
+
+body.theme-dark .ordonnance-form-page .ordonnance-title-badge,
+body.dark-mode .ordonnance-form-page .ordonnance-title-badge {
+	background: linear-gradient(135deg, #0d9b6f, #2868ca);
+}
+
+body.theme-dark .ordonnance-form-page .form-error-summary,
+body.dark-mode .ordonnance-form-page .form-error-summary {
+	background: #402129;
+	border-color: #8f3a47;
+	color: #ffd5dc;
+}
+
+body.theme-dark .ordonnance-form-page .summary-warning-box,
+body.dark-mode .ordonnance-form-page .summary-warning-box {
+	background: #402129;
+	border-color: #8f3a47;
+}
+
+body.theme-dark .ordonnance-form-page .summary-warning-box.is-valid,
+body.dark-mode .ordonnance-form-page .summary-warning-box.is-valid {
+	background: #143726;
+	border-color: #2f7b56;
+}
+
+@media (max-width: 1279.98px) {
+	.ordonnance-form-page .ordonnance-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.ordonnance-form-page .ordonnance-summary {
+		position: static;
+		order: -1;
+	}
+
+	.ordonnance-form-page .ordonnance-main-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 991.98px) {
+	.ordonnance-form-page {
+		padding: 16px;
+	}
+
+	.ordonnance-form-page .form-wrapper {
+		padding: 16px;
+	}
+
+	.ordonnance-form-page .medicament-grid-head {
+		display: none;
+	}
+
+	.ordonnance-form-page .medicament-row-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.ordonnance-form-page .form-group-wide {
+		grid-column: span 2;
+	}
+
+	.ordonnance-form-page .remove-btn span {
+		display: inline;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.ordonnance-form-page {
+		padding: 12px;
+		padding-bottom: 86px;
+	}
+
+	.ordonnance-form-page .ordonnance-main-grid,
+	.ordonnance-form-page .form-grid,
+	.ordonnance-form-page .two-col-grid,
+	.ordonnance-form-page .medicament-row-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.ordonnance-form-page .form-group-wide {
+		grid-column: auto;
+	}
+
+	.ordonnance-form-page .section-toggle {
+		display: inline-flex;
+	}
+
+	.ordonnance-form-page .accordion-section.is-collapsed .section-body {
+		display: none;
+	}
+
+	.ordonnance-form-page .accordion-section.is-collapsed .section-toggle i {
+		transform: rotate(-90deg);
+	}
+
+	.ordonnance-form-page .desktop-actions {
+		display: none;
+	}
+
+	.ordonnance-form-page .ordonnance-mobile-actions {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 8px;
+		position: fixed;
+		left: 10px;
+		right: 10px;
+		bottom: calc(10px + env(safe-area-inset-bottom));
+		z-index: 1050;
+		background: color-mix(in srgb, var(--card) 92%, var(--primary-soft));
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 8px;
+	}
+
+	.ordonnance-form-page .ordonnance-mobile-actions .btn {
+		min-width: 0;
+	}
+}
+.display-mode-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    border: 1px solid #dbe5f1;
+    background: linear-gradient(180deg, #ffffff 0%, #f6faff 100%);
+    box-shadow: 0 14px 24px -28px rgba(15, 23, 42, 0.16);
+}
+
+.display-mode-option {
+    min-height: 38px;
+    padding: 8px 13px;
+    border-radius: 10px;
+    color: #486178;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+
+.display-mode-option:hover {
+    background: #eef5ff;
+    color: #1e4f88;
+    text-decoration: none;
+}
+
+.display-mode-option.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4fbe 100%);
+    color: #ffffff;
+    box-shadow: 0 14px 20px -18px rgba(37, 99, 235, 0.45);
+}
+
+.action-tone-view:hover,
+.action-tone-view:focus {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+.action-tone-edit:hover,
+.action-tone-edit:focus {
+    background: #f59e0b !important;
+    border-color: #f59e0b !important;
+    color: #ffffff !important;
+}
+
+.action-tone-print:hover,
+.action-tone-print:focus {
+    background: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+    color: #ffffff !important;
+}
+
+.action-tone-delete:hover,
+.action-tone-delete:focus {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .display-mode-switch {
+    background: #132a45;
+    border-color: #355985;
+}
+
+body.dark-mode .display-mode-option {
+    color: #d4e8ff;
+}
+
+body.dark-mode .display-mode-option:hover {
+    background: #1c3e67;
+    color: #ffffff;
+}
+
+body.dark-mode .display-mode-option.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4fbe 100%);
+    color: #ffffff;
+}

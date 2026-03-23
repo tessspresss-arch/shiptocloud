@@ -1,0 +1,30 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "test:e2e": "playwright test",
+        "test:e2e:critical": "playwright test e2e/tests/auth.spec.ts e2e/tests/core-flow.spec.ts e2e/tests/critical-patient-consultation-billing-rdv.spec.ts e2e/tests/business-critical-regression.spec.ts",
+        "test:e2e:audit": "playwright test e2e/tests/preproduction-audit.spec.ts",
+        "test:e2e:headed": "playwright test --headed",
+        "test:e2e:report": "playwright show-report storage/test-reports/playwright-html",
+        "test:agent:analyze": "node tools/test-agent/analyze-results.mjs"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.53.0",
+        "@popperjs/core": "^2.11.6",
+        "@tailwindcss/forms": "^0.5.2",
+        "alpinejs": "^3.4.2",
+        "autoprefixer": "^10.4.2",
+        "axios": "^1.6.4",
+        "bootstrap": "^5.2.3",
+        "chart.js": "^4.5.1",
+        "laravel-vite-plugin": "^1.0.0",
+        "postcss": "^8.4.31",
+        "sass": "^1.56.1",
+        "sweetalert2": "^11.26.23",
+        "tailwindcss": "^3.1.0",
+        "vite": "^5.0.0"
+    }
+}

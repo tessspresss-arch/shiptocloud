@@ -1,0 +1,57 @@
+<?php
+
+return [
+    'accepted' => 'Le champ :attribute doit être accepté.',
+    'array' => 'Le champ :attribute doit être un tableau.',
+    'boolean' => 'Le champ :attribute doit être vrai ou faux.',
+    'confirmed' => 'La confirmation du champ :attribute ne correspond pas.',
+    'date' => 'Le champ :attribute doit être une date valide.',
+    'dimensions' => "Les dimensions de l'image :attribute sont invalides.",
+    'email' => 'Le champ :attribute doit être une adresse e-mail valide.',
+    'image' => 'Le champ :attribute doit être une image.',
+    'in' => 'La valeur sélectionnée pour :attribute est invalide.',
+    'max' => [
+        'string' => 'Le champ :attribute ne doit pas dépasser :max caractères.',
+        'file' => 'Le fichier :attribute ne doit pas dépasser :max kilo-octets.',
+    ],
+    'mimes' => 'Le champ :attribute doit être un fichier de type :values.',
+    'min' => [
+        'string' => 'Le champ :attribute doit contenir au moins :min caractères.',
+    ],
+    'nullable' => 'Le champ :attribute peut être vide.',
+    'required' => 'Le champ :attribute est obligatoire.',
+    'string' => 'Le champ :attribute doit être une chaîne de caractères.',
+    'unique' => 'Cette valeur pour :attribute est déjà utilisée.',
+
+    'password' => [
+        'letters' => 'Le champ :attribute doit contenir au moins une lettre.',
+        'mixed' => 'Le champ :attribute doit contenir au moins une majuscule et une minuscule.',
+        'numbers' => 'Le champ :attribute doit contenir au moins un chiffre.',
+        'symbols' => 'Le champ :attribute doit contenir au moins un symbole.',
+        'uncompromised' => 'Le champ :attribute apparaît dans une fuite de données. Veuillez choisir une autre valeur.',
+    ],
+
+    'attributes' => [
+        'first_name' => 'prénom',
+        'name' => 'nom',
+        'email' => 'adresse e-mail',
+        'role' => 'rôle',
+        'password' => 'mot de passe',
+        'password_confirmation' => 'confirmation du mot de passe',
+        'module_permissions' => 'modules autorisés',
+        'professional_phone' => 'téléphone professionnel',
+        'job_title' => 'fonction',
+        'speciality' => 'spécialité',
+        'order_number' => 'numéro d\'ordre',
+        'department' => 'service',
+        'account_status' => 'statut du compte',
+        'account_expires_at' => 'date d’expiration du compte',
+        'ui_language' => 'langue',
+        'timezone' => 'fuseau horaire',
+        'notification_channel' => 'mode de notification',
+        'two_factor_enabled' => 'double authentification',
+        'force_password_change' => 'changement de mot de passe forcé',
+        'avatar' => 'avatar',
+        'send_password_email' => 'envoi du mot de passe par e-mail',
+    ],
+];

@@ -1,0 +1,168 @@
+/* ===== DASHBOARD MODERN STYLES ===== */
+
+:root {
+    --primary: var(--color-primary, #2c7be5);
+    --primary-dark: var(--color-primary-strong, #2368c6);
+    --success: var(--color-success, #00a389);
+    --warning: var(--color-warning, #f0ad4e);
+    --danger: var(--color-danger, #e5533d);
+    --gray-50: var(--color-app-bg, #f4f7fb);
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+}
+
+/* Smooth transitions */
+* {
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Cards hover effect */
+.group {
+    position: relative;
+}
+
+.group::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.group:hover::before {
+    opacity: 0.05;
+}
+
+/* Gradient backgrounds */
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.from-blue-100 {
+    --tw-gradient-from: #dbeafe;
+}
+
+.to-blue-50 {
+    --tw-gradient-to: #eff6ff;
+}
+
+/* Smooth shadows */
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* KPI Cards */
+.kpi-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 72%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    transform: translateX(42%);
+    transition: transform 0.4s ease;
+}
+
+.kpi-card:hover::after {
+    transform: translateX(26%);
+}
+
+/* Graph bars animation */
+@keyframes growBar {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+    to {
+        height: var(--bar-height, 100%);
+        opacity: 1;
+    }
+}
+
+.chart-bar {
+    animation: growBar 0.6s ease-out forwards;
+}
+
+/* Notification badge pulse */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Header sticky effect */
+.sticky {
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive grid */
+@media (max-width: 768px) {
+    .lg\:col-span-2 {
+        grid-column: auto / span 1;
+    }
+}
+
+/* Loading state */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Focus states */
+button:focus,
+input:focus,
+select:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --gray-50: #1a1a1a;
+        --gray-100: #2d2d2d;
+        --gray-200: #404040;
+        --gray-900: #f5f5f5;
+    }
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none;
+    }
+}

@@ -1,0 +1,21 @@
+﻿nom_medicament,classe_therapeutique,forme,dosage
+Paracétamol,Antalgique,Comprimé,500 mg
+Ibuprofène,Anti-inflammatoire,Comprimé,400 mg
+Amoxicilline,Antibiotique,Gélule,500 mg
+Azithromycine,Antibiotique,Comprimé,250 mg
+Ciprofloxacine,Antibiotique,Comprimé,500 mg
+Metformine,Antidiabétique,Comprimé,850 mg
+Insuline,Antidiabétique,Injection,Variable
+Oméprazole,Antiulcéreux,Gélule,20 mg
+Amlodipine,Antihypertenseur,Comprimé,5 mg
+Losartan,Antihypertenseur,Comprimé,50 mg
+Atorvastatine,Hypolipémiant,Comprimé,20 mg
+Salbutamol,Bronchodilatateur,Inhalation,100 µg
+Budesonide,Corticoïde,Inhalation,200 µg
+Prednisone,Corticoïde,Comprimé,20 mg
+Diclofénac,Anti-inflammatoire,Comprimé,50 mg
+Vitamine C,Vitamine,Comprimé,500 mg
+Fer,Complément,Comprimé,80 mg
+Acide folique,Vitamine,Comprimé,5 mg
+Cétirizine,Antihistaminique,Comprimé,10 mg
+Loratadine,Antihistaminique,Comprimé,10 mg

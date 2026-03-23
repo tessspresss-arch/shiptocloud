@@ -1,0 +1,51 @@
+﻿/* Sidebar enhanced (non-conflicting utilities) */
+
+.nav-item:focus-visible,
+.nav-item-main:focus-visible,
+.nav-subitem:focus-visible,
+.sidebar-toggle:focus-visible,
+.btn-logout:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+.nav-item:focus,
+.nav-item-main:focus,
+.nav-subitem:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+@media (hover: none) {
+    .nav-item:hover,
+    .nav-item-main:hover,
+    .nav-subitem:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-item,
+    .nav-item-main,
+    .nav-subitem,
+    .nav-arrow,
+    .sidebar,
+    .main-content,
+    .btn-logout,
+    .sidebar-toggle {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+@media print {
+    .sidebar,
+    .sidebar-toggle,
+    .sidebar-footer {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+}

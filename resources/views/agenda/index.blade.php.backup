@@ -1,0 +1,567 @@
+@extends('layouts.app')
+
+@section('title', 'Agenda - Cabinet Médical')
+
+@section('content')
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="h3 mb-0">📅 Agenda Professionnel</h1>
+            <p class="text-muted">Gérez vos rendez-vous médicaux</p>
+        </div>
+    </div>
+
+    <!-- Calendrier principal -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Agenda Médical Professionnel
+                    </h5>
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#appointmentModal">
+                        <i class="fas fa-plus"></i> Nouveau Rendez-vous
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="calendar" style="height: 700px;"></div>
+                </div>
+            </div>
+
+            <!-- Statistiques rapides -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">RDV Aujourd'hui</h6>
+                            <h4 id="todayCount">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">RDV Cette Semaine</h6>
+                            <h4 id="weekCount">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">En Attente</h6>
+                            <h4 id="pendingCount">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Annulés</h6>
+                            <h4 id="cancelledCount">0</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour créer/modifier rendez-vous -->
+<div class="modal fade" id="appointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="appointmentModalTitle">Nouveau Rendez-vous</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="appointmentForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Patient</label>
+                                <div class="input-group">
+                                    <select class="form-select" name="patient_id" id="patientSelect" required>
+                                        <option value="">Sélectionner un patient</option>
+                                        @foreach($patients as $patient)
+                                            <option value="{{ $patient->id }}">{{ $patient->nom }} {{ $patient->prenom }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#patientModal">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Médecin</label>
+                                <select class="form-select" name="medecin_id" required>
+                                    <option value="">Sélectionner un médecin</option>
+                                    @foreach($medecins as $medecin)
+                                        <option value="{{ $medecin->id }}">Dr. {{ $medecin->nom }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date & Heure</label>
+                                <input type="datetime-local" class="form-control" name="date_heure" id="dateHeureInput" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Durée (minutes)</label>
+                                <select class="form-select" name="duree">
+                                    <option value="15">15 minutes</option>
+                                    <option value="30" selected>30 minutes</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60">1 heure</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type de consultation</label>
+                        <select class="form-select" name="type">
+                            <option value="consultation">Consultation</option>
+                            <option value="controle">Contrôle</option>
+                            <option value="urgence">Urgence</option>
+                            <option value="teleconsultation">Téléconsultation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Motif</label>
+                        <textarea class="form-control" name="motif" rows="3" placeholder="Motif du rendez-vous..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveAppointment">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour créer un patient -->
+<div class="modal fade" id="patientModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Nouveau Patient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="patientForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Nom *</label>
+                                <input type="text" class="form-control" name="nom" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Prénom *</label>
+                                <input type="text" class="form-control" name="prenom" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Genre *</label>
+                                <select class="form-select" name="genre" required>
+                                    <option value="">Sélectionner</option>
+                                    <option value="M">Masculin</option>
+                                    <option value="F">Féminin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date de naissance</label>
+                                <input type="date" class="form-control" name="date_naissance">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" name="telephone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-user-plus"></i> Créer Patient
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('styles')
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+
+<style>
+/* Styles pour le mini calendrier mensuel */
+.mini-month-calendar {
+    width: 100%;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.calendar-day-name {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #6c757d;
+    padding: 4px;
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+.calendar-day.empty {
+    background-color: transparent;
+    border: none;
+    cursor: default;
+}
+
+.calendar-day:not(.empty):hover {
+    background-color: #e7f3ff;
+    border-color: #0d6efd;
+    transform: scale(1.05);
+}
+
+.calendar-day.today {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: bold;
+    border-color: #0d6efd;
+}
+
+.calendar-day.today:hover {
+    background-color: #0b5ed7;
+}
+
+.calendar-day.has-appointments {
+    background-color: #d1ecf1;
+    border-color: #17a2b8;
+}
+
+.calendar-day.has-appointments:hover {
+    background-color: #bee5eb;
+}
+
+.calendar-day.today.has-appointments {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.day-number {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.appointment-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+}
+
+.calendar-day.today .appointment-badge {
+    background-color: #ffc107;
+    color: #000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendar-day-name {
+        font-size: 0.65rem;
+    }
+    
+    .day-number {
+        font-size: 0.75rem;
+    }
+    
+    .appointment-badge {
+        width: 16px;
+        height: 16px;
+        font-size: 0.6rem;
+    }
+}
+</style>
+@endpush
+
+@push('scripts')
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.min.js'></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentAppointmentId = null;
+
+    // Initialiser FullCalendar
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        locale: 'fr',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+        },
+        events: '/api/rendezvous',
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        weekends: true,
+        businessHours: {
+            daysOfWeek: [1, 2, 3, 4, 5],
+            startTime: '08:00',
+            endTime: '19:00'
+        },
+        slotDuration: '00:15:00',
+        slotLabelInterval: '01:00',
+        slotMinTime: '08:00',
+        slotMaxTime: '20:00',
+        allDaySlot: false,
+        select: function(info) {
+            // Quand l'utilisateur sélectionne une plage horaire
+            document.getElementById('dateHeureInput').value = info.startStr.substring(0, 16);
+            const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+            document.getElementById('appointmentModalTitle').textContent = 'Nouveau Rendez-vous';
+            currentAppointmentId = null;
+            document.getElementById('appointmentForm').reset();
+            modal.show();
+        },
+        eventClick: function(info) {
+            // Quand l'utilisateur clique sur un rendez-vous
+            currentAppointmentId = info.event.id;
+            editAppointment(info.event);
+        },
+        eventDrop: function(info) {
+            // Quand l'utilisateur déplace un rendez-vous
+            updateAppointmentTime(info.event);
+        },
+        eventResize: function(info) {
+            // Quand l'utilisateur redimensionne un rendez-vous
+            updateAppointmentDuration(info.event);
+        }
+    });
+
+    calendar.render();
+
+    // Gestion du formulaire
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        if (currentAppointmentId) {
+            // Mode édition
+            fetch(`/rendezvous/${currentAppointmentId}`, {
+                method: 'PUT',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    calendar.refetchEvents();
+                    resetForm();
+                    alert('Rendez-vous modifié avec succès');
+                }
+            });
+        } else {
+            // Mode création
+            fetch('/rendezvous', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    calendar.refetchEvents();
+                    this.reset();
+                    alert('Rendez-vous créé avec succès');
+                }
+            });
+        }
+    });
+
+    // Fonctions utilitaires
+    function editAppointment(event) {
+        // Remplir le formulaire pour édition
+        document.getElementById('appointmentModalTitle').textContent = 'Modifier Rendez-vous';
+        document.querySelector('select[name="patient_id"]').value = event.extendedProps.patient_id;
+        document.querySelector('select[name="medecin_id"]').value = event.extendedProps.medecin_id;
+        document.querySelector('input[name="date_heure"]').value = event.start.toISOString().substring(0, 16);
+        document.querySelector('select[name="duree"]').value = event.extendedProps.duree;
+        document.querySelector('select[name="type"]').value = event.extendedProps.type;
+        document.querySelector('textarea[name="motif"]').value = event.extendedProps.motif || '';
+        const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+        modal.show();
+    }
+
+    function updateAppointmentTime(event) {
+        fetch(`/rendezvous/${event.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                date_heure: event.start.toISOString()
+            })
+        });
+    }
+
+    function updateAppointmentDuration(event) {
+        const duration = Math.round((event.end - event.start) / 60000);
+        fetch(`/rendezvous/${event.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                duree: duration
+            })
+        });
+    }
+
+    function resetForm() {
+        currentAppointmentId = null;
+        document.getElementById('appointmentForm').reset();
+        document.getElementById('btnUpdate').classList.add('d-none');
+        document.getElementById('btnDelete').classList.add('d-none');
+        document.getElementById('btnCancel').classList.add('d-none');
+    }
+
+    // Charger les statistiques
+    function loadStatistics() {
+        fetch('/api/rendezvous/statistics')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('todayCount').textContent = data.today || 0;
+                document.getElementById('weekCount').textContent = data.week || 0;
+                document.getElementById('pendingCount').textContent = data.pending || 0;
+                document.getElementById('cancelledCount').textContent = data.cancelled || 0;
+            });
+    }
+
+    // Gestion du formulaire patient
+    document.getElementById('patientForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch('/patients', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Fermer la modal patient
+                const patientModal = bootstrap.Modal.getInstance(document.getElementById('patientModal'));
+                patientModal.hide();
+
+                // Ajouter le nouveau patient au select
+                const patientSelect = document.getElementById('patientSelect');
+                const newOption = new Option(`${data.patient.nom} ${data.patient.prenom}`, data.patient.id);
+                patientSelect.appendChild(newOption);
+                patientSelect.value = data.patient.id;
+
+                // Réinitialiser le formulaire patient
+                this.reset();
+
+                alert('Patient créé avec succès');
+            } else {
+                alert('Erreur lors de la création du patient');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors de la création du patient');
+        });
+    });
+
+    // Charger les données initiales
+    loadStatistics();
+    setInterval(loadStatistics, 60000); // Rafraîchir toutes les minutes
+});
+</script>
+@endpush

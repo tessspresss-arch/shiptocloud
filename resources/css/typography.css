@@ -1,0 +1,1228 @@
+:root {
+		--type-page-title: clamp(1.98rem, 2.7vw, 2.32rem);
+		--type-page-subtitle: 0.89rem;
+		--type-section-title: 1.02rem;
+		--type-label: 0.76rem;
+		--type-table: 0.94rem;
+		--type-secondary: 0.8rem;
+		--type-badge: 0.78rem;
+		--type-button: 0.91rem;
+		--type-kpi-value: clamp(2.5rem, 3.4vw, 3rem);
+		--type-kpi-subtle: 0.9rem;
+	}
+
+	body {
+		font-family: var(--font-sans);
+		font-size: var(--type-table);
+		font-weight: 400;
+		line-height: 1.55;
+		letter-spacing: -0.01em;
+		font-optical-sizing: auto;
+		font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+	}
+
+	h1,
+	.page-title,
+	.page-title h1,
+	.page-header h1,
+	.page-heading h1,
+	.topbar-heading-title {
+		font-size: var(--type-page-title);
+		font-weight: 600;
+		line-height: 1.1;
+		letter-spacing: -0.035em;
+	}
+
+	h2,
+	.section-title,
+	.card-title,
+	.table-head-copy h2,
+	.form-section-header h2,
+	.widget-title {
+		font-size: var(--type-section-title);
+		font-weight: 600;
+		line-height: 1.3;
+		letter-spacing: -0.015em;
+		color: #16324d;
+	}
+
+	.page-subtitle,
+	.page-title p,
+	.page-header p,
+	.page-description,
+	.page-intro,
+	.topbar-heading-subtitle,
+	.table-head-copy p {
+		font-size: var(--type-page-subtitle);
+		font-weight: 400;
+		line-height: 1.55;
+		color: #6b819c;
+	}
+
+	.form-label,
+	label {
+		font-size: var(--type-label);
+		font-weight: 600;
+		line-height: 1.35;
+		color: #475569;
+		letter-spacing: 0.03em;
+	}
+
+	:where(.form-control, .form-select, .form-input, .form-textarea, textarea, select, input:not([type="checkbox"]):not([type="radio"])) {
+		min-height: 44px;
+		font-size: var(--type-table);
+		font-weight: 400;
+		line-height: 1.35;
+		color: var(--text);
+	}
+
+	:where(.form-textarea, textarea)::placeholder,
+	:where(.form-control, .form-select, .form-input, input, textarea)::placeholder {
+		color: #94a3b8;
+		font-weight: 400;
+		opacity: 1;
+	}
+
+	:where(.btn, .btn-custom, .header-back-btn, .action-btn) {
+		font-size: var(--type-button);
+		font-weight: 600;
+		line-height: 1.1;
+		letter-spacing: 0;
+	}
+
+	:where(.modal-content, [x-on\:open-modal\.window] > div[x-show]) {
+		border-radius: 18px;
+	}
+
+	:where(.modal-header, .modal-footer) {
+		padding: 0.88rem 1rem;
+	}
+
+	:where(.modal-body) {
+		padding: 0.95rem 1rem;
+	}
+
+	:where(.modal-title) {
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.28;
+		letter-spacing: -0.015em;
+	}
+
+	:where(.modal-header .btn-close, .modal-footer .btn, .modal-footer .btn-custom) {
+		min-height: 40px;
+	}
+
+	:where(.page-header, .app-page-header, .table-head-copy, .filters-heading, .form-section-header) > :last-child {
+		margin-bottom: 0;
+	}
+
+	:where(.page-header, .app-page-header, .table-head-copy, .filters-heading, .form-section-header) p {
+		margin-top: 0.28rem;
+		margin-bottom: 0;
+	}
+
+	:where(.page-header, .app-page-header, .table-head-copy, .filters-heading, .form-section-header) h1,
+	:where(.page-header, .app-page-header, .table-head-copy, .filters-heading, .form-section-header) h2,
+	:where(.page-header, .app-page-header, .table-head-copy, .filters-heading, .form-section-header) h3 {
+		margin-bottom: 0;
+	}
+
+	:where([class$="-hero-grid"], [class*="-hero-grid "]) {
+		gap: clamp(0.85rem, 1.8vw, 1.15rem);
+	}
+
+	:where([class$="-hero-head"], [class*="-hero-head "]) {
+		gap: 0.85rem;
+	}
+
+	:where([class$="-hero-main"], [class*="-hero-main "]) {
+		gap: 0.72rem;
+	}
+
+	:where([class$="-hero-tools"], [class*="-hero-tools "], [class$="-hero-actions"], [class*="-hero-actions "]) {
+		gap: 0.65rem;
+	}
+
+	:where(.form-section, .med-form-section, .medecin-form-section, .ordonnance-form-page .form-section) {
+		border-radius: 20px;
+	}
+
+	:where(.form-section-header, .med-form-section-head, .medecin-form-section-head, .ordonnance-form-page .form-section-header) {
+		margin-bottom: 0.85rem;
+		padding-bottom: 0.8rem;
+	}
+
+	:where(.form-section-heading p, .med-form-section-help, .medecin-form-section p) {
+		margin-top: 0.2rem;
+		margin-bottom: 0;
+		font-size: 0.82rem;
+		line-height: 1.4;
+	}
+
+	:where(
+		.sticky-actions,
+		.form-actions,
+		.med-form-actions,
+		.dep-footer-actions,
+		.rx-footer-actions,
+		.ue-actions-bottom,
+		.uc-actions-bottom,
+		.ue-toolbar,
+		.uc-toolbar,
+		.template-toolbar,
+		.message-toolbar,
+		.reports-toolbar,
+		.rdv-display-toolbar
+	) {
+		gap: 0.65rem;
+	}
+
+	:where(
+		.sticky-actions,
+		.dep-footer-actions,
+		.rx-footer-actions,
+		.ordonnance-form-page .form-actions
+	) {
+		padding: 0.72rem 0.85rem;
+		border-radius: 16px;
+	}
+
+	:where(
+		.sticky-actions .btn,
+		.sticky-actions .btn-custom,
+		.form-actions .btn,
+		.form-actions .btn-custom,
+		.med-form-actions .btn,
+		.dep-footer-actions .btn,
+		.rx-footer-actions .btn,
+		.ue-actions-bottom .ue-btn,
+		.uc-actions-bottom .uc-btn,
+		.ue-toolbar .ue-btn,
+		.uc-toolbar .uc-btn
+	) {
+		min-height: 40px;
+		padding-top: 0.68rem;
+		padding-bottom: 0.68rem;
+	}
+
+	:where(
+		.display-mode-switch,
+		.view-toggle,
+		.agenda-layout-toggle,
+		.template-toolbar,
+		.reports-toolbar,
+		.rdv-display-toolbar
+	) {
+		gap: 0.35rem;
+		padding: 0.22rem;
+		border-radius: 12px;
+	}
+
+	:where(
+		.display-mode-option,
+		.view-btn,
+		.agenda-layout-toggle .btn,
+		.agenda-layout-toggle a,
+		.template-toolbar .btn,
+		.rdv-display-toolbar .btn
+	) {
+		min-height: 34px;
+		padding: 0.45rem 0.8rem;
+		border-radius: 9px;
+		font-size: 0.76rem;
+		font-weight: 600;
+		line-height: 1;
+		letter-spacing: 0.01em;
+	}
+
+	:where(
+		.snapshot-chip,
+		.up-chip,
+		.hero-chip,
+		.record-chip,
+		.sms-chip,
+		.sms-meta-chip,
+		.status-pill,
+		.rdv-timing-chip
+	) {
+		min-height: 28px;
+		padding: 0.28rem 0.56rem;
+		border-radius: 999px;
+		font-size: 0.74rem;
+		font-weight: 600;
+		line-height: 1.12;
+		letter-spacing: 0;
+	}
+
+	:where(
+		.agenda-side-card,
+		.preview-panel,
+		.summary-card,
+		.ce-sticky-card,
+		.sticky-sidebar,
+		.form-card.sidebar-card,
+		.sms-summary-card,
+		.sms-hero-side
+	) {
+		border-radius: 18px;
+		padding: 0.9rem;
+	}
+
+	:where(
+		.agenda-side-card-header,
+		.preview-panel h3,
+		.summary-title,
+		.sticky-copy strong,
+		.sms-table-header h2,
+		.sms-summary-card h2
+	) {
+		font-size: 0.98rem;
+		font-weight: 600;
+		line-height: 1.28;
+		letter-spacing: -0.015em;
+	}
+
+	:where(
+		.sticky-copy span,
+		.preview-panel p,
+		.summary-label,
+		.sms-table-header p,
+		.sms-summary-card p
+	) {
+		font-size: 0.81rem;
+		font-weight: 400;
+		line-height: 1.42;
+	}
+
+	:where(
+		.badge,
+		.status-badge,
+		.gender-badge,
+		.table-head-badge,
+		.topbar-heading-badge,
+		.page-eyebrow,
+		.badge-standard
+	) {
+		font-size: var(--type-badge);
+		font-weight: 600;
+		line-height: 1.1;
+		letter-spacing: 0;
+	}
+
+	:where(
+		.table,
+		.table-medical,
+		.patients-table,
+		.consult-table,
+		.billing-table,
+		.ord-table,
+		.med-table,
+		.contacts-table,
+		.dep-table,
+		.permissions-table,
+		.archives-table,
+		.exam-table,
+		.exam-results-table,
+		.prestations-table,
+		.rx-table
+	) {
+		font-family: var(--font-sans);
+		font-size: var(--type-table);
+		font-weight: 400;
+		color: var(--text);
+	}
+
+	:where(
+		.table,
+		.table-medical,
+		.patients-table,
+		.consult-table,
+		.billing-table,
+		.ord-table,
+		.med-table,
+		.contacts-table,
+		.dep-table,
+		.permissions-table,
+		.archives-table,
+		.exam-table,
+		.exam-results-table,
+		.prestations-table,
+		.rx-table
+	) thead th {
+		font-size: var(--type-label);
+		font-weight: 600;
+		line-height: 1.35;
+		color: #59718a;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		vertical-align: middle;
+	}
+
+	:where(
+		.table,
+		.table-medical,
+		.patients-table,
+		.consult-table,
+		.billing-table,
+		.ord-table,
+		.med-table,
+		.contacts-table,
+		.dep-table,
+		.permissions-table,
+		.archives-table,
+		.exam-table,
+		.exam-results-table,
+		.prestations-table,
+		.rx-table
+	) tbody td {
+		padding: 15px 16px;
+		border-bottom-color: #f1f5f9;
+		vertical-align: middle;
+		line-height: 1.42;
+		color: #334155;
+	}
+
+	:where(
+		.table,
+		.table-medical,
+		.patients-table,
+		.consult-table,
+		.billing-table,
+		.ord-table,
+		.med-table,
+		.contacts-table,
+		.dep-table,
+		.permissions-table,
+		.archives-table,
+		.exam-table,
+		.exam-results-table,
+		.prestations-table,
+		.rx-table
+	) tbody tr:hover {
+		background: linear-gradient(90deg, #f6fbff 0%, #f1f7fe 100%);
+		box-shadow: inset 0 0 0 1px #d8e6f4;
+	}
+
+	:where(
+		.table,
+		.table-medical,
+		.patients-table,
+		.consult-table,
+		.billing-table,
+		.ord-table,
+		.med-table,
+		.contacts-table,
+		.dep-table,
+		.permissions-table,
+		.archives-table,
+		.exam-table,
+		.exam-results-table,
+		.prestations-table,
+		.rx-table
+	) :where(small, .text-muted, .patient-subtle, .patient-muted, .contact-subtle, .table-secondary-text) {
+		font-size: 0.8rem;
+		font-weight: 400;
+		line-height: 1.45;
+		color: #91a4b8;
+	}
+
+	:where(
+		.kpi-value,
+		.consult-kpi-value,
+		.billing-kpi-value,
+		.ord-kpi-value,
+		.med-kpi-value,
+		.contact-stat-value,
+		.settings-stat-value,
+		.exam-kpi-value,
+		.exam-results-kpi-value,
+		.stat-value,
+		.rx-kpi-value,
+		.medecin-stat-value,
+		.summary-value,
+		.ce-summary-value,
+		.exam-show-kpi-value
+	) {
+		font-size: var(--type-kpi-value);
+		font-weight: 600;
+		line-height: 1.05;
+		letter-spacing: -0.035em;
+		color: var(--text);
+	}
+
+	:where(
+		.kpi-label,
+		.contact-stat-label,
+		.settings-stat-label,
+		.stat-label,
+		.medecin-stat-label,
+		.summary-label,
+		.ce-summary-label,
+		.rx-hero-stat-label,
+		.exam-show-kpi-label
+	) {
+		font-size: var(--type-label);
+		font-weight: 600;
+		line-height: 1.35;
+		color: var(--muted);
+	}
+
+	:where(
+		.kpi-subtitle,
+		.kpi-meta,
+		.summary-meta,
+		.kpi-card small,
+		.stat-card small,
+		.contact-stat-card small,
+		.template-stat-card small
+	) {
+		font-size: var(--type-kpi-subtle);
+		font-weight: 400;
+		line-height: 1.45;
+		color: var(--muted);
+	}
+
+	body.theme-dark .form-label,
+	body.theme-dark label,
+	body.dark-mode .form-label,
+	body.dark-mode label,
+	body.theme-dark :where(.table, .table-medical, .patients-table, .consult-table, .billing-table, .ord-table, .med-table, .contacts-table, .permissions-table, .archives-table, .exam-table, .exam-results-table, .prestations-table, .rx-table) thead th,
+	body.dark-mode :where(.table, .table-medical, .patients-table, .consult-table, .billing-table, .ord-table, .med-table, .contacts-table, .permissions-table, .archives-table, .exam-table, .exam-results-table, .prestations-table, .rx-table) thead th {
+		color: var(--muted);
+	}
+
+	body.theme-dark :where(.table, .table-medical, .patients-table, .consult-table, .billing-table, .ord-table, .med-table, .contacts-table, .permissions-table, .archives-table, .exam-table, .exam-results-table, .prestations-table, .rx-table) tbody tr:hover,
+	body.dark-mode :where(.table, .table-medical, .patients-table, .consult-table, .billing-table, .ord-table, .med-table, .contacts-table, .permissions-table, .archives-table, .exam-table, .exam-results-table, .prestations-table, .rx-table) tbody tr:hover {
+		background: var(--row-hover);
+	}
+
+body.theme-dark :where(.form-textarea, .form-control, .form-select, .form-input, input, textarea)::placeholder,
+body.dark-mode :where(.form-textarea, .form-control, .form-select, .form-input, input, textarea)::placeholder {
+	color: #8ba1bb;
+}
+
+/* Dashboard */
+.dashboard-kpi-grid .kpi-card {
+	padding: 0.82rem;
+	min-height: 112px;
+}
+
+.dashboard-kpi-grid .kpi-title {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.35;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.dashboard-kpi-grid .kpi-value {
+	font-size: clamp(2.15rem, 2.8vw, 2.5rem);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.04em;
+	color: var(--text);
+}
+
+.dashboard-kpi-grid .kpi-value-unit {
+	font-size: 0.56em;
+	font-weight: 600;
+	letter-spacing: 0;
+	color: var(--muted);
+}
+
+.dashboard-kpi-grid .kpi-foot {
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.4;
+	color: var(--muted);
+}
+
+/* Parametres */
+.settings-stat {
+	padding: 13px 14px 12px;
+	min-height: 108px;
+}
+
+.settings-stat-label {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.35;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.settings-stat-value {
+	font-size: clamp(2rem, 2.6vw, 2.4rem);
+	font-weight: 700;
+	line-height: 1.04;
+	letter-spacing: -0.035em;
+	color: var(--text);
+}
+
+.settings-stat-hint,
+.settings-stat-meta {
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.4;
+	color: var(--muted);
+}
+
+.settings-stat-status,
+.template-stat-card span,
+.template-stat-card small {
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.template-stat-card strong {
+	font-size: 1.7rem;
+	font-weight: 700;
+	line-height: 1.05;
+	letter-spacing: -0.03em;
+	color: var(--text);
+}
+
+/* Agenda */
+.agenda-snapshot {
+	padding: 8px 10px;
+}
+
+.snapshot-chip {
+	min-height: 46px;
+	padding: 6px 10px;
+}
+
+.snapshot-chip strong {
+	font-size: 1.55rem;
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.03em;
+	color: var(--text);
+}
+
+.snapshot-chip span {
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.25;
+	letter-spacing: 0.01em;
+	color: var(--muted);
+	text-transform: uppercase;
+}
+
+.up-patient {
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1.35;
+	color: var(--text);
+}
+
+.up-meta {
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--muted);
+}
+
+.up-chip {
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+}
+
+body.theme-dark .dashboard-kpi-grid .kpi-title,
+body.dark-mode .dashboard-kpi-grid .kpi-title,
+body.theme-dark .dashboard-kpi-grid .kpi-foot,
+body.dark-mode .dashboard-kpi-grid .kpi-foot,
+body.theme-dark .settings-stat-label,
+body.dark-mode .settings-stat-label,
+body.theme-dark .settings-stat-hint,
+body.dark-mode .settings-stat-hint,
+body.theme-dark .settings-stat-meta,
+body.dark-mode .settings-stat-meta,
+body.theme-dark .snapshot-chip span,
+body.dark-mode .snapshot-chip span,
+body.theme-dark .up-meta,
+body.dark-mode .up-meta {
+	color: var(--muted);
+}
+
+/* Patients */
+.stats-container .stat-card {
+	padding: 14px 16px;
+}
+
+.stats-container .stat-info h3 {
+	font-size: clamp(2rem, 2.6vw, 2.35rem);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.035em;
+	color: var(--text);
+}
+
+.stats-container .stat-info p,
+.filters-heading p,
+.table-head-copy p {
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.42;
+	color: var(--muted);
+}
+
+.patients-table .patient-name,
+.patients-table .patient-id,
+.patients-table .contact-info {
+	font-size: 0.9375rem;
+}
+
+.patients-table .patient-name {
+	font-weight: 600;
+	line-height: 1.35;
+	color: var(--text);
+}
+
+.patients-table .patient-id {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* Consultations / RDV / Depenses: alignement sur Patients */
+.consult-patient-name,
+.consult-medecin-name,
+.rdv-person-name,
+.rdv-doctor-name,
+.dep-description-title,
+.med-name {
+	font-size: 0.94rem;
+	font-weight: 600;
+	line-height: 1.35;
+	color: #1e293b;
+}
+
+.consult-meta,
+.consult-date-subtext,
+.rdv-person-sub,
+.rdv-doctor-sub,
+.rdv-date small,
+.dep-description-sub,
+.billing-table-copy,
+.billing-table-meta,
+.billing-table-kicker,
+.ord-card-copy,
+.ord-table-meta,
+.ord-id,
+.ord-date-note,
+.ord-person-meta,
+.med-submeta,
+.med-table-copy,
+.med-table-kicker,
+.med-table-meta,
+.contact-stat-label,
+.settings-stat-hint,
+.settings-stat-meta {
+	font-size: 0.8rem;
+	font-weight: 500;
+	line-height: 1.45;
+	color: #91a4b8;
+}
+
+.rdv-index-page .table thead th,
+.rdv-index-page .table tbody td {
+	color: #334155;
+}
+
+.rdv-index-page .table thead th {
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #59718a;
+	padding: 15px 16px;
+}
+
+.rdv-index-page .table tbody td {
+	padding: 15px 16px;
+	border-bottom-color: #f1f5f9;
+}
+
+.rdv-index-page .table-hover > tbody > tr.rdv-row:hover {
+	background: linear-gradient(90deg, #f6fbff 0%, #f1f7fe 100%);
+	box-shadow: inset 0 0 0 1px #d8e6f4;
+}
+
+.dep-table thead th,
+.dep-table tbody td,
+.consult-table thead th,
+.consult-table tbody td,
+.med-table thead th,
+.med-table tbody td,
+.billing-table thead th,
+.billing-table tbody td,
+.ord-table thead th,
+.ord-table tbody td,
+.exam-table thead th,
+.exam-table tbody td,
+.exam-results-table thead th,
+.exam-results-table tbody td,
+.contacts-table thead th,
+.contacts-table tbody td {
+	font-family: var(--font-sans);
+}
+
+.billing-table-title,
+.ord-card-title,
+.ord-table-head h2,
+.med-table-title,
+.med-filter-title,
+.consult-table-title,
+.dep-table-title {
+	font-size: 1.06rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.015em;
+	color: #16324d;
+}
+
+.billing-status-pill,
+.ord-status-pill,
+.med-status-pill,
+.categorie-badge,
+.statut-badge,
+.rdv-meta-badge,
+.rdv-type-badge,
+.consult-status-pill {
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: 0;
+}
+
+/* Medecins */
+.med-kpi {
+	padding: 14px 16px;
+}
+
+.med-kpi-value {
+	font-size: clamp(2rem, 2.6vw, 2.35rem);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.035em;
+	color: var(--text);
+}
+
+.med-table-title,
+.med-filter-title {
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--text);
+}
+
+.med-table-copy,
+.med-table-kicker,
+.med-table-meta,
+.med-field label {
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+.med-status-pill {
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.15;
+}
+
+/* Factures */
+.billing-kpi {
+	padding: 14px 16px;
+}
+
+.billing-kpi-label {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.35;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.billing-kpi-value,
+.billing-kpi-value.amount {
+	font-size: clamp(2rem, 2.6vw, 2.35rem);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.035em;
+}
+
+.billing-page .billing-title,
+.billing-page .billing-filter-title,
+.billing-page .billing-table-title {
+	font-size: 1.06rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.015em;
+	color: #16324d;
+}
+
+.billing-page .billing-subtitle,
+.billing-page .billing-filter-copy,
+.billing-page .billing-kpi-copy,
+.billing-page .billing-table-copy,
+.billing-page .billing-table-meta,
+.billing-page .billing-table-kicker,
+.billing-page .billing-pagination-copy,
+.billing-page .billing-row-meta,
+.billing-page .billing-patient-meta,
+.billing-page .billing-date-meta,
+.billing-page .billing-amount-meta {
+	font-size: 0.8rem;
+	font-weight: 500;
+	line-height: 1.45;
+	color: #91a4b8;
+}
+
+.billing-page .billing-filter-kicker,
+.billing-page .billing-field label,
+.billing-page .billing-table thead th {
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #59718a;
+}
+
+.billing-page .billing-table tbody td {
+	font-size: 0.94rem;
+	font-weight: 500;
+	line-height: 1.4;
+	padding: 15px 16px;
+	color: #334155;
+	border-bottom-color: #f1f5f9;
+}
+
+.billing-page .billing-table tbody tr:hover {
+	background: linear-gradient(90deg, #f6fbff 0%, #f1f7fe 100%);
+	box-shadow: inset 0 0 0 1px #d8e6f4;
+}
+
+.billing-page .billing-row-number,
+.billing-page .billing-patient-name,
+.billing-page .billing-date-main,
+.billing-page .billing-amount-main {
+	font-size: 0.94rem;
+	font-weight: 600;
+	line-height: 1.35;
+	color: #16324d;
+}
+
+.billing-page .billing-inline-tag,
+.billing-page .billing-table-chip,
+.billing-page .billing-status-pill {
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: 0;
+}
+
+/* Ordonnances */
+.ord-kpi-value {
+	font-size: clamp(2rem, 2.6vw, 2.35rem);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.035em;
+	color: var(--text);
+}
+
+.ord-page .ord-title,
+.ord-page .ord-card-title,
+.ord-page .ord-table-head h2 {
+	font-size: 1.06rem;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.015em;
+	color: #16324d;
+}
+
+.ord-page .ord-subtitle,
+.ord-page .ord-kpi-note,
+.ord-page .ord-card-copy,
+.ord-page .ord-table-meta,
+.ord-page .ord-id,
+.ord-page .ord-date-note,
+.ord-page .ord-person-meta,
+.ord-page .ord-pagination-info {
+	font-size: 0.8rem;
+	font-weight: 500;
+	line-height: 1.45;
+	color: #91a4b8;
+}
+
+.ord-page .ord-filter-field label,
+.ord-page .ord-table thead th {
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: #59718a;
+}
+
+.ord-page .ord-table tbody td {
+	font-size: 0.94rem;
+	font-weight: 500;
+	line-height: 1.4;
+	padding: 15px 16px;
+	color: #334155;
+	border-bottom-color: #f1f5f9;
+}
+
+.ord-page .ord-table tbody tr:hover {
+	background: linear-gradient(90deg, #f6fbff 0%, #f1f7fe 100%);
+	box-shadow: inset 0 0 0 1px #d8e6f4;
+}
+
+.ord-page .ord-person-name,
+.ord-page .ord-date-main {
+	font-size: 0.94rem;
+	font-weight: 600;
+	line-height: 1.35;
+	color: #16324d;
+}
+
+.ord-page .ord-counter,
+.ord-page .ord-num,
+.ord-page .ord-status-pill,
+.ord-page .ord-chip {
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1.1;
+	letter-spacing: 0;
+}
+
+body.theme-dark .stats-container .stat-info p,
+body.dark-mode .stats-container .stat-info p,
+body.theme-dark .filters-heading p,
+body.dark-mode .filters-heading p,
+body.theme-dark .med-table-copy,
+body.dark-mode .med-table-copy,
+body.theme-dark .med-table-kicker,
+body.dark-mode .med-table-kicker,
+body.theme-dark .med-table-meta,
+body.dark-mode .med-table-meta,
+body.theme-dark .med-field label,
+body.dark-mode .med-field label,
+body.theme-dark .billing-kpi-copy,
+body.dark-mode .billing-kpi-copy,
+body.theme-dark .billing-table-copy,
+body.dark-mode .billing-table-copy,
+body.theme-dark .billing-table-meta,
+body.dark-mode .billing-table-meta,
+body.theme-dark .billing-table-kicker,
+body.dark-mode .billing-table-kicker,
+body.theme-dark .ord-kpi-note,
+body.dark-mode .ord-kpi-note,
+body.theme-dark .ord-card-copy,
+body.dark-mode .ord-card-copy,
+body.theme-dark .ord-table-meta,
+body.dark-mode .ord-table-meta,
+body.theme-dark .ord-id,
+body.dark-mode .ord-id,
+body.theme-dark .ord-date-note,
+body.dark-mode .ord-date-note,
+body.theme-dark .ord-person-meta,
+body.dark-mode .ord-person-meta {
+	color: var(--muted);
+}
+
+/* table-responsive-density */
+@media (max-width: 1200px) {
+    .billing-table,
+    .consult-table,
+    .med-table,
+    .ord-table,
+    .dep-table,
+    .table-medical {
+        min-width: 820px !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .billing-table thead th,
+    .consult-table thead th,
+    .med-table thead th,
+    .ord-table thead th,
+    .dep-table thead th,
+    .table-medical thead th {
+        padding: 12px 14px !important;
+    }
+
+    .billing-table tbody td,
+    .consult-table tbody td,
+    .med-table tbody td,
+    .ord-table tbody td,
+    .dep-table tbody td,
+    .table-medical tbody td {
+        padding: 14px !important;
+    }
+
+    .display-mode-switch,
+    .view-toggle,
+    .agenda-layout-toggle {
+        width: 100%;
+        justify-content: stretch;
+        overflow-x: auto;
+    }
+
+    .display-mode-switch > *,
+    .view-toggle > *,
+    .agenda-layout-toggle > * {
+        flex: 1 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .billing-table,
+    .consult-table,
+    .med-table,
+    .ord-table,
+    .dep-table,
+    .table-medical {
+        min-width: 680px !important;
+    }
+}
+
+/* list-view-typography */
+.patients-table,
+.consult-table,
+.billing-table,
+.exam-table,
+.ord-table,
+.dep-table,
+.med-table,
+.payments-table,
+.doc-table,
+.sms-table,
+.reports-table,
+.table-modern,
+.permissions-table,
+.users-table,
+.rdv-index-page .table {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif !important;
+}
+
+.patients-table th,
+.consult-table thead th,
+.billing-table thead th,
+.exam-table thead th,
+.ord-table thead th,
+.dep-table thead th,
+.med-table thead th,
+.payments-table thead th,
+.doc-table th,
+.sms-table th,
+.reports-table thead th,
+.table-modern th,
+.permissions-table th,
+.users-table thead th,
+.rdv-index-page .table thead th {
+    color: var(--text, #111827) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+.patients-table td,
+.consult-table tbody td,
+.billing-table tbody td,
+.exam-table tbody td,
+.ord-table tbody td,
+.dep-table tbody td,
+.med-table tbody td,
+.payments-table tbody td,
+.doc-table td,
+.sms-table td,
+.reports-table tbody td,
+.table-modern td,
+.permissions-table td,
+.users-table tbody td,
+.rdv-index-page .table tbody td {
+    color: var(--text, #111827) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+}
+
+.patient-name,
+.consult-patient-name,
+.consult-medecin-name,
+.billing-row-number,
+.exam-patient-name,
+.ord-person-name,
+.dep-description-title,
+.med-name,
+.payments-main-text,
+.users-user-name {
+    color: var(--text, #111827) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
+    letter-spacing: 0 !important;
+}
+
+.patient-record-meta,
+.patient-subtle,
+.consult-meta,
+.consult-detail,
+.billing-row-id,
+.billing-row-meta,
+.billing-patient-meta,
+.billing-date-meta,
+.exam-patient-meta,
+.exam-date-meta,
+.exam-amount-meta,
+.ord-id,
+.ord-person-meta,
+.ord-date-note,
+.dep-description-sub,
+.med-subtext,
+.payments-sub-text,
+.users-user-meta,
+.users-access-note,
+.users-last-login-sub {
+    color: var(--muted, #6b7280) !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 1.45 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+.payments-amount strong,
+.billing-total-amount,
+.exam-amount-main,
+.dep-amount,
+.reports-table strong,
+.table-modern strong {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+}
+
+.payments-badge,
+.payments-status,
+.users-role-badge,
+.users-status-badge,
+.categorie-badge,
+.statut-badge,
+.med-pill {
+    font-weight: 500 !important;
+}

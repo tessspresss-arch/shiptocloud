@@ -30,6 +30,54 @@
     }
 @endphp
 
+{{-- DEBUG PANEL: Sidebar Rendering Debug --}}
+@if(app()->environment('local', 'staging') || config('app.debug'))
+<div id="sidebar-debug" style="position:fixed;top:10px;right:10px;z-index:99999;background:#ffeb3b;color:#000;padding:12px;border-radius:8px;border:2px solid #f59e0b;max-width:380px;max-height:300px;overflow:auto;font-family:'Monaco','Menlo',monospace;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3);line-height:1.4;">
+    <strong>🔍 SIDEBAR DEBUG ({{ now()->toDateTimeString() }})</strong><br>
+    <strong>User:</strong> {{ auth()->user()?->email ?? 'Guest' }} | <strong>Role:</strong> {{ auth()->user()?->role ?? 'N/A' }} | <strong>isAdmin:</strong> {{ auth()->user()?->isAdmin() ? '✅ YES' : '❌ NO' }}<br>
+    <strong>PatientCount:</strong> {{ $patientCount ?? 'N/A' }}<br>
+<strong>Raw $menuItems IDs:</strong><br>
+    <pre style="margin:4px 0;background:#fff;padding:8px;border-radius:4px;font-size:11px;">{{ json_encode(array_column($menuItems ?? [], 'id'), JSON_PRETTY_PRINT) }}</pre>
+    <strong>Module Permissions:</strong><br>
+    <pre style="margin:4px 0;background:#e0f2fe;padding:8px;border-radius:4px;font-size:11px;">@json(auth()->user()?->module_permissions ?? [])</pre>
+    <strong>Grouped sections:</strong> {{ collect($groupedMenu ?? [])->keys()->implode(', ') }} ({{ collect($groupedMenu ?? [])->flatten(1)->count() }} items)<br>
+<strong>Per-Item Access Analysis:</strong>
+    @php
+        $criticalItems = ['dashboard','patients','consultations','planning','medecins','pharmacie','facturation','examens','depenses','contacts','sms','documents','statistiques','rapports','parametres','utilisateurs'];
+        $user = auth()->user();
+        $menuIds = array_column($menuItems ?? [], 'id');
+    @endphp
+    <div style="margin:6px 0;overflow-x:auto;">
+        <table style="border-collapse:collapse;font-size:10px;background:#f8fafc;">
+            <thead><tr style="background:#e2e8f0;"><th style="padding:2px 4px;border:1px solid #cbd5e1;">ID</th><th style="padding:2px 4px;border:1px solid #cbd5e1;">hasAccess</th><th style="padding:2px 4px;border:1px solid #cbd5e1;">Rendered</th><th style="padding:2px 4px;border:1px solid #cbd5e1;">Reason</th></tr></thead>
+            <tbody>
+            @foreach($criticalItems as $id)
+                @php
+                    $hasAccess = $user?->hasModuleAccess($id) ?? false;
+                    $isRendered = in_array($id, $menuIds);
+                    $reason = $user?->isAdmin() ? 'admin' : ($hasAccess ? 'permission' : 'missing');
+                    if (in_array($id, ['parametres','utilisateurs']) && !$user?->isAdmin()) $reason = 'admin-only';
+                @endphp
+                <tr style="background:{{ $isRendered ? '#dcfce7' : '#fee2e2' }};">
+                    <td style="padding:1px 4px;border:1px solid #cbd5e1;font-weight:{{ $isRendered ? 'bold' : 'normal' }};">{{ $id }}</td>
+                    <td style="padding:1px 4px;border:1px solid #cbd5e1;text-align:center;">{{ $hasAccess ? '✅' : '❌' }}</td>
+                    <td style="padding:1px 4px;border:1px solid #cbd5e1;text-align:center;">{{ $isRendered ? '✅' : '❌' }}</td>
+                    <td style="padding:1px 4px;border:1px solid #cbd5e1;font-size:9px;">{{ $reason }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+    <strong>Expected critical:</strong> patients,planning,consultations,facturation,pharmacie{{ auth()->user()?->isAdmin() ? ',parametres,utilisateurs' : '' }}<br>
+    <em>Inspect DOM: F12 → Ctrl+F "data-id="planning"" etc.</em><br>
+    <button onclick="this.parentElement.remove();localStorage.removeItem('sidebarDebugDismissed')" style="margin-top:4px;padding:2px 8px;background:#ef4444;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">❌ Dismiss</button>
+</div>
+
+<script>
+if(localStorage.getItem('sidebarDebugDismissed')) document.getElementById('sidebar-debug')?.remove();
+</script>
+@endif
+
 <aside class="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-brand">

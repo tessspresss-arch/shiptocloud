@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\DossierMedical;
 use App\Models\Patient;
+use App\Services\Security\ClinicalAuthorizationService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class DossierMedicalController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(DossierMedical::class, 'dossier');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -69,7 +76,7 @@ class DossierMedicalController extends Controller
 
     private function buildIndexQuery(Request $request): Builder
     {
-        return DossierMedical::query()
+        $query = DossierMedical::query()
             ->when($request->filled('search'), function (Builder $query) use ($request) {
                 $search = trim((string) $request->input('search'));
 
@@ -88,6 +95,14 @@ class DossierMedicalController extends Controller
             ->when($request->filled('type'), function (Builder $query) use ($request) {
                 $query->where('type', (string) $request->input('type'));
             });
+
+        if ($request->user()) {
+            $query->whereHas('patient', function (Builder $patientQuery) use ($request) {
+                app(ClinicalAuthorizationService::class)->scopePatients($patientQuery, $request->user());
+            });
+        }
+
+        return $query;
     }
 
     /**
@@ -95,11 +110,23 @@ class DossierMedicalController extends Controller
      */
     public function create()
     {
-        $patients = Patient::all();
+        $patientsQuery = Patient::query();
+        if (auth()->check()) {
+            app(ClinicalAuthorizationService::class)->scopePatients($patientsQuery, auth()->user());
+        }
+
+        $patients = $patientsQuery->get();
+        $statsQuery = DossierMedical::query();
+        if (auth()->check()) {
+            $statsQuery->whereHas('patient', function (Builder $patientQuery) {
+                app(ClinicalAuthorizationService::class)->scopePatients($patientQuery, auth()->user());
+            });
+        }
+
         $createStats = [
             'patients' => $patients->count(),
-            'actifs' => DossierMedical::query()->where('statut', '!=', 'archive')->count(),
-            'archives' => DossierMedical::query()->where('statut', 'archive')->count(),
+            'actifs' => (clone $statsQuery)->where('statut', '!=', 'archive')->count(),
+            'archives' => (clone $statsQuery)->where('statut', 'archive')->count(),
         ];
 
         $typeOptions = DossierMedical::query()
@@ -134,14 +161,16 @@ class DossierMedicalController extends Controller
 
         // Set defaults
         $validated['type'] = $validated['type'] ?? 'général';
+        $patient = Patient::query()->findOrFail($validated['patient_id']);
+        abort_unless(app(ClinicalAuthorizationService::class)->canAccessPatient($request->user(), $patient), 403);
         $validated['statut'] = $validated['statut'] ?? 'actif';
 
         // Handle file uploads
         $documentPaths = [];
         if ($request->hasFile('documents')) {
             foreach ($request->file('documents') as $file) {
-                $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('documents/dossiers', $filename, 'public');
+                $filename = (string) Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('documents/dossiers', $filename, 'local');
                 $documentPaths[] = [
                     'name' => $file->getClientOriginalName(),
                     'path' => $path,
@@ -187,7 +216,12 @@ class DossierMedicalController extends Controller
     {
         $dossier->loadCount(['consultations', 'ordonnances']);
 
-        $patients = Patient::all();
+        $patientsQuery = Patient::query();
+        if (auth()->check()) {
+            app(ClinicalAuthorizationService::class)->scopePatients($patientsQuery, auth()->user());
+        }
+
+        $patients = $patientsQuery->get();
         $editStats = [
             'consultations' => (int) ($dossier->consultations_count ?? 0),
             'ordonnances' => (int) ($dossier->ordonnances_count ?? 0),
@@ -218,6 +252,8 @@ class DossierMedicalController extends Controller
         $validated['type'] = $validated['type'] ?? 'général';
 
         try {
+            $patient = Patient::query()->findOrFail($validated['patient_id']);
+            abort_unless(app(ClinicalAuthorizationService::class)->canAccessPatient($request->user(), $patient), 403);
             $dossier->update($validated);
 
             return redirect()->route('dossiers.show', $dossier->id)
@@ -264,6 +300,8 @@ class DossierMedicalController extends Controller
      */
     public function archives(Request $request)
     {
+        $this->authorize('viewAny', DossierMedical::class);
+
         $perPage = max(10, min(100, (int) $request->integer('per_page', 20)));
 
         $baseQuery = $this->buildArchivesQuery($request);
@@ -298,6 +336,8 @@ class DossierMedicalController extends Controller
      */
     public function archive(DossierMedical $dossier)
     {
+        $this->authorize('update', $dossier);
+
         if ($dossier->statut === 'archive') {
             return redirect()->route('dossiers.show', $dossier->id)
                 ->with('info', 'Le dossier est deja archive.');
@@ -312,7 +352,7 @@ class DossierMedicalController extends Controller
 
     private function buildArchivesQuery(Request $request): Builder
     {
-        return DossierMedical::query()
+        $query = DossierMedical::query()
             ->where('statut', 'archive')
             ->when($request->filled('search'), function (Builder $query) use ($request) {
                 $search = trim((string) $request->input('search'));
@@ -327,5 +367,13 @@ class DossierMedicalController extends Controller
                         });
                 });
             });
+
+        if ($request->user()) {
+            $query->whereHas('patient', function (Builder $patientQuery) use ($request) {
+                app(ClinicalAuthorizationService::class)->scopePatients($patientQuery, $request->user());
+            });
+        }
+
+        return $query;
     }
 }

@@ -540,11 +540,15 @@
         padding: 0.82rem 0.85rem;
         text-decoration: none;
         font-weight: 700;
+        font: inherit;
         display: inline-flex;
         align-items: center;
         justify-content: flex-start;
         gap: 0.6rem;
+        width: 100%;
+        text-align: left;
         border: 1px solid transparent;
+        cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.14);
     }
@@ -1069,15 +1073,15 @@
                                 <span class="action-btn-icon"><i class="fas fa-calendar-plus"></i></span>
                                 <span>Nouvelle consultation</span>
                             </a>
-                            <a
-                                href="{{ route('ordonnances.create', ['patient_id' => $patient->id]) }}"
+                            <button
+                                type="button"
                                 class="action-btn cyan"
-                                x-data
-                                @click.prevent="$dispatch('open-modal', 'modal-ordonnance')"
+                                data-open-ordonnance-modal
+                                onclick="if (!document.querySelector('#patientOrdonnanceModalForm')?.dataset.medisysBound) { return window.medisysOpenPatientOrdonnanceModal ? window.medisysOpenPatientOrdonnanceModal(event) : false; }"
                             >
                                 <span class="action-btn-icon"><i class="fas fa-prescription"></i></span>
                                 <span>Nouvelle ordonnance</span>
-                            </a>
+                            </button>
                             <a href="{{ route('examens.create', ['patient_id' => $patient->id]) }}" class="action-btn amber">
                                 <span class="action-btn-icon"><i class="fas fa-vial-circle-check"></i></span>
                                 <span>Ajouter un examen</span>

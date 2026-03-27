@@ -17,6 +17,9 @@ class PasswordResetTest extends TestCase
         $response = $this->get('/forgot-password');
 
         $response->assertStatus(200);
+        $response->assertSeeText('Reinitialisez votre acces MEDISYS Pro');
+        $response->assertSeeText('Envoyer le lien de reinitialisation');
+        $response->assertSeeText('Retour a la connexion');
     }
 
     public function test_reset_password_link_can_be_requested(): void

@@ -5,6 +5,8 @@ namespace App\Services\RendezVous;
 use App\Models\Medecin;
 use App\Models\Patient;
 use App\Models\RendezVous;
+use App\Models\User;
+use App\Services\Security\ClinicalAuthorizationService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -17,9 +19,17 @@ class RendezVousAgendaViewService
     private const STATUS_ABSENT = 'absent';
     private const STATUS_ANNULE = 'annule';
 
-    public function build(string $currentView, string $weekLayout, Carbon $selectedDate, mixed $selectedMedecinId, ?string $selectedStatut, string $searchTerm): array
+    public function __construct(private readonly ClinicalAuthorizationService $access)
     {
-        $applyFilters = static function ($query) use ($selectedMedecinId, $selectedStatut, $searchTerm) {
+    }
+
+    public function build(string $currentView, string $weekLayout, Carbon $selectedDate, mixed $selectedMedecinId, ?string $selectedStatut, string $searchTerm, ?User $user = null): array
+    {
+        $applyFilters = function ($query) use ($selectedMedecinId, $selectedStatut, $searchTerm, $user) {
+            if ($user) {
+                $this->access->scopeRendezVous($query, $user);
+            }
+
             if ($selectedMedecinId && $selectedMedecinId !== 'all') {
                 $query->where('medecin_id', $selectedMedecinId);
             }
@@ -111,7 +121,13 @@ class RendezVousAgendaViewService
             ]);
         }
 
-        $medecins = Medecin::select('id', 'nom', 'prenom', 'specialite')->orderBy('nom')->get();
+        $medecinsQuery = Medecin::select('id', 'nom', 'prenom', 'specialite')->orderBy('nom');
+
+        if ($user?->hasRole('medecin')) {
+            $medecinsQuery->whereKey($this->access->currentMedecinId($user) ?? 0);
+        }
+
+        $medecins = $medecinsQuery->get();
         $statusOptions = [
             self::STATUS_A_VENIR => 'A venir',
             self::STATUS_EN_ATTENTE => 'En attente',

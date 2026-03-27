@@ -1204,6 +1204,55 @@
             grid-template-columns: repeat(auto-fit, minmax(38px, 38px));
         }
     }
+
+    @media (max-width: 767px) {
+        .billing-title-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .billing-title-content {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .billing-title-copy,
+        .billing-title,
+        .billing-subtitle {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .billing-badge-row {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .billing-badge,
+        .billing-chip {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .billing-hero {
+            padding: 16px;
+        }
+
+        .billing-hero-grid {
+            gap: 14px;
+        }
+
+        .billing-chip,
+        .billing-badge {
+            padding-inline: 12px;
+        }
+    }
 </style>
 @endpush
 

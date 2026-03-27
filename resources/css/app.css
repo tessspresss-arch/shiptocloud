@@ -16,6 +16,8 @@
 	--color-danger: #e5533d;
 	--color-app-bg: #f8fafb;
 	--color-card: #ffffff;
+	--shell-header-height: 82px;
+	--shell-header-height-mobile: 76px;
 	--text-h1: clamp(2.15rem, 3vw, 2.5rem);
 	--text-h2: clamp(1.0625rem, 1.45vw, 1.125rem);
 	--text-h3: clamp(1rem, 1.2vw, 1.0625rem);

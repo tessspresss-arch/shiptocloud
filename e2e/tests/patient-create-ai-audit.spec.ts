@@ -16,7 +16,7 @@ test('AI audit - creation patient et diagnostic des bugs', async ({ page }) => {
   const patientNom = `AI${unique}`;
   const patientPrenom = 'Testeur';
   const patientCin = `AI${unique}`;
-  const patientTel = `+2126${unique}77`;
+  const patientTel = `6${unique.padStart(7, '0')}`;
 
   const markIssue = (severity: 'critical' | 'high' | 'medium', step: string, detail: string) => {
     issues.push({ severity, step, detail });
@@ -99,7 +99,9 @@ test('AI audit - creation patient et diagnostic des bugs', async ({ page }) => {
     await page.fill('input[name="telephone"]', patientTel);
     await page.fill('input[name="email"]', `ai.${unique}@medisys.test`);
     await page.fill('input[name="adresse"]', 'Adresse IA test');
-    await page.fill('input[name="ville"]', 'Casablanca');
+    await page.selectOption('select[name="ville_selection"]', 'Casablanca').catch(async () => {
+      await page.fill('input[name="ville"]', 'Casablanca');
+    });
 
     const assuranceSelect = page.locator('select[name="assurance_medicale"]');
     if (await assuranceSelect.isVisible().catch(() => false)) {

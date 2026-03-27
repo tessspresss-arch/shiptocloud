@@ -44,7 +44,7 @@ test.describe('Business critical regression', () => {
     const patientPrenom = 'Critical';
     const patientEmail = `business.${token}@medisys.test`;
     const patientCin = `BIZ-${token}`;
-    const patientPhone = `+2126${token.slice(-6)}`;
+    const patientPhone = `6${token.slice(-7)}`;
     const consultationDiagnostic = `Diagnostic business ${token}`;
     const factureNote = `Facture business ${token}`;
     const rendezVousNote = `Rendez-vous business ${token}`;
@@ -79,7 +79,12 @@ test.describe('Business critical regression', () => {
       await page.fill('input[name="cin"]', patientCin);
       await fillIfVisible(page.locator('input[name="email"]'), patientEmail);
       await fillIfVisible(page.locator('textarea[name="adresse"], input[name="adresse"]'), '12 rue QA business');
-      await fillIfVisible(page.locator('input[name="ville"]'), 'Casablanca');
+      const citySelect = page.locator('select[name="ville_selection"]');
+      if (await citySelect.count()) {
+        await citySelect.selectOption('Casablanca');
+      } else {
+        await fillIfVisible(page.locator('input[name="ville"]'), 'Casablanca');
+      }
       await fillIfVisible(page.locator('input[name="profession"]'), 'QA Lead');
       await fillIfVisible(page.locator('textarea[name="notes"]'), `Patient e2e critique ${token}`);
 

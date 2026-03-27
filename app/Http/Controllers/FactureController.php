@@ -9,13 +9,20 @@ use App\Models\Patient;
 use App\Models\Medecin;
 use App\Services\Billing\FactureMailService;
 use App\Services\Billing\FacturePdfService;
+use App\Services\Security\ClinicalAuthorizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class FactureController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Facture::class, 'facture');
+    }
+
     /**
      * Afficher la liste des factures
      */
@@ -69,6 +76,10 @@ class FactureController extends Controller
                     $query->whereBetween('date_facture', [now()->startOfYear(), now()->endOfYear()]);
                 }
             });
+
+        if ($request->user()) {
+            app(ClinicalAuthorizationService::class)->scopeFactures($baseQuery, $request->user());
+        }
 
         $facturesQuery = (clone $baseQuery)
             ->when($request->filled('status'), function ($query) use ($request, $statusCatalog) {
@@ -232,9 +243,15 @@ class FactureController extends Controller
             return null;
         }
 
-        return Consultation::query()
+        $query = Consultation::query()
             ->with(['patient:id,nom,prenom', 'medecin:id,nom,prenom'])
-            ->find($consultationId);
+            ->select(['id', 'patient_id', 'medecin_id']);
+
+        if (auth()->check()) {
+            app(ClinicalAuthorizationService::class)->scopeConsultations($query, auth()->user());
+        }
+
+        return $query->find($consultationId);
     }
 
     /**
@@ -273,7 +290,7 @@ class FactureController extends Controller
     public function store(Request $request)
     {
         // Validation des donnÃƒÆ’Ã‚Â©es
-        $request->validate([
+        $validated = $request->validate([
             'consultation_id' => 'nullable|exists:consultations,id',
             'patient_id' => 'required|exists:patients,id',
             'medecin_id' => 'nullable|exists:medecins,id',
@@ -288,39 +305,38 @@ class FactureController extends Controller
             'action' => 'required|in:brouillon,en_attente'
         ]);
 
-        $selectedConsultation = $this->findSelectedConsultation($request->integer('consultation_id'));
-        if ($selectedConsultation && (int) $selectedConsultation->patient_id !== (int) $request->integer('patient_id')) {
+        $selectedConsultation = $this->resolveSelectedConsultationOrFail($request, (int) ($validated['consultation_id'] ?? 0));
+        if ($selectedConsultation && (int) $selectedConsultation->patient_id !== (int) $validated['patient_id']) {
             return back()
                 ->withErrors(['consultation_id' => 'La consultation selectionnee ne correspond pas au patient choisi.'])
                 ->withInput();
         }
 
-        $medecinId = $request->filled('medecin_id')
-            ? $request->integer('medecin_id')
-            : $selectedConsultation?->medecin_id;
+        $this->assertAccessiblePatientSelection($request, (int) $validated['patient_id']);
+        $medecinId = $this->resolveAuthorizedMedecinId($request, $validated, $selectedConsultation);
 
         // Calcul du montant total
         $montantTotal = 0;
-        foreach ($request->prestations as $prestation) {
+        foreach ($validated['prestations'] as $prestation) {
             $montantTotal += $prestation['quantite'] * $prestation['prix_unitaire'];
         }
 
         // CrÃƒÆ’Ã‚Â©ation de la facture
         $facture = Facture::create([
             'numero_facture' => Facture::generateNumero(),
-            'patient_id' => $request->patient_id,
+            'patient_id' => $validated['patient_id'],
             'consultation_id' => $selectedConsultation?->id,
             'medecin_id' => $medecinId,
-            'date_facture' => $request->date_facture,
-            'date_echeance' => $request->date_echeance,
+            'date_facture' => $validated['date_facture'],
+            'date_echeance' => $validated['date_echeance'] ?? null,
             'montant_total' => $montantTotal,
-            'remise' => $request->remise ?? 0,
-            'statut' => $request->action === 'brouillon' ? 'brouillon' : 'en_attente',
-            'notes' => $request->notes,
+            'remise' => $validated['remise'] ?? 0,
+            'statut' => $validated['action'] === 'brouillon' ? 'brouillon' : 'en_attente',
+            'notes' => $validated['notes'] ?? null,
         ]);
 
         // CrÃƒÆ’Ã‚Â©ation des lignes de facture
-        foreach ($request->prestations as $prestation) {
+        foreach ($validated['prestations'] as $prestation) {
             $totalLigne = $prestation['quantite'] * $prestation['prix_unitaire'];
 
             LigneFacture::create([
@@ -334,7 +350,7 @@ class FactureController extends Controller
         }
 
         // Message de succÃƒÆ’Ã‚Â¨s selon l'action
-        $message = $request->action === 'brouillon'
+        $message = $validated['action'] === 'brouillon'
             ? 'Brouillon de facture enregistrÃƒÆ’Ã‚Â© avec succÃƒÆ’Ã‚Â¨s!'
             : 'Facture crÃƒÆ’Ã‚Â©ÃƒÆ’Ã‚Â©e avec succÃƒÆ’Ã‚Â¨s!';
 
@@ -345,30 +361,20 @@ class FactureController extends Controller
     /**
      * Afficher une facture spÃƒÆ’Ã‚Â©cifique
      */
-    public function show($id)
+    public function show(Facture $facture)
     {
-        $facture = Facture::with(['ligneFactures', 'patient', 'medecin', 'consultation.patient'])->find($id);
-        
-        if (!$facture) {
-            return redirect()->route('factures.index')
-                ->with('error', 'Facture non trouvÃƒÆ’Ã‚Â©e');
-        }
-        
+        $facture->load(['ligneFactures', 'patient', 'medecin', 'consultation.patient']);
+
         return view('factures.show', compact('facture'));
     }
 
     /**
      * Afficher le formulaire d'ÃƒÆ’Ã‚Â©dition
      */
-    public function edit($id)
+    public function edit(Facture $facture)
     {
-        $facture = Facture::with(['ligneFactures', 'patient', 'medecin', 'consultation.patient'])->find($id);
-        
-        if (!$facture) {
-            return redirect()->route('factures.index')
-                ->with('error', 'Facture non trouvÃƒÆ’Ã‚Â©e');
-        }
-        
+        $facture->load(['ligneFactures', 'patient', 'medecin', 'consultation.patient']);
+
         $patients = $this->patientSelectionQuery()->get();
         $medecins = $this->medecinSelectionQuery()->get();
         
@@ -377,26 +383,42 @@ class FactureController extends Controller
 
     private function patientSelectionQuery()
     {
-        return Patient::query()
+        $query = Patient::query()
             ->select(['id', 'nom', 'prenom', 'telephone'])
             ->orderBy('nom')
             ->orderBy('prenom');
+
+        if (auth()->check()) {
+            app(ClinicalAuthorizationService::class)->scopePatients($query, auth()->user());
+        }
+
+        return $query;
     }
 
     private function medecinSelectionQuery()
     {
-        return Medecin::query()
+        $query = Medecin::query()
             ->select(['id', 'nom', 'prenom'])
             ->orderBy('nom')
             ->orderBy('prenom');
+
+        $currentMedecinId = auth()->check()
+            ? app(ClinicalAuthorizationService::class)->currentMedecinId(auth()->user())
+            : null;
+
+        if (auth()->user()?->hasRole('medecin')) {
+            $query->whereKey($currentMedecinId ?? 0);
+        }
+
+        return $query;
     }
 
     /**
      * Mettre ÃƒÆ’Ã‚Â  jour une facture
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Facture $facture)
     {
-        $facture = Facture::with('ligneFactures')->findOrFail($id);
+        $facture->load('ligneFactures');
 
         $validated = $request->validate([
             'consultation_id' => 'nullable|exists:consultations,id',
@@ -412,16 +434,15 @@ class FactureController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $selectedConsultation = $this->findSelectedConsultation((int) ($validated['consultation_id'] ?? 0));
+        $selectedConsultation = $this->resolveSelectedConsultationOrFail($request, (int) ($validated['consultation_id'] ?? 0));
         if ($selectedConsultation && (int) $selectedConsultation->patient_id !== (int) $validated['patient_id']) {
             return back()
                 ->withErrors(['consultation_id' => 'La consultation selectionnee ne correspond pas au patient choisi.'])
                 ->withInput();
         }
 
-        $medecinId = !empty($validated['medecin_id'])
-            ? (int) $validated['medecin_id']
-            : $selectedConsultation?->medecin_id;
+        $this->assertAccessiblePatientSelection($request, (int) $validated['patient_id']);
+        $medecinId = $this->resolveAuthorizedMedecinId($request, $validated, $selectedConsultation);
 
         $montantTotal = 0;
         foreach ($validated['prestations'] as $prestation) {
@@ -464,9 +485,9 @@ class FactureController extends Controller
     /**
      * Supprimer une facture
      */
-    public function destroy($id)
+    public function destroy(Facture $facture)
     {
-        $facture = Facture::with('ligneFactures')->findOrFail($id);
+        $facture->load('ligneFactures');
 
         if ($this->isPaidStatus((string) $facture->statut)) {
             $message = "Action impossible. Cette facture a d\u{00E9}j\u{00E0} \u{00E9}t\u{00E9} r\u{00E9}gl\u{00E9}e. La suppression n'est pas autoris\u{00E9}e.";
@@ -516,9 +537,10 @@ class FactureController extends Controller
     /**
      * GÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©rer et tÃƒÆ’Ã‚Â©lÃƒÆ’Ã‚Â©charger le PDF de la facture
      */
-    public function generatePdf(int $id, FacturePdfService $pdfService)
+    public function generatePdf(Facture $facture, FacturePdfService $pdfService)
     {
-        $facture = Facture::with(['ligneFactures', 'patient', 'medecin'])->findOrFail($id);
+        $this->authorize('view', $facture);
+        $facture->load(['ligneFactures', 'patient', 'medecin']);
         
         // GÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©rer le PDF
         $pdf = Pdf::loadView('factures.pdf', compact('facture'));
@@ -530,9 +552,10 @@ class FactureController extends Controller
     /**
      * Envoyer la facture par email
      */
-    public function envoyer($id, FactureMailService $mailService)
+    public function envoyer(Facture $facture, FactureMailService $mailService)
     {
-        $facture = Facture::with(['ligneFactures', 'patient', 'medecin'])->findOrFail($id);
+        $this->authorize('view', $facture);
+        $facture->load(['ligneFactures', 'patient', 'medecin']);
         
         // VÃƒÆ’Ã‚Â©rifier que le patient a une adresse email
         if (!$facture->patient->email) {
@@ -560,9 +583,9 @@ class FactureController extends Controller
     /**
      * Mettre ÃƒÆ’Ã‚Â  jour le statut de la facture
      */
-    public function updateStatut(Request $request, $id)
+    public function updateStatut(Request $request, Facture $facture)
     {
-        $facture = Facture::findOrFail($id);
+        $this->authorize('update', $facture);
 
         $statusMap = [
             'brouillon' => 'brouillon',
@@ -589,6 +612,64 @@ class FactureController extends Controller
         return redirect()->route('factures.show', $facture)
             ->with('success', 'Statut de la facture mis ÃƒÆ’Ã‚Â  jour avec succÃƒÆ’Ã‚Â¨s.');
     }
+    private function resolveSelectedConsultationOrFail(Request $request, int $consultationId): ?Consultation
+    {
+        if ($consultationId <= 0) {
+            return null;
+        }
+
+        $consultation = $this->findSelectedConsultation($consultationId);
+        if ($consultation) {
+            return $consultation;
+        }
+
+        throw ValidationException::withMessages([
+            'consultation_id' => 'La consultation selectionnee n\'est pas accessible.',
+        ]);
+    }
+
+    private function assertAccessiblePatientSelection(Request $request, int $patientId): void
+    {
+        if (!$request->user()) {
+            return;
+        }
+
+        $patient = Patient::query()->findOrFail($patientId);
+
+        abort_unless(
+            app(ClinicalAuthorizationService::class)->canAccessPatient($request->user(), $patient),
+            403
+        );
+    }
+
+    private function resolveAuthorizedMedecinId(Request $request, array $validated, ?Consultation $selectedConsultation): ?int
+    {
+        $requestedMedecinId = !empty($validated['medecin_id'])
+            ? (int) $validated['medecin_id']
+            : null;
+        $medecinId = $requestedMedecinId ?: $selectedConsultation?->medecin_id;
+
+        if (!$request->user()?->hasRole('medecin')) {
+            return $medecinId;
+        }
+
+        $currentMedecinId = app(ClinicalAuthorizationService::class)->currentMedecinId($request->user());
+        if ($currentMedecinId === null) {
+            abort(403);
+        }
+
+        if ($selectedConsultation && (int) $selectedConsultation->medecin_id !== $currentMedecinId) {
+            throw ValidationException::withMessages([
+                'consultation_id' => 'La consultation selectionnee ne fait pas partie de votre perimetre.',
+            ]);
+        }
+
+        if ($requestedMedecinId !== null && $requestedMedecinId !== $currentMedecinId) {
+            throw ValidationException::withMessages([
+                'medecin_id' => 'Vous ne pouvez facturer qu\'au nom de votre propre profil medecin.',
+            ]);
+        }
+
+        return $currentMedecinId;
+    }
 }
-
-

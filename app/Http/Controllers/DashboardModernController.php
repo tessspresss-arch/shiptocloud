@@ -35,7 +35,7 @@ class DashboardModernController extends Controller
             fn () => $this->buildRecentActivities()
         );
         $actionCenter = Cache::remember(
-            'dashboard:action-center',
+            'dashboard:action-center:' . (auth()->id() ?? 'guest'),
             now()->addMinutes(1),
             fn () => $this->buildActionCenter()
         );
@@ -244,7 +244,7 @@ class DashboardModernController extends Controller
             })
             ->count();
 
-        return collect([
+        $items = collect([
             [
                 'title' => 'Factures a relancer',
                 'subtitle' => number_format($impayeesMontant, 0, ',', ' ') . ' DH a recuperer',
@@ -253,6 +253,7 @@ class DashboardModernController extends Controller
                 'badge' => 'Urgent',
                 'tone' => 'danger',
                 'route' => route('factures.index'),
+                'module' => 'facturation',
             ],
             [
                 'title' => 'RDV a confirmer',
@@ -262,6 +263,7 @@ class DashboardModernController extends Controller
                 'badge' => "Aujourd’hui",
                 'tone' => 'info',
                 'route' => route('rendezvous.index'),
+                'module' => 'planning',
             ],
             [
                 'title' => 'Ordonnances a renouveler',
@@ -271,6 +273,7 @@ class DashboardModernController extends Controller
                 'badge' => 'Cette semaine',
                 'tone' => 'warning',
                 'route' => route('ordonnances.index'),
+                'module' => 'pharmacie',
             ],
             [
                 'title' => 'Dossiers incomplets',
@@ -280,38 +283,67 @@ class DashboardModernController extends Controller
                 'badge' => 'A verifier',
                 'tone' => 'neutral',
                 'route' => route('patients.index'),
+                'module' => 'patients',
             ],
         ]);
+
+        $user = auth()->user();
+
+        return $items
+            ->filter(fn (array $item) => !$user || $user->hasModuleAccess((string) ($item['module'] ?? '')))
+            ->values();
     }
 
     private function buildQuickActions(): array
     {
-        return [
+        $actions = [
+            [
+                'label' => 'Nouveau patient',
+                'icon' => 'fa-user-plus',
+                'route' => route('patients.create'),
+                'tone' => 'blue',
+                'module' => 'patients',
+            ],
             [
                 'label' => 'Nouvelle consultation',
                 'icon' => 'fa-stethoscope',
                 'route' => route('consultations.create'),
                 'tone' => 'blue',
+                'module' => 'consultations',
+            ],
+            [
+                'label' => 'Ouvrir agenda',
+                'icon' => 'fa-calendar-days',
+                'route' => route('agenda.index'),
+                'tone' => 'green',
+                'module' => 'planning',
             ],
             [
                 'label' => 'Envoyer SMS patient',
                 'icon' => 'fa-comment-sms',
                 'route' => route('sms.create'),
                 'tone' => 'green',
+                'module' => 'sms',
             ],
             [
                 'label' => 'Ajouter ordonnance',
                 'icon' => 'fa-file-prescription',
                 'route' => route('ordonnances.create'),
                 'tone' => 'purple',
+                'module' => 'pharmacie',
             ],
             [
                 'label' => 'Ajouter document patient',
                 'icon' => 'fa-file-arrow-up',
                 'route' => route('documents.upload'),
                 'tone' => 'amber',
+                'module' => 'documents',
             ],
         ];
+
+        $user = auth()->user();
+
+        return array_values(array_filter($actions, fn (array $action) => !$user || $user->hasModuleAccess((string) ($action['module'] ?? ''))));
     }
 
     private function decorateRendezVousCollection(Collection $items): Collection

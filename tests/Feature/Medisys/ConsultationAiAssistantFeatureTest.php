@@ -535,6 +535,76 @@ class ConsultationAiAssistantFeatureTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('generation.action_type', ConsultationAiGeneration::ACTION_MEDICAL_REPORT);
     }
+
+    public function test_show_page_renders_ai_assistant_and_edit_page_no_longer_displays_it(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'admin',
+            'module_permissions' => ['consultations' => true],
+        ]);
+
+        $consultation = Consultation::create([
+            'patient_id' => Patient::factory()->create()->id,
+            'medecin_id' => Medecin::factory()->create()->id,
+            'date_consultation' => now()->toDateString(),
+            'symptomes' => 'Toux.',
+            'diagnostic' => 'Suspicion virale.',
+        ]);
+
+        ConsultationAiGeneration::create([
+            'consultation_id' => $consultation->id,
+            'user_id' => $user->id,
+            'action_type' => ConsultationAiGeneration::ACTION_SUMMARY,
+            'source_text' => 'Notes de test',
+            'generated_text' => 'Resume IA de test',
+            'suggested_target' => 'recommandations',
+            'context_payload' => ['provider' => 'test'],
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('consultations.show', $consultation))
+            ->assertOk()
+            ->assertSee('Assistant IA medical')
+            ->assertSee('Enregistrer les suggestions IA')
+            ->assertSee('Historisation activee');
+
+        $this->actingAs($user)
+            ->get(route('consultations.edit', $consultation))
+            ->assertOk()
+            ->assertDontSee('Assistant IA medical')
+            ->assertSee('L assistant IA est desormais disponible sur la fiche detail de consultation.');
+    }
+
+    public function test_update_from_show_can_redirect_back_to_consultation_show(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'admin',
+            'module_permissions' => ['consultations' => true],
+        ]);
+
+        $patient = Patient::factory()->create();
+        $medecin = Medecin::factory()->create();
+        $consultation = Consultation::create([
+            'patient_id' => $patient->id,
+            'medecin_id' => $medecin->id,
+            'date_consultation' => now()->toDateString(),
+            'diagnostic' => 'Avant mise a jour',
+        ]);
+
+        $response = $this->actingAs($user)->put(route('consultations.update', $consultation), [
+            'redirect_to_show' => 1,
+            'patient_id' => $patient->id,
+            'medecin_id' => $medecin->id,
+            'date_consultation' => now()->toDateString(),
+            'diagnostic' => 'Diagnostic mis a jour depuis show',
+        ]);
+
+        $response->assertRedirect(route('consultations.show', $consultation));
+        $this->assertDatabaseHas('consultations', [
+            'id' => $consultation->id,
+            'diagnostic' => 'Diagnostic mis a jour depuis show',
+        ]);
+    }
 }
 
 

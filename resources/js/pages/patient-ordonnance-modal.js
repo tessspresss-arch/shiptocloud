@@ -2,8 +2,11 @@ function parsePayload(root) {
     const node = root.querySelector('#patientOrdonnanceModalPayload');
     if (!node) return null;
 
+    const raw = (node.textContent || '').trim();
+    if (!raw) return null;
+
     try {
-        return JSON.parse(node.textContent || '{}');
+        return JSON.parse(raw);
     } catch {
         return null;
     }
@@ -14,12 +17,18 @@ export function initPatientOrdonnanceModal(root = document) {
     const modal = root.querySelector('#modal-ordonnance');
     const form = root.querySelector('#patientOrdonnanceModalForm');
 
-    if (!payload || !modal || !form || form.dataset.medisysBound === '1') {
+    if (!payload || !modal || !form) {
         return;
+    }
+
+    if (form.dataset.medisysBound === '1') {
+        return modal.__medisysController || null;
     }
 
     form.dataset.medisysBound = '1';
 
+    const openButtons = Array.from(root.querySelectorAll('[data-open-ordonnance-modal]'));
+    const closeButtons = Array.from(modal.querySelectorAll('[data-close-ordonnance-modal]'));
     const rowTemplate = root.querySelector('#ordonnanceQuickRowTemplate');
     const rowsContainer = root.querySelector('#ordonnanceQuickRows');
     const addRowButton = root.querySelector('#ordonnanceQuickAddRow');
@@ -30,6 +39,8 @@ export function initPatientOrdonnanceModal(root = document) {
     const submitButton = root.querySelector('#ordonnanceQuickSubmit');
     const submitLabel = root.querySelector('#ordonnanceQuickSubmitLabel');
     const medicationCatalog = Array.isArray(payload.medicamentCatalog) ? payload.medicamentCatalog : [];
+    const initialRows = Array.isArray(payload.initialRows) ? payload.initialRows : [];
+    const initialInstructions = payload.initialInstructions ? String(payload.initialInstructions) : '';
     const defaultMedecinId = payload.defaultMedecinId ? String(payload.defaultMedecinId) : '';
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     let rowIndex = 0;
@@ -57,6 +68,40 @@ export function initPatientOrdonnanceModal(root = document) {
         item.presentation,
         item.classe_therapeutique,
     ].filter(Boolean).join(' '));
+    const normalizeSeedRow = (row = {}) => {
+        const posologie = String(row.posologie || '').trim();
+        const splitPosologie = posologie.includes(' - ')
+            ? posologie.split(' - ', 2)
+            : [posologie, ''];
+
+        return {
+            medicamentId: row.medicament_id ? String(row.medicament_id) : '',
+            medicamentLabel: String(row.medicament_label || '').trim(),
+            dosage: String(row.dosage || row.quantite || splitPosologie[0] || '').trim(),
+            frequency: String(row.frequency || row.instructions || splitPosologie[1] || '').trim(),
+            duree: String(row.duree || '').trim(),
+        };
+    };
+
+    function openModal() {
+        modal.style.display = 'flex';
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('overflow-y-hidden');
+        clearFeedback();
+        ensureAtLeastOneRow();
+        window.setTimeout(() => {
+            medecinSelect?.focus();
+        }, 0);
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('overflow-y-hidden');
+        clearFeedback();
+    }
 
     function inputNameFromErrorKey(key) {
         return String(key || '')
@@ -237,12 +282,37 @@ export function initPatientOrdonnanceModal(root = document) {
         renderMedicationMeta(row);
     }
 
-    function ensureAtLeastOneRow() {
-        if (!rowsContainer || rowsContainer.children.length > 0) {
-            return;
+    function populateRow(row, seed = {}) {
+        const normalized = normalizeSeedRow(seed);
+        const medicationIdInput = row.querySelector('[data-role="medication-id"]');
+        const medicationLabelInput = row.querySelector('[data-role="medication-label"]');
+        const dosageInput = row.querySelector('[data-role="dosage"]');
+        const frequencyInput = row.querySelector('[data-role="frequency"]');
+        const durationInput = row.querySelector('[data-role="duration"]');
+        const medication = normalized.medicamentId ? getMedicationById(normalized.medicamentId) : null;
+
+        if (medicationIdInput) {
+            medicationIdInput.value = normalized.medicamentId;
         }
 
-        appendMedicationRow();
+        if (medicationLabelInput) {
+            medicationLabelInput.value = normalized.medicamentLabel || medication?.label || medication?.nom_commercial || '';
+        }
+
+        if (dosageInput) {
+            dosageInput.value = normalized.dosage;
+        }
+
+        if (frequencyInput) {
+            frequencyInput.value = normalized.frequency;
+        }
+
+        if (durationInput) {
+            durationInput.value = normalized.duree;
+        }
+
+        syncDerivedFields(row);
+        renderMedicationMeta(row);
     }
 
     function bindMedicationRow(row) {
@@ -308,7 +378,7 @@ export function initPatientOrdonnanceModal(root = document) {
         syncDerivedFields(row);
     }
 
-    function appendMedicationRow() {
+    function appendMedicationRow(seed = null) {
         if (!rowTemplate || !rowsContainer) {
             return null;
         }
@@ -328,8 +398,37 @@ export function initPatientOrdonnanceModal(root = document) {
 
         rowsContainer.appendChild(row);
         bindMedicationRow(row);
+        if (seed) {
+            populateRow(row, seed);
+        }
         refreshRowNumbers();
         return row;
+    }
+
+    function seedRows() {
+        if (!rowsContainer) {
+            return;
+        }
+
+        rowsContainer.innerHTML = '';
+        rowIndex = 0;
+
+        if (initialRows.length > 0) {
+            initialRows.forEach((row) => {
+                appendMedicationRow(row);
+            });
+            return;
+        }
+
+        appendMedicationRow();
+    }
+
+    function ensureAtLeastOneRow() {
+        if (!rowsContainer || rowsContainer.children.length > 0) {
+            return;
+        }
+
+        seedRows();
     }
 
     function syncAllRows() {
@@ -347,21 +446,30 @@ export function initPatientOrdonnanceModal(root = document) {
         }
 
         if (instructionsInput) {
-            instructionsInput.value = '';
+            instructionsInput.value = initialInstructions;
         }
 
-        if (rowsContainer) {
-            rowsContainer.innerHTML = '';
-        }
-
-        rowIndex = 0;
-        appendMedicationRow();
+        seedRows();
     }
 
-    function updatePrescriptionCounters(count) {
-        root.querySelectorAll('[data-prescriptions-count]').forEach((node) => {
+    function updateCounterNodes(selector, count) {
+        root.querySelectorAll(selector).forEach((node) => {
             node.textContent = String(count);
         });
+    }
+
+    function updatePrescriptionCounters(data) {
+        const patientCount = Number(data?.patient_ordonnances_count ?? data?.ordonnances_count ?? data?.prescriptions_count);
+        const consultationCount = Number(data?.consultation_ordonnances_count);
+
+        if (Number.isFinite(patientCount)) {
+            updateCounterNodes('[data-prescriptions-count]', patientCount);
+            updateCounterNodes('[data-patient-ordonnances-count]', patientCount);
+        }
+
+        if (Number.isFinite(consultationCount)) {
+            updateCounterNodes('[data-consultation-ordonnances-count]', consultationCount);
+        }
     }
 
     async function submitForm(event) {
@@ -400,19 +508,30 @@ export function initPatientOrdonnanceModal(root = document) {
                 return;
             }
 
-            const prescriptionsCount = Number(data?.ordonnances_count ?? data?.prescriptions_count);
-            if (Number.isFinite(prescriptionsCount)) {
-                updatePrescriptionCounters(prescriptionsCount);
-            }
+            updatePrescriptionCounters(data);
 
             resetFormState();
-            window.dispatchEvent(new CustomEvent('close-modal', { detail: payload.modalName || 'modal-ordonnance' }));
+            closeModal();
         } catch {
             showGenericError('Le formulaire n a pas pu etre envoye. Verifiez la connexion et reessayez.');
         } finally {
             setSubmitting(false);
         }
     }
+
+    openButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            openModal();
+        });
+    });
+
+    closeButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeModal();
+        });
+    });
 
     addRowButton?.addEventListener('click', () => {
         const row = appendMedicationRow();
@@ -427,18 +546,74 @@ export function initPatientOrdonnanceModal(root = document) {
 
     instructionsInput?.addEventListener('input', clearFeedback);
     form.addEventListener('submit', submitForm);
-    modal.addEventListener('ordonnance-quick:opened', () => {
-        clearFeedback();
-        ensureAtLeastOneRow();
-    });
-    modal.addEventListener('ordonnance-quick:closed', () => {
-        clearFeedback();
-    });
     modal.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            clearFeedback();
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
         }
     });
 
-    appendMedicationRow();
+    seedRows();
+    modal.__medisysController = { openModal, closeModal };
+    return modal.__medisysController;
+}
+
+function bootstrapPatientOrdonnanceModal(root = document) {
+    const initialize = () => {
+        initPatientOrdonnanceModal(root);
+
+        if (typeof window.requestAnimationFrame === 'function') {
+            window.requestAnimationFrame(() => {
+                initPatientOrdonnanceModal(root);
+            });
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize, { once: true });
+        return;
+    }
+
+    initialize();
+}
+
+if (typeof document !== 'undefined') {
+    window.medisysInitPatientOrdonnanceModal = function () {
+        return initPatientOrdonnanceModal(document);
+    };
+
+    window.medisysOpenPatientOrdonnanceModal = function (event) {
+        if (event?.preventDefault) {
+            event.preventDefault();
+        }
+
+        const controller = initPatientOrdonnanceModal(document);
+        if (!controller) {
+            return false;
+        }
+
+        controller.openModal();
+        return false;
+    };
+
+    bootstrapPatientOrdonnanceModal(document);
+
+    document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('[data-open-ordonnance-modal]');
+        if (!trigger) {
+            return;
+        }
+
+        const form = document.querySelector('#patientOrdonnanceModalForm');
+        if (form?.dataset.medisysBound === '1') {
+            return;
+        }
+
+        const controller = initPatientOrdonnanceModal(document);
+        if (!controller) {
+            return;
+        }
+
+        event.preventDefault();
+        controller.openModal();
+    });
 }

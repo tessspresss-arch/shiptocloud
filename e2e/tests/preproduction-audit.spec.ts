@@ -353,7 +353,7 @@ async function runWorkflows(page: Page, logs: RuntimeLogs, findings: Finding[], 
   const patientNom = `Audit${unique}`;
   const patientPrenom = 'Preprod';
   const patientEmail = `audit.${unique}@medisys.test`;
-  const patientTel = `+2126${unique}88`;
+  const patientTel = `6${unique.padStart(7, '0')}`;
   const patientCin = `QA${unique}`;
   const patientFullName = `${patientNom} ${patientPrenom}`;
   const today = formatDate(new Date());
@@ -376,7 +376,10 @@ async function runWorkflows(page: Page, logs: RuntimeLogs, findings: Finding[], 
     await page.fill('input[name="cin"]', patientCin);
     await page.fill('input[name="email"]', patientEmail).catch(() => null);
     await page.fill('input[name="adresse"]', 'Adresse audit preprod').catch(() => null);
-    await page.fill('input[name="ville"]', 'Casablanca').catch(() => null);
+    await page.selectOption('select[name="ville_selection"]', 'Casablanca')
+      .catch(async () => {
+        await page.fill('input[name="ville"]', 'Casablanca').catch(() => null);
+      });
     await page.locator('form[action*="/patients"] button[type="submit"]').first().click();
     await waitForStable(page);
     await page.goto('/patients', { waitUntil: 'domcontentloaded' });

@@ -9,8 +9,8 @@
                 <div class="card-header patient-edit-hero">
                     <div class="patient-edit-page-header">
                         <div class="patient-edit-header-main">
-                            <a href="{{ route('patients.index') }}" class="header-back-btn">
-                                <span class="header-back-btn-icon"><i class="fas fa-arrow-left"></i></span>
+                            <a href="{{ route('patients.index') }}" class="header-back-btn patient-module-btn patient-module-btn--surface">
+                                <span class="header-back-btn-icon patient-module-btn__icon"><i class="fas fa-arrow-left"></i></span>
                                 <span class="d-none d-sm-inline">Retour</span>
                             </a>
 
@@ -26,12 +26,12 @@
                         </div>
 
                         <div class="patient-edit-header-actions">
-                            <a href="{{ route('patients.show', $patient->id) }}" class="btn-custom btn-secondary-custom">
-                                <i class="fas fa-eye"></i>
+                            <a href="{{ route('patients.show', $patient->id) }}" class="btn-custom btn-secondary-custom patient-module-btn patient-module-btn--surface">
+                                <span class="patient-module-btn__icon"><i class="fas fa-eye"></i></span>
                                 <span>Voir fiche</span>
                             </a>
-                            <button type="submit" form="editPatientForm" class="btn-custom btn-success-custom">
-                                <i class="fas fa-save"></i>
+                            <button type="submit" form="editPatientForm" class="btn-custom btn-success-custom patient-module-btn patient-module-btn--primary">
+                                <span class="patient-module-btn__icon"><i class="fas fa-save"></i></span>
                                 <span>Enregistrer</span>
                             </button>
                         </div>
@@ -140,12 +140,15 @@
 
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label class="form-label">Ville</label>
-                                                <input type="text" name="ville" class="form-control @error('ville') is-invalid @enderror"
-                                                       value="{{ old('ville', $patient->ville) }}" placeholder="Ex: Casablanca">
-                                                @error('ville')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
+                                                @include('patients.partials.city-field', [
+                                                    'selectedCity' => old('ville', $patient->ville),
+                                                    'selectId' => 'patientEditVilleSelection',
+                                                    'otherId' => 'patientEditVilleAutre',
+                                                    'selectClass' => 'form-select',
+                                                    'otherInputClass' => 'form-control',
+                                                    'feedbackClass' => 'invalid-feedback d-block',
+                                                    'helperClass' => 'form-text text-muted mt-2',
+                                                ])
                                             </div>
 
                                             <div class="col-md-6 mb-3">
@@ -175,7 +178,15 @@
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">T&eacute;l&eacute;phone *</label>
                                                 <input type="tel" name="telephone" class="form-control @error('telephone') is-invalid @enderror"
-                                                       value="{{ old('telephone', $patient->telephone) }}" required>
+                                                       value="{{ old('telephone', $patient->telephone) }}"
+                                                       placeholder="61234567"
+                                                       inputmode="numeric"
+                                                       pattern="[0-9]{8}"
+                                                       minlength="8"
+                                                       maxlength="8"
+                                                       title="Saisir exactement 8 chiffres"
+                                                       autocomplete="off"
+                                                       required>
                                                 @error('telephone')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -842,6 +853,7 @@ body.theme-dark .patient-edit-page .patient-footer {
     background: #122842 !important;
 }
 </style>
+@include('patients.partials.button-theme')
 @endpush
 
 

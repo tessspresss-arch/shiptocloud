@@ -19,6 +19,7 @@ initClientTelemetry();
 const prefetchedDocumentUrls = new Set();
 const MAX_IDLE_PREFETCH_LINKS = 8;
 let resizeFrame = null;
+let appBootstrapped = false;
 
 function normalizeNavigationUrl(href) {
     if (!href) {
@@ -113,6 +114,14 @@ function initializePageModules(root = document) {
     initOrdonnancesIndex(root);
     initPatientOrdonnanceModal(root);
 }
+
+function scheduleInitialPageModules() {
+    initializePageModules(document);
+    window.requestAnimationFrame(() => {
+        initializePageModules(document);
+    });
+}
+
 function enableNavigationFeedback() {
     const body = document.body;
 
@@ -187,11 +196,16 @@ function enableNavigationFeedback() {
     window.addEventListener('pagehide', activate);
 }
 // Sidebar toggle functionality
-document.addEventListener('DOMContentLoaded', function() {
+function bootstrapApplication() {
+    if (appBootstrapped || !document.body) {
+        return;
+    }
+
+    appBootstrapped = true;
     enableNavigationFeedback();
     prefetchPriorityLinks();
     initPartialNavigation();
-    initializePageModules(document);
+    scheduleInitialPageModules();
 
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.querySelector('.sidebar');
@@ -303,8 +317,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (sidebarToggle) {
         sidebarToggle.setAttribute('aria-label', collapsedInit ? 'Ouvrir le menu' : 'Réduire le menu');
     }
-});
+}
 
+function ensureBootstrapApplication() {
+    if (appBootstrapped) {
+        return;
+    }
+
+    if (!document.body) {
+        window.requestAnimationFrame(ensureBootstrapApplication);
+        return;
+    }
+
+    bootstrapApplication();
+}
+
+document.addEventListener('DOMContentLoaded', bootstrapApplication, { once: true });
+ensureBootstrapApplication();
 
 document.addEventListener('medisys:page-loaded', function (event) {
     initializePageModules(event.detail?.container || document);

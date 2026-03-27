@@ -6,6 +6,7 @@ use App\Models\Examen;
 use App\Models\Medecin;
 use App\Models\Medicament;
 use App\Models\Patient;
+use App\Services\Security\ClinicalAuthorizationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Services\PatientsCsvExportService;
@@ -14,12 +15,18 @@ use Illuminate\Support\Str;
 
 class PatientController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Patient::class, 'patient');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $perPage = max(10, min(100, (int) $request->integer('per_page', 15)));
+        $access = app(ClinicalAuthorizationService::class);
 
         $patients = Patient::query()
             ->select([
@@ -54,34 +61,16 @@ class PatientController extends Controller
                     return $query->where('is_draft', true);
                 }
             })
+            ->tap(function ($query) use ($request, $access) {
+                if ($request->user()) {
+                    $access->scopePatients($query, $request->user());
+                }
+            })
             ->latest('id')
             ->paginate($perPage)
             ->withQueryString();
 
-        $totalActivePatients = Patient::query()
-            ->where('is_draft', false)
-            ->count();
-
-        $todayAppointments = DB::table('rendez_vous')
-            ->where('date_heure', '>=', now()->startOfDay())
-            ->where('date_heure', '<', now()->endOfDay())
-            ->whereNotIn('statut', ['annule', 'annulee'])
-            ->count();
-
-        $medicalRecords = DB::table('dossier_medicals')->count();
-
-        $medicalAlerts = Patient::query()
-            ->whereNotNull('allergies')
-            ->where('allergies', '!=', '')
-            ->count();
-
-        return view('patients.index', compact(
-            'patients',
-            'totalActivePatients',
-            'todayAppointments',
-            'medicalRecords',
-            'medicalAlerts',
-        ));
+        return view('patients.index', compact('patients'));
     }
 
     /**
@@ -104,10 +93,12 @@ class PatientController extends Controller
             'date_naissance' => 'required|date',
             'genre' => 'required|in:M,F',
             'cin' => 'nullable|string|max:20|unique:patients,cin',
-            'telephone' => 'required|string|max:20|unique:patients,telephone',
+            'telephone' => 'bail|required|digits:8|unique:patients,telephone',
             'email' => 'nullable|email|unique:patients,email',
             'adresse' => 'nullable|string|max:255',
             'ville' => 'nullable|string|max:100',
+            'ville_selection' => 'nullable|string|max:100',
+            'ville_autre' => 'required_if:ville_selection,Autre|nullable|string|max:100',
             'code_postal' => 'nullable|string|max:20',
             'groupe_sanguin' => 'nullable|in:A+,A-,B+,B-,O+,O-,AB+,AB-',
             'assurance_medicale' => 'nullable|string|max:255',
@@ -115,7 +106,9 @@ class PatientController extends Controller
             'antecedents_medicaux' => 'nullable|string',
             'allergies' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        ], $this->patientValidationMessages());
+
+        $validated = $this->resolvePatientCityInput($validated, $request);
 
         // CORRECTION : Utiliser des valeurs par defaut pour les champs NULL
         $validated['adresse'] = $validated['adresse'] ?? '';
@@ -296,8 +289,10 @@ class PatientController extends Controller
             'etat_civil' => 'nullable|string|max:50',
             'adresse' => 'nullable|string|max:255',
             'ville' => 'nullable|string|max:100',
+            'ville_selection' => 'nullable|string|max:100',
+            'ville_autre' => 'required_if:ville_selection,Autre|nullable|string|max:100',
             'code_postal' => 'nullable|string|max:20',
-            'telephone' => 'required|string|max:20',
+            'telephone' => 'bail|required|digits:8',
             'email' => 'nullable|email|max:100|unique:patients,email,' . $patient->id,
             'contact_urgence' => 'nullable|string|max:100',
             'telephone_urgence' => 'nullable|string|max:20',
@@ -308,7 +303,9 @@ class PatientController extends Controller
             'antecedents' => 'nullable|string',
             'traitements' => 'nullable|string',
             'notes' => 'nullable|string'
-        ]);
+        ], $this->patientValidationMessages());
+
+        $validated = $this->resolvePatientCityInput($validated, $request);
 
         $validated['assurance'] = ($validated['assurance_medicale'] ?? '') === 'Autre'
             ? trim((string) ($validated['assurance_autre'] ?? ''))
@@ -320,6 +317,33 @@ class PatientController extends Controller
 
         return redirect()->route('patients.show', $patient->id)
             ->with('success', 'Patient modifie avec succes!');
+    }
+
+    private function resolvePatientCityInput(array $validated, Request $request): array
+    {
+        if ($request->has('ville_selection') || $request->has('ville_autre')) {
+            $selectedCity = trim((string) ($validated['ville_selection'] ?? ''));
+            $manualCity = trim((string) ($validated['ville_autre'] ?? ''));
+
+            $validated['ville'] = $selectedCity === 'Autre'
+                ? $manualCity
+                : $selectedCity;
+        } else {
+            $validated['ville'] = trim((string) ($validated['ville'] ?? ''));
+        }
+
+        unset($validated['ville_selection'], $validated['ville_autre']);
+
+        return $validated;
+    }
+
+    private function patientValidationMessages(): array
+    {
+        return [
+            'telephone.required' => 'Le numero de telephone est obligatoire.',
+            'telephone.digits' => 'Le numero de telephone doit contenir exactement 8 chiffres.',
+            'telephone.unique' => 'Ce numero de telephone est deja utilise.',
+        ];
     }
 
     /**
@@ -360,6 +384,9 @@ class PatientController extends Controller
      */
     public function export(Request $request, PatientsCsvExportService $csvService)
     {
+        $this->authorize('export', Patient::class);
+
+        $access = app(ClinicalAuthorizationService::class);
         $patients = Patient::query()
             ->select([
                 'id',
@@ -390,6 +417,11 @@ class PatientController extends Controller
                     return $query->where('is_draft', false);
                 } elseif ($request->status == 'archive') {
                     return $query->where('is_draft', true);
+                }
+            })
+            ->tap(function ($query) use ($request, $access) {
+                if ($request->user()) {
+                    $access->scopePatients($query, $request->user());
                 }
             })
             ->latest()

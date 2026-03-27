@@ -158,7 +158,7 @@ class SMSReminderController extends Controller
 
         $heuresAvantCalculees = max(0, (int) $plannedAt->diffInHours($rendezvousAt, false));
 
-        SMSReminder::create([
+        $reminder = SMSReminder::create([
             'rendezvous_id' => $rendezvous->id,
             'patient_id' => $rendezvous->patient_id,
             'telephone' => $validated['telephone'],
@@ -167,6 +167,21 @@ class SMSReminderController extends Controller
             'date_envoi_prevue' => $plannedAt,
             'message_template' => $validated['message_template'] ?? null,
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Rappel SMS cree avec succes.',
+                'reminder' => [
+                    'id' => $reminder->id,
+                    'patient_id' => $reminder->patient_id,
+                    'rendezvous_id' => $reminder->rendezvous_id,
+                    'telephone' => $reminder->telephone,
+                    'statut' => $reminder->statut,
+                    'date_envoi_prevue' => optional($reminder->date_envoi_prevue)->toIso8601String(),
+                ],
+            ]);
+        }
 
         return redirect()->route('sms.index')->with('success', 'Rappel SMS cree avec succes.');
     }

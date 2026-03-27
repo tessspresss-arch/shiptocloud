@@ -89,8 +89,12 @@
         display: flex;
         gap: 14px;
         align-items: center;
-        margin-top: 12px;
+        margin-top: 0;
         flex-wrap: wrap;
+    }
+
+    .med-title-row .med-eyebrow {
+        flex-shrink: 0;
     }
 
     .med-title-icon {
@@ -109,6 +113,15 @@
 
     .med-title-block {
         min-width: 0;
+    }
+
+    .med-title-block.is-compact {
+        display: none;
+    }
+
+    .med-title-block.is-compact .med-title,
+    .med-title-block.is-compact .med-subtitle {
+        display: none;
     }
 
     .med-title {
@@ -854,10 +867,10 @@
         <header class="med-hero">
             <div class="med-head">
                 <div>
-                    <span class="med-eyebrow">Pharmacie</span>
                     <div class="med-title-row">
                         <span class="med-title-icon" aria-hidden="true"><i class="fas fa-pills"></i></span>
-                        <div class="med-title-block">
+                        <span class="med-eyebrow">Pharmacie</span>
+                        <div class="med-title-block is-compact">
                             <h1 class="med-title">Gestion des médicaments</h1>
                             <p class="med-subtitle">Centralisez le catalogue, les niveaux de stock, les alertes de péremption et les actions métier dans une interface plus lisible, plus cohérente et mieux équilibrée.</p>
                         </div>

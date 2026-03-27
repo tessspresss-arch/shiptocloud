@@ -3668,6 +3668,1222 @@
         background: #173450;
         color: #ffffff;
     }
+
+    /* Final toolbar cleanup */
+    .mini-nav button,
+    .date-controls > button:not(.btn-today),
+    .btn-today,
+    .view-btn,
+    .agenda-layout-btn,
+    .btn-new-rdv,
+    .btn-apply,
+    .btn-reset {
+        transition:
+            transform .18s ease,
+            box-shadow .18s ease,
+            border-color .18s ease,
+            background .18s ease,
+            color .18s ease,
+            filter .18s ease;
+    }
+
+    .mini-nav button:focus-visible,
+    .date-controls > button:not(.btn-today):focus-visible,
+    .btn-today:focus-visible,
+    .view-btn:focus-visible,
+    .agenda-layout-btn:focus-visible,
+    .btn-new-rdv:focus-visible,
+    .btn-apply:focus-visible,
+    .btn-reset:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, .14);
+    }
+
+    .agenda-top {
+        display: grid;
+        grid-template-columns: minmax(260px, 1.05fr) minmax(360px, 1fr) auto;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 20px;
+    }
+
+    .agenda-top--week {
+        grid-template-columns: minmax(260px, .95fr) minmax(460px, 1.15fr);
+    }
+
+    .agenda-top--week .view-tools {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+        row-gap: 10px;
+    }
+
+    .agenda-top--week .btn-new-rdv {
+        margin-left: auto;
+    }
+
+    .agenda-top--week .date-controls {
+        max-width: 100%;
+    }
+
+    .agenda-top--week .date-label {
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .agenda-title {
+        min-width: 0;
+        flex: initial;
+    }
+
+    .agenda-title-row {
+        gap: 12px;
+    }
+
+    .agenda-count-badge {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding-inline: 14px;
+    }
+
+    .date-controls {
+        display: grid;
+        grid-template-columns: 44px minmax(220px, 1fr) 44px auto;
+        align-items: center;
+        justify-content: stretch;
+        gap: 8px;
+        min-width: 0;
+        width: 100%;
+        padding: 8px;
+        border-radius: 16px;
+    }
+
+    .date-controls > button:not(.btn-today) {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0;
+        border-radius: 12px;
+        font-size: 1.08rem;
+        font-weight: 800;
+    }
+
+    .date-label {
+        min-width: 0;
+        width: 100%;
+        padding: 0 16px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-radius: 12px;
+    }
+
+    .btn-today {
+        min-width: 118px;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 12px;
+        font-size: .94rem;
+        line-height: 1;
+    }
+
+    .view-tools {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+
+    .view-toggle,
+    .agenda-layout-toggle {
+        min-height: 52px;
+        align-items: center;
+    }
+
+    .view-btn,
+    .agenda-layout-btn {
+        min-height: 44px;
+        padding: 0 16px;
+        line-height: 1;
+        font-size: .92rem;
+        border-radius: 11px;
+    }
+
+    .btn-new-rdv {
+        min-height: 48px;
+        padding: 0 20px;
+        line-height: 1;
+        gap: 10px;
+        flex: 0 0 auto;
+    }
+
+    .agenda-filters {
+        grid-template-columns: minmax(280px, 1.15fr) minmax(220px, .95fr) auto;
+        align-items: center;
+    }
+
+    .filter-inline {
+        align-items: stretch;
+    }
+
+    .btn-apply,
+    .btn-reset {
+        min-height: 46px;
+        padding: 0 18px;
+        line-height: 1;
+    }
+
+    .btn-apply {
+        box-shadow: 0 16px 24px -22px rgba(37, 99, 235, .52);
+    }
+
+    .btn-reset:hover,
+    .btn-apply:hover,
+    .agenda-layout-btn:hover,
+    .btn-today:hover,
+    .date-controls > button:not(.btn-today):hover,
+    .mini-nav button:hover {
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 1320px) {
+        .agenda-top {
+            grid-template-columns: minmax(240px, 1fr) minmax(320px, 1fr);
+        }
+
+        .view-tools {
+            grid-column: 1 / -1;
+            justify-content: flex-start;
+        }
+
+        .agenda-filters {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filter-actions {
+            grid-column: 1 / -1;
+            justify-content: flex-end;
+        }
+    }
+
+    @media (max-width: 980px) {
+        .agenda-top {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 15px 14px;
+        }
+
+        .agenda-title,
+        .date-controls,
+        .view-tools {
+            width: 100%;
+        }
+
+        .date-controls {
+            grid-template-columns: 44px minmax(0, 1fr) 44px;
+        }
+
+        .date-label {
+            grid-column: 2;
+        }
+
+        .btn-today {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
+
+        .view-tools {
+            justify-content: stretch;
+        }
+
+        .view-toggle {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .agenda-layout-toggle {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .btn-new-rdv {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .agenda-filters {
+            grid-template-columns: 1fr;
+            padding: 12px;
+        }
+
+        .filter-inline {
+            flex-direction: column;
+        }
+
+        .filter-actions {
+            width: 100%;
+            justify-content: stretch;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .agenda-shell {
+            padding: 10px;
+            border-radius: 18px;
+        }
+
+        .agenda-title {
+            align-items: flex-start;
+        }
+
+        .agenda-title h1 {
+            font-size: 1.55rem;
+            line-height: 1.08;
+        }
+
+        .agenda-title p {
+            font-size: .9rem;
+        }
+
+        .agenda-count-badge {
+            min-height: 34px;
+            font-size: .8rem;
+            padding-inline: 12px;
+        }
+
+        .date-controls {
+            gap: 6px;
+            padding: 6px;
+            border-radius: 14px;
+        }
+
+        .date-controls > button:not(.btn-today) {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            min-height: 42px;
+        }
+
+        .date-label {
+            min-height: 42px;
+            padding-inline: 12px;
+            font-size: .9rem;
+            white-space: normal;
+            line-height: 1.25;
+        }
+
+        .view-btn,
+        .agenda-layout-btn,
+        .btn-today,
+        .btn-new-rdv,
+        .btn-apply,
+        .btn-reset {
+            min-height: 44px;
+            font-size: .9rem;
+        }
+
+        .filter-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .agenda-sms-flash {
+        margin-bottom: 14px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid #cde0f5;
+        background: linear-gradient(180deg, #f4f9ff 0%, #edf5ff 100%);
+        color: #1c446f;
+        font-weight: 700;
+        box-shadow: 0 16px 24px -32px rgba(20, 70, 120, .35);
+    }
+
+    .agenda-sms-flash.is-error {
+        border-color: #f1c6cc;
+        background: linear-gradient(180deg, #fff7f8 0%, #fff0f2 100%);
+        color: #a63a46;
+    }
+
+    .agenda-sms-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 12000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    .agenda-sms-modal.is-open {
+        display: flex;
+    }
+
+    .agenda-sms-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, .52);
+        backdrop-filter: blur(3px);
+    }
+
+    .agenda-sms-dialog {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 760px);
+        max-height: calc(100vh - 48px);
+        overflow: auto;
+    }
+
+    .agenda-sms-shell {
+        border-radius: 24px;
+        border: 1px solid #d7e3f0;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        box-shadow: 0 30px 44px -34px rgba(15, 23, 42, .45);
+        overflow: hidden;
+    }
+
+    .agenda-sms-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px 24px 18px;
+        border-bottom: 1px solid #e3ebf5;
+        background: linear-gradient(135deg, rgba(37, 99, 235, .08) 0%, rgba(59, 130, 246, .04) 55%, rgba(255, 255, 255, .92) 100%);
+    }
+
+    .agenda-sms-kicker {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #eef5ff;
+        border: 1px solid #d6e4f8;
+        color: #22548d;
+        font-size: .78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .agenda-sms-head-copy h2 {
+        margin: 10px 0 6px;
+        color: #12345f;
+        font-size: 1.45rem;
+        font-weight: 800;
+    }
+
+    .agenda-sms-head-copy p {
+        margin: 0;
+        color: #637b94;
+        font-size: .95rem;
+    }
+
+    .agenda-sms-close {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid #d7e3f0;
+        background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
+        color: #355273;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all .18s ease;
+    }
+
+    .agenda-sms-close:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(180deg, #ffffff 0%, #eaf2fc 100%);
+        color: #1b4d87;
+    }
+
+    .agenda-sms-alert {
+        margin: 18px 24px 0;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid #f1c6cc;
+        background: #fff3f5;
+        color: #a63a46;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+    .agenda-sms-form {
+        padding: 20px 24px 24px;
+        display: grid;
+        gap: 18px;
+    }
+
+    .agenda-sms-summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .agenda-sms-summary-item {
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid #dce7f3;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .agenda-sms-summary-item span {
+        display: block;
+        margin-bottom: 6px;
+        color: #6880a0;
+        font-size: .77rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .agenda-sms-summary-item strong {
+        color: #173454;
+        font-size: .96rem;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .agenda-sms-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr);
+        gap: 16px;
+        align-items: start;
+    }
+
+    .agenda-sms-field {
+        display: grid;
+        gap: 8px;
+    }
+
+    .agenda-sms-field-full {
+        gap: 10px;
+    }
+
+    .agenda-sms-field span {
+        color: #173454;
+        font-size: .86rem;
+        font-weight: 800;
+    }
+
+    .agenda-sms-field input,
+    .agenda-sms-field textarea {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid #d6e2ee;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        color: #183b62;
+        padding: 13px 14px;
+        font-size: .96rem;
+        font-weight: 600;
+        transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .agenda-sms-field textarea {
+        min-height: 148px;
+        resize: vertical;
+    }
+
+    .agenda-sms-field input:focus,
+    .agenda-sms-field textarea:focus {
+        border-color: #8bb4ef;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+        outline: none;
+    }
+
+    .agenda-sms-field small,
+    .agenda-sms-field-meta small {
+        color: #6d83a0;
+        font-size: .8rem;
+        line-height: 1.45;
+    }
+
+    .agenda-sms-preview-card {
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid #dce7f3;
+        background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
+        display: grid;
+        gap: 10px;
+        min-height: 100%;
+    }
+
+    .agenda-sms-preview-label {
+        color: #6880a0;
+        font-size: .76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .agenda-sms-preview-phone {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid #d7e3f0;
+        background: #ffffff;
+        color: #214f8b;
+        font-weight: 800;
+        font-size: .9rem;
+        overflow-wrap: anywhere;
+    }
+
+    .agenda-sms-preview-message {
+        min-height: 124px;
+        padding: 14px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4fbe 100%);
+        color: #ffffff;
+        font-size: .95rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        box-shadow: 0 20px 30px -26px rgba(37, 99, 235, .5);
+    }
+
+    .agenda-sms-preview-message.is-empty {
+        background: linear-gradient(180deg, #eef4fb 0%, #e7eff9 100%);
+        color: #6782a7;
+        box-shadow: none;
+    }
+
+    .agenda-sms-field-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .agenda-sms-field-meta strong {
+        color: #214f8b;
+        font-size: .85rem;
+        font-weight: 800;
+    }
+
+    .agenda-sms-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .agenda-sms-btn {
+        min-height: 46px;
+        border-radius: 14px;
+        border: 1px solid #d7e3f0;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 800;
+        transition: all .18s ease;
+    }
+
+    .agenda-sms-btn-muted {
+        background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
+        color: #536b86;
+    }
+
+    .agenda-sms-btn-muted:hover {
+        background: linear-gradient(180deg, #ffffff 0%, #eaf2fc 100%);
+        color: #36506f;
+    }
+
+    .agenda-sms-btn-primary {
+        border-color: transparent;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4fbe 100%);
+        color: #ffffff;
+        box-shadow: 0 18px 28px -24px rgba(37, 99, 235, .48);
+    }
+
+    .agenda-sms-btn-primary:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(135deg, #2e6ef0 0%, #214fbf 100%);
+        color: #ffffff;
+    }
+
+    .agenda-sms-btn[disabled] {
+        opacity: .7;
+        cursor: wait;
+        transform: none;
+    }
+
+    @media (max-width: 768px) {
+        .agenda-sms-modal {
+            padding: 14px;
+        }
+
+        .agenda-sms-dialog {
+            width: 100%;
+            max-height: calc(100vh - 28px);
+        }
+
+        .agenda-sms-head,
+        .agenda-sms-form {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+
+        .agenda-sms-summary,
+        .agenda-sms-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .agenda-sms-actions {
+            flex-direction: column-reverse;
+        }
+
+        .agenda-sms-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .agenda-sms-head {
+            padding-top: 16px;
+            padding-bottom: 14px;
+        }
+
+        .agenda-sms-head-copy h2 {
+            font-size: 1.22rem;
+        }
+
+        .agenda-sms-field input,
+        .agenda-sms-field textarea {
+            font-size: .92rem;
+        }
+
+        .agenda-sms-field-meta {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    body.dark-mode .agenda-sms-flash {
+        border-color: #355978;
+        background: linear-gradient(180deg, #173251 0%, #12304c 100%);
+        color: #d5e7ff;
+    }
+
+    body.dark-mode .agenda-sms-flash.is-error {
+        border-color: #7b3b46;
+        background: #3a2327;
+        color: #ffd1d8;
+    }
+
+    body.dark-mode .agenda-sms-shell {
+        border-color: #2f4b67;
+        background: linear-gradient(180deg, #102136 0%, #0f1d31 100%);
+        box-shadow: 0 30px 44px -34px rgba(0, 0, 0, .72);
+    }
+
+    body.dark-mode .agenda-sms-head {
+        border-bottom-color: #29435f;
+        background: linear-gradient(135deg, rgba(37, 99, 235, .18) 0%, rgba(15, 29, 49, .96) 60%);
+    }
+
+    body.dark-mode .agenda-sms-kicker,
+    body.dark-mode .agenda-sms-preview-phone,
+    body.dark-mode .agenda-sms-summary-item,
+    body.dark-mode .agenda-sms-preview-card {
+        border-color: #2f4b67;
+        background: #11263e;
+        color: #dbeafe;
+    }
+
+    body.dark-mode .agenda-sms-head-copy h2,
+    body.dark-mode .agenda-sms-summary-item strong,
+    body.dark-mode .agenda-sms-field span,
+    body.dark-mode .agenda-sms-field-meta strong {
+        color: #e5edff;
+    }
+
+    body.dark-mode .agenda-sms-head-copy p,
+    body.dark-mode .agenda-sms-summary-item span,
+    body.dark-mode .agenda-sms-field small,
+    body.dark-mode .agenda-sms-field-meta small,
+    body.dark-mode .agenda-sms-preview-label {
+        color: #9fb3cf;
+    }
+
+    body.dark-mode .agenda-sms-close,
+    body.dark-mode .agenda-sms-btn-muted,
+    body.dark-mode .agenda-sms-field input,
+    body.dark-mode .agenda-sms-field textarea {
+        border-color: #355978;
+        background: #111f33;
+        color: #e5edff;
+    }
+
+    body.dark-mode .agenda-sms-preview-message.is-empty {
+        background: #13263f;
+        color: #9fb3cf;
+    }
+
+    body.dark-mode .agenda-sms-alert {
+        border-color: #7b3b46;
+        background: #3a2327;
+        color: #ffd1d8;
+    }
+
+    /* Final polish: header controls and RDV actions */
+    .date-controls {
+        grid-template-columns: 46px minmax(240px, 1fr) 46px max-content;
+        align-items: stretch;
+        justify-content: start;
+        gap: 6px;
+        padding: 6px;
+        border-radius: 18px;
+        border: 1px solid #dbe7f3;
+        background: linear-gradient(180deg, rgba(255, 255, 255, .98) 0%, rgba(243, 248, 255, .96) 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .9),
+            0 20px 34px -32px rgba(37, 99, 235, .45);
+    }
+
+    .date-controls > button:not(.btn-today) {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        min-height: 46px;
+        border-radius: 13px;
+        border-color: #d4e2f1;
+        background: linear-gradient(180deg, #ffffff 0%, #f4f8fd 100%);
+        color: #1d4e80;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .92),
+            0 12px 20px -22px rgba(15, 23, 42, .34);
+    }
+
+    .date-label {
+        min-height: 46px;
+        padding-inline: 18px;
+        border: 1px solid #dbe7f3;
+        background: rgba(255, 255, 255, .94);
+        color: #153f69;
+        font-size: .97rem;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .86);
+    }
+
+    .btn-today {
+        justify-self: start;
+        min-width: 132px;
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 13px;
+        border: 1px solid #d4e2f1;
+        background: linear-gradient(180deg, #ffffff 0%, #edf4fb 100%);
+        color: #1c4f81;
+        font-size: .93rem;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .94),
+            0 16px 24px -26px rgba(37, 99, 235, .44);
+    }
+
+    .btn-today:hover,
+    .date-controls > button:not(.btn-today):hover {
+        border-color: #bfd4ea;
+        background: linear-gradient(180deg, #ffffff 0%, #eaf3fd 100%);
+        color: #133d68;
+    }
+
+    .btn-today:active,
+    .date-controls > button:not(.btn-today):active {
+        transform: translateY(0);
+    }
+
+    .week-rdv-actions {
+        margin-top: 8px;
+    }
+
+    .timeline-slot,
+    .rdv-card,
+    .agenda-week-grid {
+        position: relative;
+        overflow: visible;
+    }
+
+    .agenda-week-day {
+        position: relative;
+        overflow: visible;
+        z-index: 0;
+    }
+
+    .agenda-week-day-body {
+        overflow: visible;
+    }
+
+    .rdv-card {
+        z-index: 0;
+    }
+
+    .week-rdv {
+        position: relative;
+        z-index: 0;
+    }
+
+    .timeline-slot:has(.rdv-more[open]),
+    .rdv-card:has(.rdv-more[open]),
+    .week-rdv:has(.rdv-more[open]),
+    .agenda-week-day:has(.rdv-more[open]) {
+        z-index: 40;
+    }
+
+    .rdv-action-stack {
+        align-items: stretch;
+        gap: 10px;
+        max-width: 100%;
+    }
+
+    .rdv-action-primary {
+        min-height: 36px;
+        padding: 0 12px;
+        border-radius: 11px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .01em;
+        box-shadow: 0 14px 24px -20px rgba(31, 111, 163, .58);
+    }
+
+    .rdv-action-primary i {
+        font-size: .84rem;
+    }
+
+    .rdv-action-more {
+        width: 36px;
+        min-height: 36px;
+        border-radius: 11px;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .88),
+            0 12px 20px -20px rgba(15, 23, 42, .3);
+    }
+
+    .rdv-more {
+        z-index: 2;
+    }
+
+    .rdv-more[open] {
+        z-index: 50;
+    }
+
+    .rdv-more-menu {
+        min-width: 216px;
+        padding: 10px;
+        border-radius: 16px;
+        border-color: #d8e4f1;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        box-shadow:
+            0 24px 36px -24px rgba(15, 23, 42, .28),
+            0 10px 22px -26px rgba(37, 99, 235, .26);
+        gap: 8px;
+    }
+
+    .rdv-more-link,
+    .rdv-more-menu button {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid #e0e9f3;
+        border-radius: 11px;
+        background: #ffffff;
+        color: #36526e;
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.15;
+        justify-content: flex-start;
+        white-space: normal;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92);
+        transition:
+            transform .18s ease,
+            border-color .18s ease,
+            background .18s ease,
+            color .18s ease,
+            box-shadow .18s ease;
+    }
+
+    .rdv-more-link i,
+    .rdv-more-menu button i {
+        width: 15px;
+        flex: 0 0 15px;
+        text-align: center;
+        color: currentColor;
+    }
+
+    .rdv-more-link span,
+    .rdv-more-menu button span,
+    .dense-context-link span {
+        min-width: 0;
+    }
+
+    .rdv-more-link:hover,
+    .rdv-more-menu button:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
+        border-color: #c9daeb;
+        color: #143b64;
+        text-decoration: none;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .95),
+            0 14px 20px -24px rgba(15, 23, 42, .3);
+    }
+
+    .rdv-more-menu form {
+        width: 100%;
+    }
+
+    .rdv-more-link--dossier {
+        background: linear-gradient(180deg, #f6fbff 0%, #eef5ff 100%);
+        border-color: #cfe0f3;
+        color: #195086;
+    }
+
+    .rdv-more-link--consultation,
+    .rdv-more-button--finish {
+        background: linear-gradient(180deg, #f3fbf9 0%, #e8f7f2 100%);
+        border-color: #cfe7dc;
+        color: #0f6b56;
+    }
+
+    .rdv-more-button--start {
+        background: linear-gradient(180deg, #f3f8ff 0%, #eaf3ff 100%);
+        border-color: #cfe0f4;
+        color: #18508a;
+    }
+
+    .rdv-more-button--cancel {
+        background: linear-gradient(180deg, #fff7f8 0%, #fff0f2 100%);
+        border-color: #efc8cf;
+        color: #b2434f;
+    }
+
+    .dense-context-menu {
+        min-width: 208px;
+        padding: 10px;
+        border-radius: 16px;
+        border-color: #d8e4f1;
+        box-shadow:
+            0 24px 38px -24px rgba(15, 23, 42, .28),
+            0 10px 22px -26px rgba(37, 99, 235, .26);
+    }
+
+    .dense-context-link {
+        min-height: 38px;
+        padding: 0 12px;
+        border: 1px solid #e0e9f3;
+        border-radius: 11px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        color: #36526e;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: normal;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .92);
+        transition:
+            transform .18s ease,
+            border-color .18s ease,
+            background .18s ease,
+            color .18s ease,
+            box-shadow .18s ease;
+    }
+
+    .dense-context-link:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(180deg, #ffffff 0%, #f3f8ff 100%);
+        border-color: #c9daeb;
+        color: #143b64;
+        text-decoration: none;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .95),
+            0 14px 20px -24px rgba(15, 23, 42, .3);
+    }
+
+    @media (max-width: 980px) {
+        .date-controls {
+            grid-template-columns: 46px minmax(0, 1fr) 46px;
+        }
+
+        .btn-today {
+            grid-column: 1 / -1;
+            width: 100%;
+            justify-self: stretch;
+        }
+
+        .agenda-top--week .btn-new-rdv {
+            margin-left: 0;
+        }
+
+        .agenda-top--week .date-label {
+            justify-content: center;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .rdv-action-stack {
+            width: 100%;
+            gap: 8px;
+        }
+
+        .rdv-action-primary {
+            flex: 1 1 auto;
+        }
+
+        .rdv-more-menu {
+            left: 0;
+            right: auto;
+            min-width: min(216px, calc(100vw - 48px));
+        }
+
+        .timeline-slot:has(.rdv-more[open]),
+        .rdv-card:has(.rdv-more[open]),
+        .week-rdv:has(.rdv-more[open]),
+        .agenda-week-day:has(.rdv-more[open]) {
+            z-index: 60;
+        }
+
+        .dense-context-menu {
+            min-width: min(208px, calc(100vw - 32px));
+        }
+    }
+
+    @media (max-width: 640px) {
+        .date-controls {
+            gap: 6px;
+            padding: 6px;
+            border-radius: 16px;
+        }
+
+        .date-controls > button:not(.btn-today),
+        .date-label,
+        .btn-today {
+            min-height: 44px;
+        }
+
+        .date-controls > button:not(.btn-today) {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+        }
+
+        .date-label {
+            font-size: .89rem;
+            padding-inline: 12px;
+        }
+
+        .btn-today {
+            min-width: 100%;
+            font-size: .9rem;
+        }
+
+        .agenda-top--week .view-tools {
+            justify-content: stretch;
+        }
+
+        .rdv-more-menu,
+        .dense-context-menu {
+            min-width: min(100%, calc(100vw - 28px));
+        }
+    }
+
+    body.dark-mode .date-controls {
+        border-color: #2c4f75;
+        background: linear-gradient(180deg, rgba(16, 37, 60, .96) 0%, rgba(19, 43, 69, .94) 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, .04),
+            0 22px 34px -32px rgba(0, 0, 0, .62);
+    }
+
+    body.dark-mode .date-controls > button:not(.btn-today),
+    body.dark-mode .date-label,
+    body.dark-mode .btn-today {
+        border-color: #355b84;
+        color: #dbe9f8;
+    }
+
+    body.dark-mode .date-controls > button:not(.btn-today) {
+        background: linear-gradient(180deg, #173559 0%, #12304f 100%);
+    }
+
+    body.dark-mode .date-label {
+        background: rgba(15, 34, 55, .94);
+        color: #f2f7ff;
+    }
+
+    body.dark-mode .btn-today {
+        background: linear-gradient(180deg, #17385d 0%, #133152 100%);
+        color: #eff6ff;
+    }
+
+    body.dark-mode .btn-today:hover,
+    body.dark-mode .date-controls > button:not(.btn-today):hover {
+        border-color: #4a759f;
+        background: linear-gradient(180deg, #1b416a 0%, #16385c 100%);
+        color: #ffffff;
+    }
+
+    body.dark-mode .rdv-more-menu,
+    body.dark-mode .dense-context-menu {
+        background: linear-gradient(180deg, #10253c 0%, #142f4d 100%);
+        border-color: #2f547e;
+        box-shadow:
+            0 26px 40px -24px rgba(0, 0, 0, .62),
+            0 10px 24px -28px rgba(15, 23, 42, .4);
+    }
+
+    body.dark-mode .rdv-more-link,
+    body.dark-mode .rdv-more-menu button,
+    body.dark-mode .dense-context-link {
+        background: #173454;
+        border-color: #315a85;
+        color: #dbe9f8;
+    }
+
+    body.dark-mode .rdv-more-link:hover,
+    body.dark-mode .rdv-more-menu button:hover,
+    body.dark-mode .dense-context-link:hover {
+        background: #1a3c61;
+        border-color: #4773a0;
+        color: #ffffff;
+    }
+
+    body.dark-mode .rdv-more-link--dossier,
+    body.dark-mode .rdv-more-button--start {
+        background: linear-gradient(180deg, #173a60 0%, #153451 100%);
+        border-color: #406992;
+        color: #e6f1ff;
+    }
+
+    body.dark-mode .rdv-more-link--consultation,
+    body.dark-mode .rdv-more-button--finish {
+        background: linear-gradient(180deg, #153a37 0%, #12312f 100%);
+        border-color: #32695f;
+        color: #c7f2e3;
+    }
+
+    body.dark-mode .rdv-more-button--cancel {
+        background: linear-gradient(180deg, #44222b 0%, #371a22 100%);
+        border-color: #7b4050;
+        color: #ffd5dc;
+    }
 </style>
 
 <div class="agenda-shell">
@@ -3772,7 +4988,7 @@
         </aside>
 
         <main class="agenda-main">
-            <div class="agenda-top">
+            <div class="agenda-top {{ $currentView === 'week' ? 'agenda-top--week' : '' }}">
                 <div class="agenda-title">
                     <i class="fas fa-calendar-check"></i>
                     <div>
@@ -3909,6 +5125,7 @@
                                     $patientInitials = $patientInitials !== '' ? mb_strtoupper($patientInitials, 'UTF-8') : 'PT';
                                     $patientMeta = trim((string) optional($rdv->patient)->numero_dossier);
                                     $patientMeta = $patientMeta !== '' ? $patientMeta : 'ID ' . $rdv->patient_id;
+                                    $patientPhone = trim((string) optional($rdv->patient)->telephone);
                                     $isUrgent = str_contains($combinedType, 'urgence');
                                     $delayMinutes = (!in_array($normalizedStatus, ['vu', 'absent', 'annule'], true) && $rdv->date_heure->isPast())
                                         ? $rdv->date_heure->diffInMinutes(now())
@@ -3925,6 +5142,7 @@
                                             'rendez_vous_id' => $rdv->id,
                                         ])
                                         : null;
+                                    $smsRendezvousLabel = $rdv->date_heure->format('d/m/Y H:i') . ($doctorName !== 'Medecin inconnu' ? ' • ' . $doctorName : '');
 
                                     $motifClass = 'motif-consultation';
                                     if (str_contains($combinedType, 'urgence')) {
@@ -3994,20 +5212,32 @@
                                             <div class="rdv-action-stack" role="group" aria-label="Actions rendez-vous">
                                                 <div class="rdv-quick-actions" aria-label="Actions rapides rendez-vous">
                                                     @if($dossierUrl)
-                                                        <a href="{{ $dossierUrl }}" class="rdv-quick-action" title="Ouvrir dossier" aria-label="Ouvrir dossier">
+                                                        <a href="{{ $dossierUrl }}" class="rdv-quick-action" title="Ouvrir dossier" aria-label="Ouvrir dossier" target="_blank" rel="noopener noreferrer">
                                                             <i class="fas fa-folder-open"></i>
                                                         </a>
                                                     @endif
-                                                    <a href="{{ $smsUrl }}" class="rdv-quick-action" title="Envoyer SMS" aria-label="Envoyer SMS">
+                                                    <a
+                                                        href="{{ $smsUrl }}"
+                                                        class="rdv-quick-action"
+                                                        title="Envoyer SMS"
+                                                        aria-label="Envoyer SMS"
+                                                        data-agenda-sms-trigger
+                                                        data-rendezvous-id="{{ $rdv->id }}"
+                                                        data-patient-name="{{ $patientName }}"
+                                                        data-patient-phone="{{ $patientPhone }}"
+                                                        data-rendezvous-label="{{ $smsRendezvousLabel }}"
+                                                        data-rendezvous-date="{{ $rdv->date_heure->toIso8601String() }}"
+                                                        data-doctor-name="{{ $doctorName }}"
+                                                    >
                                                         <i class="fas fa-sms"></i>
                                                     </a>
                                                     @if($factureUrl)
-                                                        <a href="{{ $factureUrl }}" class="rdv-quick-action" title="Creer facture" aria-label="Creer facture">
+                                                        <a href="{{ $factureUrl }}" class="rdv-quick-action" title="Creer facture" aria-label="Creer facture" target="_blank" rel="noopener noreferrer">
                                                             <i class="fas fa-file-invoice-dollar"></i>
                                                         </a>
                                                     @endif
                                                     @if($consultationUrl)
-                                                        <a href="{{ $consultationUrl }}" class="rdv-quick-action" title="Ouvrir consultation" aria-label="Ouvrir consultation">
+                                                        <a href="{{ $consultationUrl }}" class="rdv-quick-action" title="Ouvrir consultation" aria-label="Ouvrir consultation" target="_blank" rel="noopener noreferrer">
                                                             <i class="fas fa-stethoscope"></i>
                                                         </a>
                                                     @endif
@@ -4023,11 +5253,21 @@
                                                     </summary>
                                                     <div class="rdv-more-menu">
                                                         @if($rdv->patient_id)
-                                                            <a href="{{ route('patients.show', $rdv->patient_id) }}" class="rdv-more-link">
+                                                            <a href="{{ route('patients.show', $rdv->patient_id) }}" class="rdv-more-link rdv-more-link--dossier" target="_blank" rel="noopener noreferrer">
                                                                 <i class="fas fa-folder-open"></i><span>Dossier patient</span>
                                                             </a>
                                                         @endif
-                                                        <a href="{{ route('sms.create', ['rendezvous_id' => $rdv->id]) }}" class="rdv-more-link">
+                                                        <a
+                                                            href="{{ route('sms.create', ['rendezvous_id' => $rdv->id]) }}"
+                                                            class="rdv-more-link"
+                                                            data-agenda-sms-trigger
+                                                            data-rendezvous-id="{{ $rdv->id }}"
+                                                            data-patient-name="{{ $patientName }}"
+                                                            data-patient-phone="{{ $patientPhone }}"
+                                                            data-rendezvous-label="{{ $smsRendezvousLabel }}"
+                                                            data-rendezvous-date="{{ $rdv->date_heure->toIso8601String() }}"
+                                                            data-doctor-name="{{ $doctorName }}"
+                                                        >
                                                             <i class="fas fa-sms"></i><span>Envoyer un SMS</span>
                                                         </a>
                                                         <a href="{{ route('rendezvous.edit', $rdv) }}#notes" class="rdv-more-link">
@@ -4037,7 +5277,7 @@
                                                             <form action="{{ route('rendezvous.update_status', $rdv->id) }}" method="POST">
                                                                 @csrf
                                                                 <input type="hidden" name="statut" value="en_soins">
-                                                                <button type="submit">
+                                                                <button type="submit" class="rdv-more-button rdv-more-button--start">
                                                                     <i class="fas fa-play"></i><span>Demarrer</span>
                                                                 </button>
                                                             </form>
@@ -4045,12 +5285,12 @@
                                                             <form action="{{ route('rendezvous.update_status', $rdv->id) }}" method="POST">
                                                                 @csrf
                                                                 <input type="hidden" name="statut" value="vu">
-                                                                <button type="submit">
+                                                                <button type="submit" class="rdv-more-button rdv-more-button--finish">
                                                                     <i class="fas fa-check"></i><span>Terminer</span>
                                                                 </button>
                                                             </form>
                                                         @else
-                                                            <a href="{{ route('consultations.create', ['patient_id' => $rdv->patient_id]) }}" class="rdv-more-link">
+                                                            <a href="{{ route('consultations.create', ['patient_id' => $rdv->patient_id]) }}" class="rdv-more-link rdv-more-link--consultation" target="_blank" rel="noopener noreferrer">
                                                                 <i class="fas fa-stethoscope"></i><span>Creer une consultation</span>
                                                             </a>
                                                         @endif
@@ -4060,7 +5300,7 @@
                                                                   onsubmit="return confirm('Annuler ce rendez-vous ?');">
                                                                 @csrf
                                                                 <input type="hidden" name="statut" value="annule">
-                                                                <button type="submit">
+                                                                <button type="submit" class="rdv-more-button rdv-more-button--cancel">
                                                                     <i class="fas fa-ban"></i><span>Annuler le rendez-vous</span>
                                                                 </button>
                                                             </form>
@@ -4146,7 +5386,7 @@
                                                         </summary>
                                                         <div class="rdv-more-menu">
                                                             @if($rdv->patient_id)
-                                                                <a href="{{ route('patients.show', $rdv->patient_id) }}" class="rdv-more-link">
+                                                                <a href="{{ route('patients.show', $rdv->patient_id) }}" class="rdv-more-link rdv-more-link--dossier" target="_blank" rel="noopener noreferrer">
                                                                     <i class="fas fa-folder-open"></i><span>Dossier patient</span>
                                                                 </a>
                                                             @endif
@@ -4154,7 +5394,7 @@
                                                                 <form action="{{ route('rendezvous.update_status', $rdv->id) }}" method="POST">
                                                                     @csrf
                                                                     <input type="hidden" name="statut" value="en_soins">
-                                                                    <button type="submit">
+                                                                    <button type="submit" class="rdv-more-button rdv-more-button--start">
                                                                         <i class="fas fa-play"></i><span>Demarrer</span>
                                                                     </button>
                                                                 </form>
@@ -4162,12 +5402,12 @@
                                                                 <form action="{{ route('rendezvous.update_status', $rdv->id) }}" method="POST">
                                                                     @csrf
                                                                     <input type="hidden" name="statut" value="vu">
-                                                                    <button type="submit">
+                                                                    <button type="submit" class="rdv-more-button rdv-more-button--finish">
                                                                         <i class="fas fa-check"></i><span>Terminer</span>
                                                                     </button>
                                                                 </form>
                                                             @else
-                                                                <a href="{{ route('consultations.create', ['patient_id' => $rdv->patient_id]) }}" class="rdv-more-link">
+                                                                <a href="{{ route('consultations.create', ['patient_id' => $rdv->patient_id]) }}" class="rdv-more-link rdv-more-link--consultation" target="_blank" rel="noopener noreferrer">
                                                                     <i class="fas fa-stethoscope"></i><span>Creer une consultation</span>
                                                                 </a>
                                                             @endif
@@ -4175,7 +5415,7 @@
                                                                 <form action="{{ route('rendezvous.update_status', $rdv->id) }}" method="POST">
                                                                     @csrf
                                                                     <input type="hidden" name="statut" value="annule">
-                                                                    <button type="submit">
+                                                                    <button type="submit" class="rdv-more-button rdv-more-button--cancel">
                                                                         <i class="fas fa-ban"></i><span>Annuler</span>
                                                                     </button>
                                                                 </form>
@@ -4233,33 +5473,57 @@
                                             </div>
 
                                             <div class="dense-rdv-hover-actions">
-                                                <a href="{{ $rdv->dense_open_url }}" class="dense-hover-action" title="Ouvrir dossier" aria-label="Ouvrir dossier" data-stop-open>
+                                                <a href="{{ $rdv->dense_open_url }}" class="dense-hover-action" title="Ouvrir dossier" aria-label="Ouvrir dossier" data-stop-open target="_blank" rel="noopener noreferrer">
                                                     <i class="fas fa-folder-open"></i>
                                                 </a>
-                                                <a href="{{ $rdv->dense_sms_url }}" class="dense-hover-action" title="Envoyer SMS" aria-label="Envoyer SMS" data-stop-open>
+                                                <a
+                                                    href="{{ $rdv->dense_sms_url }}"
+                                                    class="dense-hover-action"
+                                                    title="Envoyer SMS"
+                                                    aria-label="Envoyer SMS"
+                                                    data-stop-open
+                                                    data-agenda-sms-trigger
+                                                    data-rendezvous-id="{{ $rdv->id }}"
+                                                    data-patient-name="{{ $rdv->dense_patient_name }}"
+                                                    data-patient-phone="{{ trim((string) optional($rdv->patient)->telephone) }}"
+                                                    data-rendezvous-label="{{ $rdv->date_heure->format('d/m/Y H:i') }}{{ $rdv->dense_doctor_name !== 'Medecin inconnu' ? ' • ' . $rdv->dense_doctor_name : '' }}"
+                                                    data-rendezvous-date="{{ $rdv->date_heure->toIso8601String() }}"
+                                                    data-doctor-name="{{ $rdv->dense_doctor_name }}"
+                                                >
                                                     <i class="fas fa-sms"></i>
                                                 </a>
                                                 @if($rdv->dense_facture_url)
-                                                    <a href="{{ $rdv->dense_facture_url }}" class="dense-hover-action" title="Creer facture" aria-label="Creer facture" data-stop-open>
+                                                    <a href="{{ $rdv->dense_facture_url }}" class="dense-hover-action" title="Creer facture" aria-label="Creer facture" data-stop-open target="_blank" rel="noopener noreferrer">
                                                         <i class="fas fa-file-invoice-dollar"></i>
                                                     </a>
                                                 @endif
                                                 @if($rdv->dense_consultation_url)
-                                                    <a href="{{ $rdv->dense_consultation_url }}" class="dense-hover-action" title="Ouvrir consultation" aria-label="Ouvrir consultation" data-stop-open>
+                                                    <a href="{{ $rdv->dense_consultation_url }}" class="dense-hover-action" title="Ouvrir consultation" aria-label="Ouvrir consultation" data-stop-open target="_blank" rel="noopener noreferrer">
                                                         <i class="fas fa-stethoscope"></i>
                                                     </a>
                                                 @endif
                                             </div>
 
                                             <div class="dense-context-menu" id="dense-menu-{{ $rdv->id }}" role="menu">
-                                                <a href="{{ $rdv->dense_open_url }}" class="dense-context-link" data-stop-open>
+                                                <a href="{{ $rdv->dense_open_url }}" class="dense-context-link" data-stop-open target="_blank" rel="noopener noreferrer">
                                                     <i class="fas fa-folder-open"></i><span>Ouvrir dossier</span>
                                                 </a>
-                                                <a href="{{ $rdv->dense_sms_url }}" class="dense-context-link" data-stop-open>
+                                                <a
+                                                    href="{{ $rdv->dense_sms_url }}"
+                                                    class="dense-context-link"
+                                                    data-stop-open
+                                                    data-agenda-sms-trigger
+                                                    data-rendezvous-id="{{ $rdv->id }}"
+                                                    data-patient-name="{{ $rdv->dense_patient_name }}"
+                                                    data-patient-phone="{{ trim((string) optional($rdv->patient)->telephone) }}"
+                                                    data-rendezvous-label="{{ $rdv->date_heure->format('d/m/Y H:i') }}{{ $rdv->dense_doctor_name !== 'Medecin inconnu' ? ' • ' . $rdv->dense_doctor_name : '' }}"
+                                                    data-rendezvous-date="{{ $rdv->date_heure->toIso8601String() }}"
+                                                    data-doctor-name="{{ $rdv->dense_doctor_name }}"
+                                                >
                                                     <i class="fas fa-sms"></i><span>Envoyer SMS</span>
                                                 </a>
                                                 @if($rdv->dense_facture_url)
-                                                    <a href="{{ $rdv->dense_facture_url }}" class="dense-context-link" data-stop-open>
+                                                    <a href="{{ $rdv->dense_facture_url }}" class="dense-context-link" data-stop-open target="_blank" rel="noopener noreferrer">
                                                         <i class="fas fa-file-invoice-dollar"></i><span>Creer facture</span>
                                                     </a>
                                                 @endif
@@ -4269,7 +5533,7 @@
                                                     </a>
                                                 @endif
                                                 @if($rdv->dense_consultation_url)
-                                                    <a href="{{ $rdv->dense_consultation_url }}" class="dense-context-link" data-stop-open>
+                                                    <a href="{{ $rdv->dense_consultation_url }}" class="dense-context-link" data-stop-open target="_blank" rel="noopener noreferrer">
                                                         <i class="fas fa-stethoscope"></i><span>Ouvrir consultation</span>
                                                     </a>
                                                 @endif
@@ -4354,6 +5618,8 @@
     </div>
 </div>
 
+@include('agenda._sms_modal')
+
 <script type="application/json" id="agendaPagePayload">
 {!! json_encode([
     'currentView' => $currentView,
@@ -4361,6 +5627,7 @@
     'selectedDate' => $selectedDate->format('Y-m-d'),
     'agendaBaseUrl' => route('agenda.index'),
     'createBaseUrl' => route('rendezvous.create'),
+    'smsStoreUrl' => route('sms.store'),
     'daysWithAppointments' => $daysWithAppointments,
     'selectedMedecinId' => (string) ($selectedMedecinId ?? ''),
     'selectedStatut' => (string) ($selectedStatut ?? ''),

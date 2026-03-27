@@ -99,25 +99,34 @@
 
     .med-title-row {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: 14px;
         flex-wrap: nowrap;
-        margin-top: 14px;
+        margin-top: 0;
+    }
+
+    .med-title-row .med-eyebrow {
+        flex-shrink: 0;
     }
 
     .med-title-content {
         display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
+        align-items: center;
+        justify-content: flex-end;
         gap: 16px;
-        flex: 1 1 0;
+        flex: 0 0 auto;
         flex-wrap: wrap;
-        min-width: 0;
+        min-width: auto;
+        margin-left: auto;
     }
 
     .med-title-copy {
         flex: 1 1 440px;
         min-width: 0;
+    }
+
+    .med-title-copy.is-compact {
+        display: none;
     }
 
     .med-title-icon {
@@ -1053,6 +1062,12 @@
             flex-wrap: wrap;
         }
 
+        .med-title-content {
+            width: 100%;
+            margin-left: 0;
+            justify-content: flex-start;
+        }
+
         .med-btn,
         .med-filter-btn {
             width: 100%;
@@ -1073,13 +1088,13 @@
         <section class="med-hero">
             <div class="med-hero-grid">
                 <div>
-                    <span class="med-eyebrow">Equipe medicale</span>
                     <div class="med-title-row">
                         <span class="med-title-icon">
                             <i class="fas fa-user-doctor"></i>
                         </span>
+                        <span class="med-eyebrow">Equipe medicale</span>
                         <div class="med-title-content">
-                            <div class="med-title-copy">
+                            <div class="med-title-copy is-compact">
                                 <h1 class="med-title">Gestion des Medecins</h1>
                                 <p class="med-subtitle">Structurez les profils medicaux, les contacts et les statuts avec une interface plus lisible, premium et coherente avec le reste du produit.</p>
                             </div>
@@ -1097,11 +1112,6 @@
                         </div>
                     </div>
 
-                    <div class="med-badge-row">
-                        <span class="med-badge"><i class="fas fa-layer-group"></i>{{ $medecins->total() }} resultat{{ $medecins->total() > 1 ? 's' : '' }}</span>
-                        <span class="med-chip"><i class="fas fa-user-md"></i>{{ $stats['actifs'] }} actif{{ $stats['actifs'] > 1 ? 's' : '' }}</span>
-                        <span class="med-chip"><i class="fas fa-stethoscope"></i>{{ $stats['specialites'] }} specialite{{ $stats['specialites'] > 1 ? 's' : '' }}</span>
-                    </div>
                 </div>
             </div>
         </section>

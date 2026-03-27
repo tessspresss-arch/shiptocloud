@@ -34,7 +34,6 @@
     }
 
     .consult-hero,
-    .consult-kpi,
     .consult-filter-card,
     .consult-table-card {
         position: relative;
@@ -52,7 +51,6 @@
             var(--consult-bg);
     }
 
-    .consult-kpi,
     .consult-filter-card,
     .consult-table-card {
         background: var(--consult-surface);
@@ -60,7 +58,6 @@
     }
 
     .consult-hero::before,
-    .consult-kpi::before,
     .consult-filter-card::before,
     .consult-table-card::before {
         content: "";
@@ -71,7 +68,6 @@
     }
 
     .consult-hero > *,
-    .consult-kpi > *,
     .consult-filter-card > *,
     .consult-table-card > * {
         position: relative;
@@ -259,87 +255,6 @@
         box-shadow: 0 24px 32px -24px rgba(37, 99, 235, 0.58);
     }
 
-    .consult-kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 16px;
-    }
-
-    .consult-kpi {
-        padding: 22px;
-        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-    }
-
-    .consult-kpi:hover {
-        transform: translateY(-2px);
-        border-color: #c8dcee;
-        box-shadow: 0 28px 42px -36px rgba(15, 40, 65, 0.26);
-    }
-
-    .consult-kpi-top {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: flex-start;
-        margin-bottom: 18px;
-    }
-
-    .consult-kpi-label {
-        margin: 0 0 6px;
-        color: var(--consult-muted);
-        font-size: .78rem;
-        font-weight: 800;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-    }
-
-    .consult-kpi-value {
-        margin: 0;
-        color: var(--consult-text);
-        font-size: clamp(1.8rem, 2.5vw, 2.35rem);
-        line-height: 1;
-        font-weight: 800;
-        letter-spacing: -0.04em;
-    }
-
-    .consult-kpi-copy {
-        margin: 0;
-        color: var(--consult-muted);
-        font-size: .92rem;
-        line-height: 1.55;
-        font-weight: 600;
-    }
-
-    .consult-kpi-icon {
-        width: 46px;
-        height: 46px;
-        border-radius: 16px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.15rem;
-    }
-
-    .consult-kpi-icon.total {
-        background: rgba(27, 121, 201, 0.12);
-        color: var(--consult-primary);
-    }
-
-    .consult-kpi-icon.today {
-        background: rgba(22, 149, 111, 0.12);
-        color: var(--consult-success);
-    }
-
-    .consult-kpi-icon.upcoming {
-        background: rgba(201, 130, 18, 0.12);
-        color: var(--consult-warning);
-    }
-
-    .consult-kpi-icon.medecins {
-        background: rgba(215, 77, 93, 0.12);
-        color: var(--consult-danger);
-    }
-
     .consult-filter-card {
         padding: 20px;
     }
@@ -514,6 +429,7 @@
         gap: 10px;
         flex-wrap: wrap;
         align-items: center;
+        justify-content: flex-end;
     }
 
     .consult-table-wrap {
@@ -756,6 +672,8 @@
 
     .consult-table-footer .pagination {
         margin-bottom: 0;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .consult-table-footer .page-link {
@@ -781,10 +699,8 @@
         border-color: #294661;
     }
 
-    html.dark body .consult-kpi,
     html.dark body .consult-filter-card,
     html.dark body .consult-table-card,
-    body.dark-mode .consult-kpi,
     body.dark-mode .consult-filter-card,
     body.dark-mode .consult-table-card {
         background: rgba(12, 27, 43, 0.92);
@@ -793,14 +709,12 @@
     }
 
     html.dark body .consult-title,
-    html.dark body .consult-kpi-value,
     html.dark body .consult-filter-title,
     html.dark body .consult-table-title,
     html.dark body .consult-patient-name,
     html.dark body .consult-medecin-name,
     html.dark body .consult-empty h3,
     body.dark-mode .consult-title,
-    body.dark-mode .consult-kpi-value,
     body.dark-mode .consult-filter-title,
     body.dark-mode .consult-table-title,
     body.dark-mode .consult-patient-name,
@@ -818,7 +732,6 @@
     html.dark body .consult-subtitle,
     html.dark body .consult-chip,
     html.dark body .consult-inline-tag,
-    html.dark body .consult-kpi-copy,
     html.dark body .consult-filter-copy,
     html.dark body .consult-meta,
     html.dark body .consult-date-subtext,
@@ -828,7 +741,6 @@
     body.dark-mode .consult-subtitle,
     body.dark-mode .consult-chip,
     body.dark-mode .consult-inline-tag,
-    body.dark-mode .consult-kpi-copy,
     body.dark-mode .consult-filter-copy,
     body.dark-mode .consult-meta,
     body.dark-mode .consult-date-subtext,
@@ -934,12 +846,12 @@
     }
 
     @media (max-width: 1200px) {
-        .consult-kpi-grid {
+        .consult-filter-form {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .consult-filter-form {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+        .consult-title-content {
+            gap: 14px;
         }
 
         .consult-filter-actions {
@@ -948,8 +860,51 @@
     }
 
     @media (max-width: 992px) {
+        .consult-page {
+            padding-bottom: 72px;
+        }
+
         .consult-hero-grid {
             grid-template-columns: 1fr;
+        }
+
+        .consult-hero,
+        .consult-filter-card,
+        .consult-table-card {
+            border-radius: 20px;
+        }
+
+        .consult-title-row {
+            align-items: flex-start;
+        }
+
+        .consult-title-content {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 14px;
+        }
+
+        .consult-hero-actions {
+            width: 100%;
+            align-self: stretch;
+            justify-content: flex-start;
+        }
+
+        .consult-hero-actions .consult-btn {
+            flex: 1 1 220px;
+        }
+
+        .consult-filter-card {
+            padding: 18px;
+        }
+
+        .consult-table-head {
+            align-items: flex-start;
+        }
+
+        .consult-table-meta {
+            width: 100%;
+            justify-content: flex-start;
         }
 
         .consult-table {
@@ -1018,16 +973,32 @@
         .consult-page {
             padding-left: 0;
             padding-right: 0;
+            padding-bottom: 40px;
         }
 
-        .consult-kpi-grid,
+        .consult-shell {
+            gap: 14px;
+        }
+
+        .consult-hero,
+        .consult-filter-card,
+        .consult-table-card {
+            border-radius: 18px;
+        }
+
+        .consult-hero,
+        .consult-filter-card {
+            padding: 16px;
+        }
+
         .consult-filter-form {
             grid-template-columns: 1fr;
         }
 
         .consult-actions,
         .consult-filter-actions,
-        .consult-hero-actions {
+        .consult-hero-actions,
+        .consult-table-meta {
             flex-direction: column;
             align-items: stretch;
         }
@@ -1039,16 +1010,18 @@
 
         .consult-table-head,
         .consult-table-footer {
-            padding: 18px;
+            padding: 16px;
         }
 
         .consult-title-row {
+            gap: 12px;
             align-items: flex-start;
         }
 
         .consult-title-content {
             flex-direction: column;
             align-items: stretch;
+            gap: 12px;
         }
 
         .consult-title-icon {
@@ -1066,6 +1039,96 @@
         .consult-inline-tag {
             width: 100%;
             justify-content: center;
+        }
+
+        .consult-table tbody {
+            padding: 14px;
+        }
+
+        .consult-table tbody tr {
+            padding: 16px;
+            border-radius: 16px;
+        }
+
+        .consult-actions-cell {
+            justify-content: flex-start;
+        }
+
+        .consult-table-footer {
+            justify-content: flex-start;
+        }
+
+        .consult-table-footer nav {
+            width: 100%;
+        }
+
+        .consult-table-footer .pagination {
+            justify-content: flex-start !important;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .consult-table-wrap {
+            overflow: visible;
+        }
+
+        .consult-table td,
+        .consult-profile-cell,
+        .consult-profile-copy,
+        .consult-patient-name,
+        .consult-medecin-name,
+        .consult-meta,
+        .consult-date-subtext,
+        .consult-diagnostic {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .consult-profile-cell,
+        .consult-profile-copy {
+            display: grid;
+            min-width: 0;
+        }
+
+        .consult-actions-cell {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(42px, 42px));
+            justify-content: flex-start;
+            gap: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .consult-table tbody td {
+            margin-top: 0;
+            display: grid;
+            gap: 6px;
+        }
+
+        .consult-table-meta {
+            width: 100%;
+        }
+
+        .consult-table-meta .consult-chip {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .consult-table tbody {
+            padding: 12px;
+            gap: 12px;
+        }
+
+        .consult-table tbody tr {
+            padding: 14px;
+            border-radius: 14px;
+        }
+
+        .consult-table tbody td + td {
+            margin-top: 10px;
         }
     }
 </style>
@@ -1118,52 +1181,6 @@
                 </div>
 
             </div>
-        </section>
-
-        <section class="consult-kpi-grid">
-            <article class="consult-kpi">
-                <div class="consult-kpi-top">
-                    <div>
-                        <p class="consult-kpi-label">Activite globale</p>
-                        <p class="consult-kpi-value">{{ $totalConsultations }}</p>
-                    </div>
-                    <span class="consult-kpi-icon total"><i class="fas fa-notes-medical"></i></span>
-                </div>
-                <p class="consult-kpi-copy">Consultations correspondant aux filtres actifs et triees par date de prise en charge.</p>
-            </article>
-
-            <article class="consult-kpi">
-                <div class="consult-kpi-top">
-                    <div>
-                        <p class="consult-kpi-label">Aujourd'hui</p>
-                        <p class="consult-kpi-value">{{ $todayConsultations }}</p>
-                    </div>
-                    <span class="consult-kpi-icon today"><i class="fas fa-calendar-day"></i></span>
-                </div>
-                <p class="consult-kpi-copy">Suivi immediat des consultations du jour pour fluidifier la charge du cabinet.</p>
-            </article>
-
-            <article class="consult-kpi">
-                <div class="consult-kpi-top">
-                    <div>
-                        <p class="consult-kpi-label">A venir</p>
-                        <p class="consult-kpi-value">{{ $upcomingConsultations }}</p>
-                    </div>
-                    <span class="consult-kpi-icon upcoming"><i class="fas fa-clock"></i></span>
-                </div>
-                <p class="consult-kpi-copy">Projection des consultations attendues dans les sept prochains jours.</p>
-            </article>
-
-            <article class="consult-kpi">
-                <div class="consult-kpi-top">
-                    <div>
-                        <p class="consult-kpi-label">Equipe medicale</p>
-                        <p class="consult-kpi-value">{{ $activeMedecins }}</p>
-                    </div>
-                    <span class="consult-kpi-icon medecins"><i class="fas fa-user-md"></i></span>
-                </div>
-                <p class="consult-kpi-copy">Medecins actifs mobilisables pour les consultations et la coordination clinique.</p>
-            </article>
         </section>
 
         <section class="consult-filter-card">
@@ -1364,9 +1381,12 @@
             @endif
 
             <div class="consult-table-footer">
-                <p class="consult-pagination-info mb-0">Affichage de {{ $consultations->firstItem() ?? 0 }} a {{ $consultations->lastItem() ?? 0 }} sur {{ $consultations->total() }} consultation{{ $consultations->total() > 1 ? 's' : '' }}.</p>
+                <p class="consult-pagination-info mb-0">
+                    Affichage de {{ $consultations->firstItem() ?? 0 }} &agrave; {{ $consultations->lastItem() ?? 0 }}
+                    sur {{ $consultations->total() }} consultation{{ $consultations->total() > 1 ? 's' : '' }}
+                </p>
                 @if($consultations->hasPages())
-                    <div>{{ $consultations->links() }}</div>
+                    <x-pagination :paginator="$consultations" />
                 @endif
             </div>
         </section>

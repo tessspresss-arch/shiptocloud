@@ -127,57 +127,63 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>15/01/2024</td>
-                                <td>Rapport mensuel</td>
-                                <td>D&eacute;cembre 2023</td>
-                                <td>Dr. Martin</td>
-                                <td><span class="badge bg-primary">PDF</span></td>
-                                <td>
-                                    <button class="btn action-btn action-view me-1" type="button" aria-label="Voir">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn action-btn action-download me-1" type="button" aria-label="T&eacute;l&eacute;charger">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                    <button class="btn action-btn action-delete" type="button" aria-label="Supprimer">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                <td data-label="Date">15/01/2024</td>
+                                <td data-label="Type">Rapport mensuel</td>
+                                <td data-label="P&eacute;riode">D&eacute;cembre 2023</td>
+                                <td data-label="G&eacute;n&eacute;r&eacute; par">Dr. Martin</td>
+                                <td data-label="Format"><span class="badge bg-primary">PDF</span></td>
+                                <td data-label="Actions">
+                                    <div class="reports-row-actions">
+                                        <button class="btn action-btn action-view" type="button" aria-label="Voir">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn action-btn action-download" type="button" aria-label="T&eacute;l&eacute;charger">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn action-btn action-delete" type="button" aria-label="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td>10/01/2024</td>
-                                <td>Rapport financier</td>
-                                <td>4eme trimestre 2023</td>
-                                <td>Admin</td>
-                                <td><span class="badge bg-success">Excel</span></td>
-                                <td>
-                                    <button class="btn action-btn action-view me-1" type="button" aria-label="Voir">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn action-btn action-download me-1" type="button" aria-label="T&eacute;l&eacute;charger">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                    <button class="btn action-btn action-delete" type="button" aria-label="Supprimer">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                <td data-label="Date">10/01/2024</td>
+                                <td data-label="Type">Rapport financier</td>
+                                <td data-label="P&eacute;riode">4eme trimestre 2023</td>
+                                <td data-label="G&eacute;n&eacute;r&eacute; par">Admin</td>
+                                <td data-label="Format"><span class="badge bg-success">Excel</span></td>
+                                <td data-label="Actions">
+                                    <div class="reports-row-actions">
+                                        <button class="btn action-btn action-view" type="button" aria-label="Voir">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn action-btn action-download" type="button" aria-label="T&eacute;l&eacute;charger">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn action-btn action-delete" type="button" aria-label="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td>05/01/2024</td>
-                                <td>Rapport patients</td>
-                                <td>Janvier 2024</td>
-                                <td>Dr. Dubois</td>
-                                <td><span class="badge bg-primary">PDF</span></td>
-                                <td>
-                                    <button class="btn action-btn action-view me-1" type="button" aria-label="Voir">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn action-btn action-download me-1" type="button" aria-label="T&eacute;l&eacute;charger">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                    <button class="btn action-btn action-delete" type="button" aria-label="Supprimer">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                <td data-label="Date">05/01/2024</td>
+                                <td data-label="Type">Rapport patients</td>
+                                <td data-label="P&eacute;riode">Janvier 2024</td>
+                                <td data-label="G&eacute;n&eacute;r&eacute; par">Dr. Dubois</td>
+                                <td data-label="Format"><span class="badge bg-primary">PDF</span></td>
+                                <td data-label="Actions">
+                                    <div class="reports-row-actions">
+                                        <button class="btn action-btn action-view" type="button" aria-label="Voir">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn action-btn action-download" type="button" aria-label="T&eacute;l&eacute;charger">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn action-btn action-delete" type="button" aria-label="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -429,6 +435,13 @@
     border-color: #edf2f9;
 }
 
+.reports-row-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    flex-wrap: wrap;
+}
+
 .action-btn {
     width: 34px;
     height: 34px;
@@ -616,14 +629,74 @@ body.dark-mode .reports-main-btn {
         font-size: 1rem;
     }
 
-    .reports-table {
-        font-size: .88rem;
-    }
-
     .action-btn {
         width: 30px;
         height: 30px;
         border-radius: 8px;
+    }
+
+    .reports-card-body .table-responsive {
+        overflow: visible;
+    }
+
+    .reports-table,
+    .reports-table tbody,
+    .reports-table tr,
+    .reports-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .reports-table {
+        font-size: .88rem;
+    }
+
+    .reports-table thead {
+        display: none;
+    }
+
+    .reports-table tbody {
+        display: grid;
+        gap: .85rem;
+    }
+
+    .reports-table tbody tr {
+        background: #ffffff;
+        border: 1px solid var(--rp-border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 18px 24px -30px rgba(26, 54, 93, 0.52);
+    }
+
+    .reports-table tbody td {
+        display: grid;
+        grid-template-columns: minmax(92px, 108px) minmax(0, 1fr);
+        gap: .75rem;
+        align-items: start;
+        padding: .75rem .85rem;
+        border-bottom: 1px solid #edf2f9;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .reports-table tbody td:last-child {
+        border-bottom: 0;
+    }
+
+    .reports-table tbody td::before {
+        content: attr(data-label);
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: #6782a7;
+    }
+
+    .reports-row-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 32px));
+        gap: .45rem;
     }
 }
 
@@ -651,9 +724,30 @@ body.dark-mode .reports-main-btn {
         padding: .65rem;
     }
 
-    .reports-table thead th,
     .reports-table tbody td {
-        white-space: nowrap;
+        grid-template-columns: 1fr;
+        gap: .45rem;
+        white-space: normal;
+    }
+
+    .reports-row-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.dark-mode .reports-table tbody tr {
+        background: #0b1730;
+        border-color: #374151;
+        box-shadow: none;
+    }
+
+    body.dark-mode .reports-table tbody td::before {
+        color: #8ea9c6;
     }
 }
 </style>

@@ -6,6 +6,7 @@ use App\Models\CategorieDocument;
 use App\Models\DocumentMedical;
 use App\Models\Patient;
 use App\Models\PatientArchive;
+use App\Services\Security\ClinicalAuthorizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,11 @@ use Illuminate\Support\Str;
 
 class DocumentController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(DocumentMedical::class, 'document');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -20,11 +26,19 @@ class DocumentController extends Controller
     {
         CategorieDocument::ensureDefaultCatalog();
 
-        $documents = DocumentMedical::with(['categorie', 'archive.patient'])
+        $documentsQuery = DocumentMedical::with(['categorie', 'archive.patient']);
+        if (auth()->check()) {
+            $access = app(ClinicalAuthorizationService::class);
+            $documentsQuery->whereHas('archive.patient', function ($patientQuery) use ($access) {
+                $access->scopePatients($patientQuery, auth()->user());
+            });
+        }
+
+        $documents = $documentsQuery
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        $totalDocuments = DocumentMedical::count();
+        $totalDocuments = (clone $documentsQuery)->count();
         $totalCategories = CategorieDocument::query()
             ->actives()
             ->count();
@@ -77,11 +91,16 @@ class DocumentController extends Controller
             ->groupBy('categorie_document_id')
             ->pluck('total', 'categorie_document_id');
 
-        $patients = Patient::query()
+        $patientsQuery = Patient::query()
             ->select('id', 'nom', 'prenom', 'numero_dossier')
             ->orderBy('nom')
-            ->orderBy('prenom')
-            ->get();
+            ->orderBy('prenom');
+
+        if ($request->user()) {
+            app(ClinicalAuthorizationService::class)->scopePatients($patientsQuery, $request->user());
+        }
+
+        $patients = $patientsQuery->get();
 
         $selectedPatient = null;
         if ($request->filled('patient_id')) {
@@ -149,6 +168,7 @@ class DocumentController extends Controller
             $extension = strtolower((string) $file->getClientOriginalExtension());
             $fileName = (string) Str::uuid() . '.' . $extension;
             $patient = Patient::query()->findOrFail($validated['patient_id']);
+            abort_unless(app(ClinicalAuthorizationService::class)->canAccessPatient($request->user(), $patient), 403);
             $category = CategorieDocument::query()->findOrFail($validated['categorie_document_id']);
             $archive = PatientArchive::query()->firstOrCreate(
                 ['patient_id' => $patient->id],

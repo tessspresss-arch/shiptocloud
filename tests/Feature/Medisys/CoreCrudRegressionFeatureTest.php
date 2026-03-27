@@ -3,11 +3,14 @@
 namespace Tests\Feature\Medisys;
 
 use App\Models\Examen;
+use App\Models\Consultation;
 use App\Models\Medecin;
+use App\Models\Ordonnance;
 use App\Models\Patient;
 use App\Models\PatientArchive;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class CoreCrudRegressionFeatureTest extends TestCase
@@ -27,11 +30,54 @@ class CoreCrudRegressionFeatureTest extends TestCase
             'statut' => 'actif',
         ]);
 
+        $patient = Patient::factory()->create();
+
+        $consultation = Consultation::query()->create([
+            'patient_id' => $patient->id,
+            'medecin_id' => $medecin->id,
+            'date_consultation' => '2026-03-24',
+            'diagnostic' => 'Controle annuel',
+        ]);
+
+        $ordonnancePayload = [
+            'numero_ordonnance' => 'ORD-SHOW-TEST-0001',
+            'patient_id' => $patient->id,
+            'consultation_id' => $consultation->id,
+            'date_prescription' => '2026-03-24',
+            'observations' => 'Ordonnance liee a la fiche medecin.',
+            'instructions' => 'Apres le repas.',
+            'medicaments' => [
+                [
+                    'medicament_label' => 'Paracetamol',
+                    'posologie' => '1 comprime',
+                    'duree' => '5 jours',
+                ],
+            ],
+        ];
+
+        if (Schema::hasColumn('ordonnances', 'medecin_id')) {
+            $ordonnancePayload['medecin_id'] = $medecin->id;
+        }
+
+        if (Schema::hasColumn('ordonnances', 'date_expiration')) {
+            $ordonnancePayload['date_expiration'] = '2026-04-24';
+        }
+
+        if (Schema::hasColumn('ordonnances', 'statut')) {
+            $ordonnancePayload['statut'] = 'active';
+        }
+
+        Ordonnance::query()->create($ordonnancePayload);
+
         $this->actingAs($user)
             ->get(route('medecins.show', $medecin))
             ->assertOk()
             ->assertSee('Ahmed')
-            ->assertSee('Bennani');
+            ->assertSee('Bennani')
+            ->assertViewHas('medecin', function (Medecin $loadedMedecin): bool {
+                return (int) ($loadedMedecin->consultations_count ?? 0) === 1
+                    && (int) ($loadedMedecin->ordonnances_count ?? 0) === 1;
+            });
 
         $this->actingAs($user)
             ->put(route('medecins.update', $medecin), [

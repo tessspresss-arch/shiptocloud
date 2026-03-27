@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\InlineAvatar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -47,6 +48,21 @@ class Patient extends Model
         return $this->hasMany(Ordonnance::class);
     }
 
+    public function factures()
+    {
+        return $this->hasMany(Facture::class);
+    }
+
+    public function examens()
+    {
+        return $this->hasMany(Examen::class);
+    }
+
+    public function certificats()
+    {
+        return $this->hasMany(CertificatMedical::class);
+    }
+
     public function archive()
     {
         return $this->hasOne(PatientArchive::class);
@@ -75,7 +91,7 @@ class Patient extends Model
     {
         return $this->photo
             ? asset('storage/' . ltrim($this->photo, '/'))
-            : 'https://ui-avatars.com/api/?name=' . urlencode(trim($this->prenom . ' ' . $this->nom)) . '&color=2563EB&background=EAF2FF';
+            : InlineAvatar::dataUri(trim($this->prenom . ' ' . $this->nom), '#EAF2FF', '#2563EB', 'PT');
     }
 
     public function getTelephoneFormattedAttribute()

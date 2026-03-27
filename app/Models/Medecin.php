@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Support\InlineAvatar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Schema;
 
 class Medecin extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected static ?array $ordonnanceTableColumns = null;
 
     protected $fillable = [
         'matricule',
@@ -55,7 +59,7 @@ class Medecin extends Model
     {
         return $this->photo_path
             ? asset('storage/' . $this->photo_path)
-            : 'https://ui-avatars.com/api/?name=' . urlencode($this->nom . ' ' . $this->prenom) . '&color=7F9CF5&background=EBF4FF';
+            : InlineAvatar::dataUri(trim($this->prenom . ' ' . $this->nom), '#EBF4FF', '#4F46E5', 'DR');
     }
 
     public static function generateMatricule()
@@ -69,7 +73,22 @@ class Medecin extends Model
 
     public function ordonnances()
     {
-        return $this->hasMany(Ordonnance::class);
+        if ($this->ordonnanceColumnExists('medecin_id')) {
+            return $this->hasMany(Ordonnance::class, 'medecin_id');
+        }
+
+        if ($this->ordonnanceColumnExists('consultation_id')) {
+            return $this->hasManyThrough(
+                Ordonnance::class,
+                Consultation::class,
+                'medecin_id',
+                'consultation_id',
+                'id',
+                'id'
+            );
+        }
+
+        return $this->hasMany(Ordonnance::class, 'patient_id', 'id')->whereRaw('1 = 0');
     }
 
     public function consultations()
@@ -128,5 +147,14 @@ class Medecin extends Model
             'rendezvous' => $this->rendezvous()->count(),
             'patients_uniques' => $this->consultations()->distinct('patient_id')->count('patient_id'),
         ];
+    }
+
+    private function ordonnanceColumnExists(string $column): bool
+    {
+        if (self::$ordonnanceTableColumns === null) {
+            self::$ordonnanceTableColumns = array_fill_keys(Schema::getColumnListing('ordonnances'), true);
+        }
+
+        return isset(self::$ordonnanceTableColumns[$column]);
     }
 }

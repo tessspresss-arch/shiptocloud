@@ -102,8 +102,12 @@
         display: flex;
         gap: 14px;
         align-items: center;
-        margin-top: 12px;
+        margin-top: 0;
         flex-wrap: wrap;
+    }
+
+    .ord-title-row .ord-eyebrow {
+        flex-shrink: 0;
     }
 
     .ord-title-icon {
@@ -122,6 +126,10 @@
 
     .ord-title-block {
         min-width: 0;
+    }
+
+    .ord-title-block.is-compact {
+        display: none;
     }
 
     .ord-title {
@@ -1062,6 +1070,59 @@
             justify-content: center;
         }
     }
+
+    @media (max-width: 1024px) {
+        .ord-table-wrap {
+            overflow: visible;
+        }
+
+        .ord-table td,
+        .ord-ref,
+        .ord-person,
+        .ord-person-name,
+        .ord-person-meta,
+        .ord-date-main,
+        .ord-date-note,
+        .ord-num,
+        .ord-id {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .ord-actions-cell {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .ord-actions-cell {
+            grid-template-columns: 1fr;
+        }
+
+        .ord-row-btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .ord-table tbody {
+            gap: 12px;
+        }
+
+        .ord-table tbody tr {
+            padding: 14px;
+            gap: 10px;
+            border-radius: 16px;
+        }
+
+        .ord-table tbody td {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+    }
 </style>
 @endpush
 
@@ -1071,10 +1132,10 @@
         <section class="ord-hero">
             <div class="ord-hero-top">
                 <div>
-                    <span class="ord-eyebrow">Pilotage des prescriptions</span>
                     <div class="ord-title-row">
                         <span class="ord-title-icon"><i class="fas fa-prescription-bottle-alt"></i></span>
-                        <div class="ord-title-block">
+                        <span class="ord-eyebrow">Pilotage des prescriptions</span>
+                        <div class="ord-title-block is-compact">
                             <h1 class="ord-title">Gestion des Ordonnances</h1>
                             <p class="ord-subtitle">Centralisez les prescriptions du cabinet dans une interface plus lisible, plus fluide et plus professionnelle, avec un suivi clair des patients, des mÃƒÂ©decins et des statuts.</p>
                         </div>

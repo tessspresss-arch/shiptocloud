@@ -636,7 +636,7 @@
                         <span class="ce-icon"><i class="fas fa-pen-to-square"></i></span>
                         <div>
                             <h1 class="ce-title">Modifier Consultation #{{ $consultation->id }}</h1>
-                            <p class="ce-subtitle">Mettez a jour les donnees medicales, enrichissez le contenu clinique et exploitez l'assistant IA depuis une interface harmonisee.</p>
+                            <p class="ce-subtitle">Mettez a jour les donnees medicales et le contenu clinique depuis une interface harmonisee, puis utilisez la fiche detail pour l assistant IA medical.</p>
                         </div>
                     </div>
 
@@ -810,11 +810,6 @@
                         </div>
                     </section>
 
-                    @include('consultations.partials.ai_assistant', [
-                        'consultation' => $consultation,
-                        'aiGenerations' => $aiGenerations ?? collect(),
-                    ])
-
                     <section class="ce-section">
                         <div class="ce-section-head">
                             <span class="ce-section-kicker">Conclusion et suivi</span>
@@ -877,7 +872,7 @@
                             <ul class="ce-info-list">
                                 <li>Les champs patient, medecin et date restent obligatoires.</li>
                                 <li>Completez les constantes pour fiabiliser l'historique clinique.</li>
-                                <li>Le bloc IA peut enrichir le diagnostic, le traitement et les recommandations.</li>
+                                <li>L assistant IA est desormais disponible sur la fiche detail de consultation.</li>
                                 <li>Le detail consultation reste accessible pendant l'edition.</li>
                             </ul>
                         </div>

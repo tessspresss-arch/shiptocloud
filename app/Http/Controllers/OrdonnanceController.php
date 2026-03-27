@@ -9,20 +9,33 @@ use App\Models\ModeleOrdonnance;
 use App\Models\Ordonnance;
 use App\Models\Patient;
 use App\Services\Pdf\PdfBuilder;
+use App\Services\Security\ClinicalAuthorizationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+
 class OrdonnanceController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Ordonnance::class, 'ordonnance');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $ordonnances = Ordonnance::with(['patient', 'medecin', 'consultation.medecin'])->paginate(10);
+        $query = Ordonnance::with(['patient', 'medecin', 'consultation.medecin']);
+        if (auth()->check()) {
+            app(ClinicalAuthorizationService::class)->scopeOrdonnances($query, auth()->user());
+        }
+
+        $ordonnances = $query->paginate(10);
 
         $currentPageItems = $ordonnances->getCollection()->map(function (Ordonnance $ordonnance) {
             $linkedMedecin = optional($ordonnance->consultation)->medecin ?? $ordonnance->medecin;
@@ -79,9 +92,12 @@ class OrdonnanceController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Ordonnance::class);
+
         $supportsMedecinColumn = $this->supportsOrdonnanceColumn('medecin_id');
         $validated = $request->validate($this->ordonnanceRules($supportsMedecinColumn));
         $validated['medicaments'] = $this->normalizeMedicationRows($validated['medicaments'] ?? []);
+        $this->assertOrdonnanceAccess($request, $validated, $supportsMedecinColumn);
         $this->ensureConsultationMatchesContext($validated, $supportsMedecinColumn);
 
         $payload = [
@@ -106,6 +122,11 @@ class OrdonnanceController extends Controller
             $patientOrdonnancesCount = Ordonnance::query()
                 ->where('patient_id', $validated['patient_id'])
                 ->count();
+            $consultationOrdonnancesCount = !empty($validated['consultation_id'])
+                ? Ordonnance::query()
+                    ->where('consultation_id', $validated['consultation_id'])
+                    ->count()
+                : null;
 
             return response()->json([
                 'success' => true,
@@ -117,6 +138,9 @@ class OrdonnanceController extends Controller
                 'patient_id' => (int) $validated['patient_id'],
                 'ordonnances_count' => $patientOrdonnancesCount,
                 'prescriptions_count' => $patientOrdonnancesCount,
+                'patient_ordonnances_count' => $patientOrdonnancesCount,
+                'consultation_id' => isset($validated['consultation_id']) ? (int) $validated['consultation_id'] : null,
+                'consultation_ordonnances_count' => $consultationOrdonnancesCount,
             ]);
         }
 
@@ -134,9 +158,12 @@ class OrdonnanceController extends Controller
      */
     public function previewPdf(Request $request, PdfBuilder $pdfBuilder)
     {
+        $this->authorize('create', Ordonnance::class);
+
         $supportsMedecinColumn = $this->supportsOrdonnanceColumn('medecin_id');
         $validated = $request->validate($this->ordonnanceRules($supportsMedecinColumn));
         $validated['medicaments'] = $this->normalizeMedicationRows($validated['medicaments'] ?? []);
+        $this->assertOrdonnanceAccess($request, $validated, $supportsMedecinColumn);
         $this->ensureConsultationMatchesContext($validated, $supportsMedecinColumn);
 
         $patient = Patient::query()->findOrFail($validated['patient_id']);
@@ -173,7 +200,7 @@ class OrdonnanceController extends Controller
 
         $selectedPatientIdFromContext = $ordonnance?->patient_id ?: $request->input('patient_id');
 
-        $patients = Patient::query()
+        $patientsQuery = Patient::query()
             ->select([
                 'id',
                 'numero_dossier',
@@ -187,14 +214,25 @@ class OrdonnanceController extends Controller
                 'notes',
             ])
             ->orderBy('prenom')
-            ->orderBy('nom')
-            ->get();
+            ->orderBy('nom');
 
-        $medecins = Medecin::query()
+        if (auth()->check()) {
+            app(ClinicalAuthorizationService::class)->scopePatients($patientsQuery, auth()->user());
+        }
+
+        $patients = $patientsQuery->get();
+
+        $medecinsQuery = Medecin::query()
             ->select(['id', 'civilite', 'nom', 'prenom', 'specialite', 'email', 'telephone'])
             ->orderBy('prenom')
-            ->orderBy('nom')
-            ->get();
+            ->orderBy('nom');
+
+        if (auth()->user()?->hasRole('medecin')) {
+            $currentMedecinId = app(ClinicalAuthorizationService::class)->currentMedecinId(auth()->user());
+            $medecinsQuery->whereKey($currentMedecinId ?? 0);
+        }
+
+        $medecins = $medecinsQuery->get();
 
         $medicaments = Medicament::query()
             ->select([
@@ -213,7 +251,7 @@ class OrdonnanceController extends Controller
             $medicaments = collect($this->fallbackMedicationCatalog())->map(fn (array $item) => new Medicament($item));
         }
 
-        $consultations = Consultation::with([
+        $consultationsQuery = Consultation::with([
             'patient:id,numero_dossier,nom,prenom',
             'medecin:id,civilite,nom,prenom,specialite',
         ])
@@ -223,15 +261,26 @@ class OrdonnanceController extends Controller
                 fn ($query) => $query
             )
             ->latest('date_consultation')
-            ->take($selectedPatientIdFromContext ? 50 : 20)
-            ->get();
+            ->take($selectedPatientIdFromContext ? 50 : 20);
+
+        if (auth()->check()) {
+            app(ClinicalAuthorizationService::class)->scopeConsultations($consultationsQuery, auth()->user());
+        }
+
+        $consultations = $consultationsQuery->get();
 
         $selectedConsultation = null;
         if ($request->filled('consultation_id') || $ordonnance?->consultation_id) {
-            $selectedConsultation = Consultation::with([
+            $selectedConsultationQuery = Consultation::with([
                 'patient:id,numero_dossier,nom,prenom,date_naissance,allergies,traitements',
                 'medecin:id,civilite,nom,prenom,specialite,email,telephone',
-            ])->find($request->integer('consultation_id', $ordonnance?->consultation_id));
+            ]);
+
+            if (auth()->check()) {
+                app(ClinicalAuthorizationService::class)->scopeConsultations($selectedConsultationQuery, auth()->user());
+            }
+
+            $selectedConsultation = $selectedConsultationQuery->find($request->integer('consultation_id', $ordonnance?->consultation_id));
         }
 
         if ($selectedConsultation && !$consultations->contains('id', $selectedConsultation->id)) {
@@ -449,6 +498,8 @@ class OrdonnanceController extends Controller
         $supportsMedecinColumn = $this->supportsOrdonnanceColumn('medecin_id');
 
         $validated = $request->validate($this->ordonnanceRules($supportsMedecinColumn));
+        $validated['medicaments'] = $this->normalizeMedicationRows($validated['medicaments'] ?? []);
+        $this->assertOrdonnanceAccess($request, $validated, $supportsMedecinColumn);
         $this->ensureConsultationMatchesContext($validated, $supportsMedecinColumn);
 
         $payload = [
@@ -478,6 +529,8 @@ class OrdonnanceController extends Controller
      */
     public function downloadPdf(Ordonnance $ordonnance, PdfBuilder $pdfBuilder)
     {
+        $this->authorize('view', $ordonnance);
+
         $ordonnance->load(['patient', 'medecin', 'consultation.medecin']);
 
         $medicationRows = $this->hydrateMedicationRows(is_array($ordonnance->medicaments) ? $ordonnance->medicaments : []);
@@ -587,7 +640,7 @@ class OrdonnanceController extends Controller
             'date_prescription' => 'required|date',
             'diagnostic' => 'nullable|string',
             'instructions' => 'nullable|string',
-            'statut' => 'nullable|string|max:50',
+            'statut' => ['nullable', 'string', 'max:50', Rule::in(['active', 'expiree', 'annulee'])],
             'imprimee' => 'nullable|boolean',
             'medicaments' => 'required|array|min:1',
             'medicaments.*.medicament_id' => 'nullable|exists:medicaments,id',
@@ -627,6 +680,57 @@ class OrdonnanceController extends Controller
         }
 
         return $normalized->all();
+    }
+
+    private function assertOrdonnanceAccess(Request $request, array &$validated, bool $supportsMedecinColumn): void
+    {
+        if (!$request->user()) {
+            return;
+        }
+
+        $access = app(ClinicalAuthorizationService::class);
+        $patient = Patient::query()->findOrFail($validated['patient_id']);
+        abort_unless($access->canAccessPatient($request->user(), $patient), 403);
+
+        $selectedConsultation = null;
+        if (!empty($validated['consultation_id'])) {
+            $consultationQuery = Consultation::query()->select(['id', 'patient_id', 'medecin_id']);
+            $access->scopeConsultations($consultationQuery, $request->user());
+            $selectedConsultation = $consultationQuery->find($validated['consultation_id']);
+
+            if (!$selectedConsultation) {
+                throw ValidationException::withMessages([
+                    'consultation_id' => 'La consultation selectionnee n\'est pas accessible.',
+                ]);
+            }
+        }
+
+        if (!$request->user()->hasRole('medecin')) {
+            return;
+        }
+
+        $currentMedecinId = $access->currentMedecinId($request->user());
+        if ($currentMedecinId === null) {
+            abort(403);
+        }
+
+        if ($selectedConsultation && (int) $selectedConsultation->medecin_id !== $currentMedecinId) {
+            throw ValidationException::withMessages([
+                'consultation_id' => 'La consultation selectionnee ne fait pas partie de votre perimetre.',
+            ]);
+        }
+
+        if ($supportsMedecinColumn) {
+            $requestedMedecinId = (int) ($validated['medecin_id'] ?? 0);
+
+            if ($requestedMedecinId !== $currentMedecinId) {
+                throw ValidationException::withMessages([
+                    'medecin_id' => 'Vous ne pouvez prescrire qu\'au nom de votre propre profil medecin.',
+                ]);
+            }
+
+            $validated['medecin_id'] = $currentMedecinId;
+        }
     }
 
     private function ensureConsultationMatchesContext(array $validated, bool $supportsMedecinColumn): void

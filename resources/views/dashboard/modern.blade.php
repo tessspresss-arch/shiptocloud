@@ -1,7 +1,10 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('title', 'Tableau de Bord')
-@section('topbar_subtitle', "Bienvenue. Vue d'ensemble compl&egrave;te.")
+@section('topbar_subtitle', "Cockpit clinique unifie pour piloter agenda, finance et priorites du cabinet.")
+@section('topbar_badge', 'Cockpit SaaS')
+@section('topbar_icon', 'fa-chart-pie')
+@section('topbar_search_placeholder', 'Rechercher patient, rendez-vous, facture ou action...')
 
 @push('styles')
 <style>
@@ -48,6 +51,10 @@
     background: linear-gradient(135deg, #f8fafb 0%, #f0f4f8 100%);
     padding: clamp(0.7rem, 1vw, 1rem);
     overflow-x: clip;
+}
+
+.dashboard-shell--headerless {
+    padding-top: clamp(0.45rem, 0.75vw, 0.75rem);
 }
 
 .dashboard-entrance {
@@ -2450,6 +2457,7 @@ body.dark-mode .doctor-summary-away {
 
 @media (max-width: 700px) {
     .dashboard-shell { padding: 0.55rem; }
+    .dashboard-shell--headerless { padding-top: 0.35rem; }
 
     .dashboard-header { border-radius: 14px; padding: 0.7rem; }
 
@@ -2612,468 +2620,491 @@ body.dark-mode .doctor-summary-away {
     }
 
 }
+
+.dashboard-premium-header-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.95fr) minmax(240px, 0.8fr);
+    align-items: stretch;
+}
+
+.dashboard-hero-title {
+    margin: 0.42rem 0 0;
+    color: #0f3158;
+    font-size: clamp(1.45rem, 2.2vw, 2.2rem);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+}
+
+.dashboard-hero-lead {
+    margin: 0.4rem 0 0;
+    color: #6281a2;
+    font-size: 0.96rem;
+    line-height: 1.68;
+    max-width: 64ch;
+}
+
+.dashboard-hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.9rem;
+}
+
+.dashboard-hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 40px;
+    padding: 0 0.82rem;
+    border-radius: 999px;
+    border: 1px solid #d6e3f0;
+    background: rgba(255, 255, 255, 0.82);
+    color: #365a86;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.dashboard-hero-chip.is-warm {
+    border-color: #f3d2ad;
+    background: #fff8ef;
+    color: #b5661e;
+}
+
+.dashboard-hero-spotlight {
+    display: grid;
+    gap: 0.72rem;
+}
+
+.dashboard-spotlight-card {
+    border-radius: 18px;
+    border: 1px solid #d8e4ef;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem 1.05rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.dashboard-spotlight-card.is-primary {
+    background: linear-gradient(180deg, #f5f9ff 0%, #edf4ff 100%);
+    border-color: #d6e3f8;
+}
+
+.dashboard-spotlight-label {
+    display: block;
+    color: #6d86a5;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.dashboard-spotlight-card strong {
+    display: block;
+    margin-top: 0.45rem;
+    color: #10263f;
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+.dashboard-spotlight-card small {
+    font-size: 0.58em;
+    color: #31557e;
+    font-weight: 700;
+}
+
+.dashboard-spotlight-card p {
+    margin: 0.38rem 0 0;
+    color: #6281a2;
+    font-size: 0.84rem;
+    line-height: 1.5;
+}
+
+.dashboard-hero-actions {
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    justify-self: stretch;
+}
+
+.dashboard-hero-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    min-height: 54px;
+    padding: 0.88rem 0.94rem;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    font-weight: 700;
+    transition: var(--dashboard-transition);
+}
+
+.dashboard-hero-action:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-hero-action-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.dashboard-hero-action-main i,
+.dashboard-hero-action-arrow {
+    width: 34px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.56);
+}
+
+.dashboard-hero-action-arrow {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+}
+
+.dashboard-hero-action-blue {
+    background: linear-gradient(180deg, #f4f8ff 0%, #edf4ff 100%);
+    border-color: #d6e3f8;
+    color: #295fc7;
+}
+
+.dashboard-hero-action-green {
+    background: linear-gradient(180deg, #f1faf6 0%, #eaf7f1 100%);
+    border-color: #d3e9de;
+    color: #0d7a57;
+}
+
+.dashboard-hero-action-purple {
+    background: linear-gradient(180deg, #f7f5ff 0%, #f1effe 100%);
+    border-color: #e2dbf7;
+    color: #5f48a5;
+}
+
+.dashboard-hero-action-amber {
+    background: linear-gradient(180deg, #fff9f1 0%, #fff3e3 100%);
+    border-color: #eedcc4;
+    color: #b5661e;
+}
+
+.kpi-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-top: 0.95rem;
+}
+
+.kpi-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 0.65rem;
+    border-radius: 999px;
+    background: #f4f8ff;
+    color: #31557e;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.kpi-meta-helper {
+    color: #6a84a7;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-align: right;
+}
+
+.kpi-meter {
+    width: 100%;
+    height: 7px;
+    margin-top: 0.62rem;
+    border-radius: 999px;
+    background: #e7edf5;
+    overflow: hidden;
+}
+
+.kpi-meter span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--kpi-meter, linear-gradient(90deg, #2563eb, #38bdf8));
+}
+
+.dashboard-split-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.95fr);
+    gap: 1rem;
+}
+
+.dashboard-card-subtitle {
+    margin: 0.32rem 0 0;
+    color: #6a84a7;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    max-width: 62ch;
+}
+
+.dashboard-table-wrap {
+    overflow: auto;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+}
+
+.dashboard-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+}
+
+.dashboard-table thead th {
+    padding: 0.88rem 0.95rem;
+    background: #f8fbff;
+    color: #6982a0;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #edf2f7;
+    white-space: nowrap;
+}
+
+.dashboard-table tbody td {
+    padding: 0.95rem;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+    color: var(--dashboard-text);
+}
+
+.dashboard-table tbody tr:hover {
+    background: #fbfdff;
+}
+
+.dashboard-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.dashboard-table-person {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+}
+
+.dashboard-table-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    object-fit: cover;
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    background: linear-gradient(145deg, #edf4ff 0%, #dce9ff 100%);
+    color: #2d66d8;
+    font-size: 0.82rem;
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.dashboard-table-copy {
+    min-width: 0;
+    display: grid;
+    gap: 0.18rem;
+}
+
+.dashboard-table-copy strong {
+    color: #10263f;
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.dashboard-table-copy span,
+.dashboard-table-cell-muted {
+    color: #6a84a7;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.dashboard-table-time {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 0.68rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #295fc7;
+    font-size: 0.76rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.dashboard-table-note {
+    display: -webkit-box;
+    color: #10263f;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.dashboard-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.42rem;
+    flex-wrap: wrap;
+}
+
+.dashboard-table-actions form {
+    display: inline-flex;
+}
+
+.chart-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 0.62rem;
+    border-radius: 999px;
+    background: #f4f8ff;
+    color: #295fc7;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.chart-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    margin-bottom: 0.85rem;
+}
+
+.chart-summary strong {
+    color: #10263f;
+    font-size: 1.38rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.chart-summary span {
+    color: #6a84a7;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.dashboard-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+.dashboard-stat-tile {
+    padding: 0.82rem;
+    border-radius: 16px;
+    border: 1px solid #d9e4ef;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.dashboard-stat-tile span {
+    display: block;
+    color: #6a84a7;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.dashboard-stat-tile strong {
+    display: block;
+    margin-top: 0.45rem;
+    color: #10263f;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.dashboard-stat-tile.is-success {
+    background: linear-gradient(180deg, #f1faf6 0%, #eaf7f1 100%);
+    border-color: #d3e9de;
+}
+
+.dashboard-stat-tile.is-danger {
+    background: linear-gradient(180deg, #fff5f5 0%, #fff0f0 100%);
+    border-color: #f4d1d1;
+}
+
+.dashboard-stat-tile.is-warning {
+    background: linear-gradient(180deg, #fff9f1 0%, #fff3e3 100%);
+    border-color: #eedcc4;
+}
+
+@media (max-width: 1380px) {
+    .dashboard-premium-header-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-hero-spotlight {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-hero-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .dashboard-split-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1180px) {
+    .dashboard-chart-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-hero-spotlight,
+    .dashboard-chart-grid,
+    .dashboard-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-hero-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-table {
+        min-width: 680px;
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-hero-chip {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-hero-action {
+        padding: 0.82rem 0.88rem;
+    }
+
+    .kpi-meta-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
 </style>
 @endpush
 
 @section('content')
-<div class="dashboard-shell">
-    <div class="dashboard-wrap">
-        <section class="dashboard-kpi-grid">
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">Patients</p>
-                        <p class="kpi-value">{{ $stats['patients_total'] ?? 0 }}</p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-blue">
-                        <i class="fas fa-users"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">+{{ $stats['patients_nouveaux_mois'] ?? 0 }} ce mois</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">RDV aujourd'hui</p>
-                        <p class="kpi-value">{{ $stats['rdv_aujourd_hui'] ?? 0 }}</p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-cyan">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">{{ $stats['rdv_semaine'] ?? 0 }} programm&eacute;s cette semaine</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">Salle d'attente</p>
-                        <p class="kpi-value">{{ $stats['patients_salle_attente'] ?? 0 }}</p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-amber">
-                        <i class="fas fa-hourglass-half"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">Patients arriv&eacute;s en attente</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">Consultations termin&eacute;es</p>
-                        <p class="kpi-value">{{ $stats['consultations_terminees_aujourdhui'] ?? 0 }}</p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-green">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">Aujourd'hui</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">Patients absents</p>
-                        <p class="kpi-value">{{ $stats['patients_absents_aujourdhui'] ?? 0 }}</p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-cyan">
-                        <i class="fas fa-user-clock"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">Absences du jour</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">Temps moyen</p>
-                        <p class="kpi-value">{{ $stats['temps_moyen_consultation'] ?? 0 }} <span class="kpi-value-unit">min</span></p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-blue">
-                        <i class="fas fa-stopwatch"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">Dur&eacute;e moyenne de consultation</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">M&eacute;decins actifs</p>
-                        <p class="kpi-value">{{ $medecinsActifs }}</p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-green">
-                        <i class="fas fa-user-md"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">En service</div>
-            </article>
-
-            <article class="kpi-card">
-                <div class="kpi-top">
-                    <div>
-                        <p class="kpi-title">Revenus mois</p>
-                        <p class="kpi-value">{{ $revenuMois }} <span class="kpi-value-unit">DH</span></p>
-                    </div>
-                    <div class="kpi-icon kpi-tone-amber">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                </div>
-                <div class="kpi-foot kpi-foot-muted">Factures impay&eacute;es : {{ number_format((float)($financialSummary['factures_impayees'] ?? 0), 0, ',', ' ') }} DH</div>
-            </article>
-        </section>
-
-        <section class="dashboard-main-grid">
-            <div class="dashboard-stack">
-                <article class="dashboard-card">
-                    <div class="dashboard-card-head">
-                        <h2 class="dashboard-card-title"><i class="fas fa-stethoscope"></i>Consultations</h2>
-                        <a class="dashboard-card-link" href="{{ route('consultations.index') }}">Voir tout</a>
-                    </div>
-
-                    @if(($rdvToday->count() ?? 0) > 0)
-                        <div class="dashboard-list">
-                            @foreach($rdvToday->take(5) as $rdv)
-                                <div class="dashboard-list-item">
-                                    <div class="dashboard-list-main">
-                                        @if($rdv->dashboard_patient_avatar)
-                                            <img src="{{ $rdv->dashboard_patient_avatar }}" alt="{{ $rdv->dashboard_patient_name }}" class="dashboard-list-icon" style="object-fit:cover;padding:0;">
-                                        @else
-                                            <div class="dashboard-list-icon" style="background:#dbeafe;color:#2563eb;">
-                                                {{ $rdv->dashboard_patient_initials }}
-                                            </div>
-                                        @endif
-                                        <div class="dashboard-list-text">
-                                            <div class="dashboard-meta-row">
-                                                <p class="fw-semibold text-dark">{{ $rdv->dashboard_patient_name }}</p>
-                                                <span class="status-pill {{ $rdv->dashboard_status['class'] }}">{{ $rdv->dashboard_status['label'] }}</span>
-                                            </div>
-                                            <p class="text-muted small">{{ optional($rdv->date_rdv ?? $rdv->date_heure)->format('H:i') ?? '-' }} - {{ $rdv->motif ?? 'Consultation' }}</p>
-                                            <p class="text-muted small">Dr {{ trim(($rdv->medecin->prenom ?? '') . ' ' . ($rdv->medecin->nom ?? '')) ?: __('messages.common.not_provided') }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="dashboard-list-actions">
-                                        <a class="mini-action mini-action-folder" href="{{ $rdv->dashboard_patient_url }}" title="Ouvrir le dossier patient">
-                                            <i class="fas fa-folder-open"></i>
-                                        </a>
-                                        <a class="mini-action mini-action-sms" href="{{ $rdv->dashboard_sms_url }}" title="Envoyer un SMS au patient">
-                                            <i class="fas fa-comment-sms"></i>
-                                        </a>
-                                        <a class="mini-action mini-action-note" href="{{ $rdv->dashboard_ordonnance_url }}" title="Ajouter une ordonnance">
-                                            <i class="fas fa-file-prescription"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="dashboard-empty">
-                            <i class="fas fa-inbox mb-2" style="font-size:1.6rem;"></i>
-                            <p class="m-0">Aucune consultation aujourd'hui.</p>
-                        </div>
-                    @endif
-                </article>
-
-                <article class="dashboard-card">
-                    <div class="dashboard-card-head">
-                        <h2 class="dashboard-card-title"><i class="fas fa-calendar-alt"></i>Agenda du jour</h2>
-                        <a class="dashboard-card-link" href="{{ route('rendezvous.index') }}">Voir calendrier</a>
-                    </div>
-
-                    @if(($upcomingRDV->count() ?? 0) > 0)
-                        <div class="dashboard-list upcoming-compact-list">
-                            @foreach($upcomingRDV->take(6) as $rdv)
-                                <div class="dashboard-list-item upcoming-compact-card">
-                                    <div class="dashboard-list-main">
-                                        @if($rdv->dashboard_patient_avatar)
-                                            <img src="{{ $rdv->dashboard_patient_avatar }}" alt="{{ $rdv->dashboard_patient_name }}" class="dashboard-list-icon" style="object-fit:cover;padding:0;">
-                                        @else
-                                            <div class="dashboard-list-icon" style="background:#cffafe;color:#0891b2;">
-                                                {{ $rdv->dashboard_patient_initials }}
-                                            </div>
-                                        @endif
-                                        <div class="dashboard-list-text">
-                                            <div class="dashboard-meta-row">
-                                                <p class="fw-semibold text-dark">{{ $rdv->dashboard_patient_name }}</p>
-                                                <span class="status-pill {{ $rdv->dashboard_status['class'] }}">{{ $rdv->dashboard_status['label'] }}</span>
-                                            </div>
-                                            <p class="upcoming-inline-meta">
-                                                <span class="upcoming-inline-label">Motif</span>
-                                                <span class="upcoming-inline-value">{{ $rdv->motif ?? 'Rendez-vous' }}</span>
-                                                <span class="upcoming-inline-dot">&bull;</span>
-                                                <span class="upcoming-inline-label">Heure</span>
-                                                <span class="upcoming-inline-value">{{ optional($rdv->date_rdv ?? $rdv->date_heure)->format('H:i') ?? '-' }}</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="dashboard-list-actions">
-                                        @if(($rdv->statut ?? null) !== 'en_soins')
-                                            <form method="POST" action="{{ $rdv->dashboard_start_url }}" class="d-inline" data-dashboard-status-form>
-                                                @csrf
-                                                <input type="hidden" name="statut" value="en_soins">
-                                                <button type="submit" class="mini-action mini-action-play" title="Commencer la consultation">
-                                                    <i class="fas fa-play"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        <a class="mini-action mini-action-edit" href="{{ $rdv->dashboard_edit_url }}" title="Reporter ou modifier le rendez-vous">
-                                            <i class="fas fa-pen"></i>
-                                        </a>
-                                        <a class="mini-action mini-action-folder" href="{{ $rdv->dashboard_patient_url }}" title="Ouvrir le dossier patient">
-                                            <i class="fas fa-folder-open"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="dashboard-empty">
-                            <i class="fas fa-calendar-xmark mb-2" style="font-size:1.6rem;"></i>
-                            <p class="m-0">{{ __('messages.dashboard.no_appointment') }}</p>
-                        </div>
-                    @endif
-                </article>
-
-                <article class="dashboard-card">
-                    <h3 class="bottom-card-title"><i class="fas fa-file-prescription"></i>{{ __('messages.dashboard.prescriptions_title') }}</h3>
-                    <div class="info-list">
-                        <a href="{{ route('ordonnances.index') }}" class="info-link info-link-blue">
-                            <span>{{ __('messages.dashboard.latest_prescriptions') }}</span><i class="fas fa-arrow-right"></i>
-                        </a>
-                        <a href="{{ route('medicaments.index') }}" class="info-link info-link-green">
-                            <span>{{ __('messages.dashboard.most_prescribed_medications') }}</span><i class="fas fa-arrow-right"></i>
-                        </a>
-                        <a href="{{ route('ordonnances.index') }}" class="info-link info-link-orange">
-                            <span>{{ __('messages.dashboard.prescriptions_to_renew') }}</span><i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <article class="dashboard-card" data-urgent-consultations-widget data-refresh-url="{{ route('dashboard.urgent-consultations') }}">
-                    <div class="dashboard-card-head">
-                        <h2 class="dashboard-card-title"><i class="fas fa-triangle-exclamation"></i>Consultations urgentes</h2>
-                        <a class="dashboard-card-link" href="{{ route('rendezvous.index', ['date' => now()->toDateString(), 'type' => 'urgence']) }}">Voir toutes les urgences</a>
-                    </div>
-
-                    <div class="urgent-widget">
-                        <span class="urgent-widget-count" data-urgent-count>
-                            <i class="fas fa-bolt"></i>{{ $urgentConsultations->count() }}
-                        </span>
-
-                        <div class="urgent-list" data-urgent-list>
-                            @forelse($urgentConsultations as $rdv)
-                                <div class="urgent-item">
-                                    <div class="urgent-item-main">
-                                        <div class="urgent-avatar">
-                                            @if($rdv->dashboard_patient_avatar)
-                                                <img src="{{ $rdv->dashboard_patient_avatar }}" alt="{{ $rdv->dashboard_patient_name }}">
-                                            @else
-                                                {{ $rdv->dashboard_patient_initials }}
-                                            @endif
-                                        </div>
-                                        <div class="urgent-item-text">
-                                            <div class="urgent-name-row">
-                                                <p class="urgent-patient-name">{{ $rdv->dashboard_patient_name }}</p>
-                                                <span class="urgent-time"><i class="fas fa-clock"></i>{{ optional($rdv->date_rdv ?? $rdv->date_heure)->format('H:i') ?? '-' }}</span>
-                                            </div>
-                                            <p class="urgent-meta">{{ 'Dr ' . (trim(($rdv->medecin->prenom ?? '') . ' ' . ($rdv->medecin->nom ?? '')) ?: __('messages.common.not_provided')) }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="dashboard-list-actions">
-                                        <span class="status-pill {{ $rdv->dashboard_status['class'] }}">{{ $rdv->dashboard_status['label'] }}</span>
-                                        <a class="mini-action mini-action-folder" href="{{ $rdv->dashboard_patient_url }}" title="Ouvrir le dossier patient">
-                                            <i class="fas fa-folder-open"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="urgent-empty" data-urgent-empty>Aucune consultation urgente aujourd'hui.</div>
-                            @endforelse
-                        </div>
-                    </div>
-                </article>
-
-                <article class="dashboard-card">
-                    <div class="dashboard-card-head">
-                        <h2 class="dashboard-card-title"><i class="fas fa-user-doctor"></i>{{ __('messages.dashboard.active_doctors') }}</h2>
-                        <a class="dashboard-card-link" href="{{ route('medecins.index') }}">Voir tous</a>
-                    </div>
-
-                    <div class="doctor-widget">
-                        <div class="doctor-summary">
-                            <div class="doctor-summary-card doctor-summary-available">
-                                <span>Disponibles</span>
-                                <strong>{{ $medecinActivity['disponible'] ?? 0 }}</strong>
-                            </div>
-                            <div class="doctor-summary-card doctor-summary-busy">
-                                <span>En consultation</span>
-                                <strong>{{ $medecinActivity['en_consultation'] ?? 0 }}</strong>
-                            </div>
-                            <div class="doctor-summary-card doctor-summary-away">
-                                <span>Absents</span>
-                                <strong>{{ $medecinActivity['absent'] ?? 0 }}</strong>
-                            </div>
-                        </div>
-
-                        @if(!empty($medecinActivity['items']) && ($medecinActivity['items_count'] ?? 0) > 0)
-                            <div class="doctor-list">
-                                @foreach($medecinActivity['items'] as $doctor)
-                                    <div class="doctor-item">
-                                        <div class="doctor-item-main">
-                                            <div class="doctor-avatar">
-                                                @if(!empty($doctor['avatar_url']))
-                                                    <img src="{{ $doctor['avatar_url'] }}" alt="{{ $doctor['name'] }}">
-                                                @else
-                                                    <div class="dashboard-list-icon" style="width:38px;height:38px;margin:0;background:#dbeafe;color:#2563eb;">{{ $doctor['display_initials'] }}</div>
-                                                @endif
-                                            </div>
-                                            <div>
-                                                <p class="doctor-item-name">{{ $doctor['name'] }}</p>
-                                                <p class="doctor-item-meta">{{ $doctor['display_specialite'] }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="dashboard-list-actions">
-                                            <span class="status-pill {{ $doctor['display_status']['class'] }}">{{ $doctor['display_status']['label'] }}</span>
-                                            @if(!empty($doctor['next_slot']))
-                                                <span class="text-muted small">{{ __('messages.dashboard.next') }} {{ $doctor['next_slot'] }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="dashboard-empty">
-                                <i class="fas fa-user-doctor mb-2" style="font-size:1.5rem;"></i>
-                                <p class="m-0">{{ __('messages.dashboard.no_doctor') }}</p>
-                            </div>
-                        @endif
-                    </div>
-                </article>
-
-            </div>
-
-            <div class="dashboard-stack dashboard-stack-side">
-                <article class="dashboard-card dashboard-card-side">
-                    <h2 class="dashboard-card-title mb-3"><i class="fas fa-circle-exclamation"></i>Alertes</h2>
-
-                    @if(!empty($alerts) && count($alerts) > 0)
-                        <div class="dashboard-list">
-                            @foreach($alerts as $alert)
-                                <a href="{{ $alert['route'] ?? '#' }}" class="alert-tile {{ $alert['tile_class'] ?? 'alert-info' }}" style="text-decoration:none;display:block;">
-                                    <p class="alert-tile-text">
-                                        <span class="alert-tile-icon"><i class="fas {{ $alert['icon'] ?? 'fa-bell' }}"></i></span>
-                                        <span class="alert-tile-label">{{ $alert['message'] ?? 'Alerte' }}</span>
-                                    </p>
-                                </a>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="alert-tile alert-success">
-                            <p class="alert-tile-text">
-                                <span class="alert-tile-icon"><i class="fas fa-check"></i></span>
-                                <span class="alert-tile-label">Aucune alerte. Tout est en ordre.</span>
-                            </p>
-                        </div>
-                    @endif
-                </article>
-
-                <article class="dashboard-card dashboard-card-side">
-                    <h2 class="dashboard-card-title mb-3"><i class="fas fa-bolt"></i>Actions rapides</h2>
-                    @foreach($quickActions as $action)
-                        <a href="{{ $action['route'] }}" class="quick-link quick-link-{{ $action['tone'] ?? 'blue' }} {{ $loop->first ? '' : 'mt-2' }}">
-                            <span class="quick-link-main">
-                                <i class="fas {{ $action['icon'] ?? 'fa-arrow-right' }} quick-link-glyph"></i>
-                                <span class="quick-link-label">{{ $action['label'] }}</span>
-                            </span>
-                            <span class="quick-link-arrow"><i class="fas fa-arrow-right"></i></span>
-                        </a>
-                    @endforeach
-                    <a href="{{ route('rendezvous.create') }}" class="quick-link quick-link-green mt-2">
-                        <span class="quick-link-main">
-                            <i class="fas fa-calendar-plus quick-link-glyph"></i>
-                            <span class="quick-link-label">Nouveau RDV</span>
-                        </span>
-                        <span class="quick-link-arrow"><i class="fas fa-arrow-right"></i></span>
-                    </a>
-                    <a href="{{ route('patients.create') }}" class="quick-link quick-link-blue mt-2">
-                        <span class="quick-link-main">
-                            <i class="fas fa-user-plus quick-link-glyph"></i>
-                            <span class="quick-link-label">Nouveau patient</span>
-                        </span>
-                        <span class="quick-link-arrow"><i class="fas fa-arrow-right"></i></span>
-                    </a>
-                </article>
-
-                <article class="dashboard-card dashboard-card-side">
-                    <h3 class="bottom-card-title"><i class="fas fa-clock-rotate-left"></i>Historique r&eacute;cent</h3>
-
-                    @if(($recentActivities->count() ?? 0) > 0)
-                        <div class="activity-feed">
-                            @foreach($recentActivities->take(5) as $activity)
-                                <a href="{{ $activity['url'] ?? '#' }}" class="activity-item">
-                                    <span class="activity-icon"><i class="fas {{ $activity['icon'] ?? 'fa-circle' }}"></i></span>
-                                    <div class="activity-body">
-                                        <div class="activity-head">
-                                            <span class="activity-title">{{ $activity['title'] ?? 'Activite' }}</span>
-                                            <span class="activity-time">{{ $activity['time'] ?? '-' }}</span>
-                                        </div>
-                                        <p class="activity-text">{{ $activity['description'] ?? '-' }}</p>
-                                        <p class="activity-meta">{{ $activity['meta'] ?? '' }}</p>
-                                    </div>
-                                </a>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="dashboard-empty">
-                            <i class="fas fa-clock mb-2" style="font-size:1.5rem;"></i>
-                            <p class="m-0">Aucune activit&eacute; r&eacute;cente.</p>
-                        </div>
-                    @endif
-                </article>
-
-                <article class="dashboard-card dashboard-card-side">
-                    <h3 class="bottom-card-title"><i class="fas fa-bullseye"></i>Objectifs du mois</h3>
-                    <div class="goal-list">
-                        <div class="goal-row">
-                            <div class="goal-head"><span>Revenus</span><strong>{{ $revenuProgress }}%</strong></div>
-                            <div class="goal-track"><div class="goal-fill" style="width:{{ $revenuProgress }}%;background:linear-gradient(90deg,#2563eb,#1d4ed8);"></div></div>
-                        </div>
-                        <div class="goal-row">
-                            <div class="goal-head"><span>Nouveaux patients</span><strong>{{ $patientsProgress }}%</strong></div>
-                            <div class="goal-track"><div class="goal-fill" style="width:{{ $patientsProgress }}%;background:linear-gradient(90deg,#059669,#10b981);"></div></div>
-                        </div>
-                        <div class="goal-row">
-                            <div class="goal-head"><span>Rendez-vous semaine</span><strong>{{ $rdvProgress }}%</strong></div>
-                            <div class="goal-track"><div class="goal-fill" style="width:{{ $rdvProgress }}%;background:linear-gradient(90deg,#d97706,#f59e0b);"></div></div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="dashboard-card dashboard-card-side">
-                    <h3 class="bottom-card-title"><i class="fas fa-wand-magic-sparkles"></i>Raccourcis utiles</h3>
-                    <div class="quick-mini">
-                        <a href="{{ route('consultations.index') }}" class="quick-mini-blue">
-                            <span>Voir les consultations</span><i class="fas fa-arrow-right"></i>
-                        </a>
-                        <a href="{{ route('statistiques') }}" class="quick-mini-green">
-                            <span>Analyser les statistiques</span><i class="fas fa-arrow-right"></i>
-                        </a>
-                        <a href="{{ route('rapports.index') }}" class="quick-mini-purple">
-                            <span>Generer un rapport</span><i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-        <footer class="dashboard-footer">
-            <span>Copyright {{ now()->year }} Medisys Pro.</span>
-            <span>Interface optimisee desktop, tablette et mobile.</span>
-        </footer>
-    </div>
-</div>
-
+    @include('dashboard.partials.premium-content')
 @endsection
 
 @push('scripts')
@@ -3122,7 +3153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const items = Array.isArray(payload.items) ? payload.items : [];
 
         if (items.length === 0) {
-            listNode.innerHTML = '<div class="urgent-empty" data-urgent-empty>Aucune consultation urgente aujourd'hui.</div>';
+            listNode.innerHTML = "<div class=\"urgent-empty\" data-urgent-empty>Aucune consultation urgente aujourd'hui.</div>";
             return;
         }
 
@@ -3228,3 +3259,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
+

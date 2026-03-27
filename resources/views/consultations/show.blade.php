@@ -462,6 +462,26 @@
         gap: 0.56rem;
     }
 
+    .cs-ai-persist-card {
+        display: grid;
+        gap: 0.8rem;
+    }
+
+    .cs-ai-persist-copy {
+        margin: 0;
+        color: #53657f;
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    .cs-ai-persist-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
     .cs-prescription-item {
         border: 1px solid #e6eef8;
         border-radius: 12px;
@@ -653,6 +673,11 @@
         .cs-vitals-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+
+        .cs-ai-persist-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
     }
 
     @media (max-width: 768px) {
@@ -821,9 +846,14 @@
                     <a href="{{ route('factures.create', ['consultation_id' => $consultation->id]) }}" class="cs-btn cs-btn-soft">
                         <i class="fas fa-file-invoice-dollar"></i> Facturer
                     </a>
-                    <a href="{{ route('ordonnances.create', ['consultation_id' => $consultation->id]) }}" class="cs-btn cs-btn-success">
+                    <button
+                        type="button"
+                        class="cs-btn cs-btn-success"
+                        data-open-ordonnance-modal
+                        onclick="if (!document.querySelector('#patientOrdonnanceModalForm')?.dataset.medisysBound) { return window.medisysOpenPatientOrdonnanceModal ? window.medisysOpenPatientOrdonnanceModal(event) : false; }"
+                    >
                         <i class="fas fa-prescription"></i> Ordonnance
-                    </a>
+                    </button>
                     <form action="{{ route('consultations.destroy', $consultation->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette consultation ?')">
                         @csrf
                         @method('DELETE')
@@ -854,9 +884,14 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('ordonnances.create', ['consultation_id' => $consultation->id]) }}">
+                            <button
+                                type="button"
+                                class="dropdown-item"
+                                data-open-ordonnance-modal
+                                onclick="if (!document.querySelector('#patientOrdonnanceModalForm')?.dataset.medisysBound) { return window.medisysOpenPatientOrdonnanceModal ? window.medisysOpenPatientOrdonnanceModal(event) : false; }"
+                            >
                                 <i class="fas fa-prescription me-2"></i>Ordonnance
-                            </a>
+                            </button>
                         </li>
                         <li>
                             <button type="button" class="dropdown-item" data-action="print">
@@ -1064,6 +1099,44 @@
                     </div>
                 </section>
 
+                <form id="consultationAiBridgeForm" action="{{ route('consultations.update', $consultation->id) }}" method="POST" class="d-none">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="redirect_to_show" value="1">
+                    <input type="hidden" name="patient_id" value="{{ $consultation->patient_id }}">
+                    <input type="hidden" name="medecin_id" value="{{ $consultation->medecin_id }}">
+                    <input type="hidden" name="date_consultation" value="{{ $consultation->date_consultation ? \Carbon\Carbon::parse($consultation->date_consultation)->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s') }}">
+                    <textarea id="symptomes" name="symptomes">{{ old('symptomes', $consultation->symptomes) }}</textarea>
+                    <textarea id="examen_clinique" name="examen_clinique">{{ old('examen_clinique', $consultation->examen_clinique) }}</textarea>
+                    <textarea id="diagnostic" name="diagnostic">{{ old('diagnostic', $consultation->diagnostic) }}</textarea>
+                    <textarea id="traitement_prescrit" name="traitement_prescrit">{{ old('traitement_prescrit', $consultation->traitement_prescrit) }}</textarea>
+                    <textarea id="recommandations" name="recommandations">{{ old('recommandations', $consultation->recommandations) }}</textarea>
+                </form>
+
+                @include('consultations.partials.ai_assistant', [
+                    'consultation' => $consultation,
+                    'aiGenerations' => $aiGenerations ?? collect(),
+                ])
+
+                <section class="cs-card">
+                    <div class="cs-card-head">
+                        <h2 class="cs-card-title"><i class="fas fa-floppy-disk"></i> Application des suggestions IA</h2>
+                    </div>
+                    <div class="cs-card-body cs-ai-persist-card">
+                        <p class="cs-ai-persist-copy">
+                            Les insertions realisees depuis l assistant IA sont preparees sur cette fiche. Enregistrez ensuite la consultation pour appliquer les changements sur le diagnostic, l examen clinique, le traitement ou les recommandations.
+                        </p>
+                        <div class="cs-ai-persist-actions">
+                            <a href="{{ route('consultations.edit', $consultation->id) }}" class="cs-btn cs-btn-soft">
+                                <i class="fas fa-pen-to-square"></i> Edition complete
+                            </a>
+                            <button type="submit" form="consultationAiBridgeForm" class="cs-btn cs-btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer les suggestions IA
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="cs-card">
                     <div class="cs-card-head">
                         <h2 class="cs-card-title"><i class="fas fa-prescription"></i> {{ __('messages.consultations.associated_prescriptions') }}</h2>
@@ -1156,7 +1229,11 @@
                             </div>
                             <div class="cs-kv">
                                 <span class="cs-kv-label">Nombre ordonnances</span>
-                                <span class="cs-kv-value">{{ $prescriptionsCount }}</span>
+                                <span class="cs-kv-value" data-consultation-ordonnances-count aria-live="polite">{{ $consultationOrdonnancesCount }}</span>
+                            </div>
+                            <div class="cs-kv">
+                                <span class="cs-kv-label">Historique IA</span>
+                                <span class="cs-kv-value">{{ $aiGenerationsCount }} entree{{ $aiGenerationsCount > 1 ? 's' : '' }}</span>
                             </div>
                         </div>
                     </div>
@@ -1165,6 +1242,16 @@
         </div>
     </div>
 </div>
+
+<x-modal-ordonnance
+    :patient="$patient"
+    :consultation="$consultation"
+    :medecins="$medecins"
+    :current-medecin="$currentMedecin"
+    :medicament-catalog-data="$medicamentCatalogData"
+    :existing-ordonnance="$latestConsultationOrdonnance"
+    :existing-ordonnances-count="$consultationOrdonnancesCount"
+/>
 @endsection
 
 @push('scripts')

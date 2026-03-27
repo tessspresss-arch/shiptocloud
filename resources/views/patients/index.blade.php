@@ -229,59 +229,6 @@
         text-decoration: none;
     }
 
-    /* Stats Cards */
-    .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 18px;
-        margin-bottom: 28px;
-    }
-
-    .stat-card {
-        background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(246,250,255,0.92) 100%);
-        border-radius: 22px;
-        padding: 22px 20px;
-        box-shadow: 0 22px 36px -34px rgba(18, 57, 97, 0.22);
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        transition: box-shadow 0.22s, border-color 0.22s, transform 0.15s;
-        border: 1px solid #d9e5f1;
-        backdrop-filter: blur(6px);
-    }
-
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 26px 40px -32px rgba(18, 57, 97, 0.28);
-        border-color: #bfd3ea;
-    }
-
-    .stat-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        border: 1px solid rgba(255,255,255,0.9);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.88);
-    }
-
-    .stat-info h3 {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: var(--primary-color);
-        margin: 0;
-        line-height: 1;
-    }
-
-    .stat-info p {
-        color: var(--secondary-color);
-        font-size: 0.9rem;
-        margin: 0;
-    }
-
     /* Search and Filter */
     .search-filter-container {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 251, 255, 0.92) 100%);
@@ -1052,14 +999,12 @@
     }
 
     body.dark-mode .page-title p,
-    body.dark-mode .stat-info p,
     body.dark-mode .contact-info,
     body.dark-mode .pagination-info,
     body.dark-mode .admin-contact {
         color: #a9bfd8;
     }
 
-    body.dark-mode .stat-card,
     body.dark-mode .search-filter-container,
     body.dark-mode .table-container,
     body.dark-mode .admin-info {
@@ -1068,12 +1013,6 @@
         box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
     }
 
-    body.dark-mode .stat-card:hover {
-        border-color: #5da5ff;
-        box-shadow: 0 14px 26px rgba(0, 0, 0, 0.35);
-    }
-
-    body.dark-mode .stat-info h3,
     body.dark-mode .patients-table th,
     body.dark-mode .patients-table td,
     body.dark-mode .patient-name,
@@ -1382,10 +1321,6 @@
     }
 
     @media (max-width: 576px) {
-        .stats-container {
-            grid-template-columns: 1fr;
-        }
-
         .page-header-main {
             width: 100%;
             flex-wrap: wrap;
@@ -1601,20 +1536,95 @@
             background-color: #f8fafc;
         }
     }
+
+    @media (max-width: 576px) {
+        .table-head-tools {
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+
+        .table-head-badge {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .table-head-tools .display-mode-switch {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4px;
+        }
+
+        .table-head-tools .display-mode-option {
+            width: 100%;
+            min-width: 0;
+            padding: 8px 6px;
+            justify-content: center;
+            text-align: center;
+            gap: 6px;
+        }
+
+        .table-head-tools .display-mode-option span:last-child {
+            min-width: 0;
+            font-size: 0.74rem;
+            line-height: 1.2;
+            white-space: normal;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .patients-table td {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .patients-table td::before {
+            margin-bottom: 2px;
+        }
+
+        .patients-table td,
+        .patient-profile-cell,
+        .patient-profile-copy,
+        .patient-name,
+        .patient-id,
+        .contact-info,
+        .contact-line,
+        .patient-birth-main,
+        .patient-record-meta {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .table-head-tools .display-mode-switch {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .table-head-tools .display-mode-option {
+            padding: 10px 8px;
+        }
+    }
 </style>
+@include('patients.partials.button-theme')
 @endpush
 
 @section('content')
 @php
     $displayMode = request('display', 'table');
 @endphp
-<div class="container-fluid py-4 patients-mode-{{ $displayMode }}">
+<div class="container-fluid py-4 patients-management-page patients-mode-{{ $displayMode }}">
     <!-- Page Header -->
     <div class="page-header flex-wrap gap-2">
         <div class="page-header-main mb-2 mb-md-0">
             <!-- Bouton retour dashboard -->
-            <a href="{{ route('dashboard') }}" class="header-back-btn me-2">
-                <span class="header-back-btn-icon"><i class="fas fa-arrow-left"></i></span>
+            <a href="{{ route('dashboard') }}" class="header-back-btn patient-module-btn patient-module-btn--surface me-2">
+                <span class="header-back-btn-icon patient-module-btn__icon"><i class="fas fa-arrow-left"></i></span>
                 <span class="d-none d-sm-inline">Retour</span>
             </a>
             <div class="page-title">
@@ -1626,55 +1636,14 @@
             </div>
         </div>
         <div class="header-actions">
-            <a href="{{ route('patients.export', request()->all()) }}" class="btn-custom btn-secondary-custom">
-                <i class="fas fa-file-export"></i> Exporter CSV
+            <a href="{{ route('patients.export', request()->all()) }}" class="btn-custom btn-secondary-custom patient-module-btn patient-module-btn--surface">
+                <span class="patient-module-btn__icon"><i class="fas fa-file-export"></i></span>
+                <span>Exporter CSV</span>
             </a>
-            <a href="{{ route('patients.create') }}" class="btn-custom btn-success-custom">
-                <i class="fas fa-user-plus"></i> Nouveau Patient
+            <a href="{{ route('patients.create') }}" class="btn-custom btn-success-custom patient-module-btn patient-module-btn--primary">
+                <span class="patient-module-btn__icon"><i class="fas fa-user-plus"></i></span>
+                <span>Nouveau Patient</span>
             </a>
-        </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-icon" style="background-color: #dbeafe; color: #3b82f6;">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-info">
-                <h3>{{ $totalActivePatients }}</h3>
-                <p>Patients actifs</p>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon" style="background-color: #f0fdf4; color: #10b981;">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="stat-info">
-                <h3>{{ $todayAppointments }}</h3>
-                <p>Rendez-vous aujourd'hui</p>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon" style="background-color: #fef3c7; color: #f59e0b;">
-                <i class="fas fa-file-medical"></i>
-            </div>
-            <div class="stat-info">
-                <h3>{{ $medicalRecords }}</h3>
-                <p>Dossiers m&eacute;dicaux</p>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon" style="background-color: #fee2e2; color: #ef4444;">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <div class="stat-info">
-                <h3>{{ $medicalAlerts }}</h3>
-                <p>Patients avec allergies</p>
-            </div>
         </div>
     </div>
 
@@ -1708,10 +1677,19 @@
                     <i class="fas fa-users"></i>
                     <span>{{ $patients->count() }} ligne{{ $patients->count() > 1 ? 's' : '' }} sur cette page</span>
                 </div>
-                <div class="display-mode-switch" role="group" aria-label="Mode d affichage">
-                    <a href="{{ request()->fullUrlWithQuery(['display' => 'table', 'page' => null]) }}" class="display-mode-option {{ $displayMode === 'table' ? 'active' : '' }}">Mode tableau</a>
-                    <a href="{{ request()->fullUrlWithQuery(['display' => 'compact', 'page' => null]) }}" class="display-mode-option {{ $displayMode === 'compact' ? 'active' : '' }}">Mode compact</a>
-                    <a href="{{ request()->fullUrlWithQuery(['display' => 'cards', 'page' => null]) }}" class="display-mode-option {{ $displayMode === 'cards' ? 'active' : '' }}">Mode cartes</a>
+                <div class="display-mode-switch patient-module-segmented" role="group" aria-label="Mode d affichage">
+                    <a href="{{ request()->fullUrlWithQuery(['display' => 'table', 'page' => null]) }}" class="display-mode-option patient-module-segmented__option {{ $displayMode === 'table' ? 'active' : '' }}">
+                        <span class="patient-module-btn__icon"><i class="fas fa-table-columns"></i></span>
+                        <span>Mode tableau</span>
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['display' => 'compact', 'page' => null]) }}" class="display-mode-option patient-module-segmented__option {{ $displayMode === 'compact' ? 'active' : '' }}">
+                        <span class="patient-module-btn__icon"><i class="fas fa-grip-lines"></i></span>
+                        <span>Mode compact</span>
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['display' => 'cards', 'page' => null]) }}" class="display-mode-option patient-module-segmented__option {{ $displayMode === 'cards' ? 'active' : '' }}">
+                        <span class="patient-module-btn__icon"><i class="fas fa-table-cells-large"></i></span>
+                        <span>Mode cartes</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -1791,18 +1769,21 @@
                         <td data-label="Actions">
                             <div class="actions-cell">
                                 <a href="{{ route('patients.show', $patient->id) }}"
-                                   class="action-btn action-btn-primary view action-tone-view"
-                                   title="Voir dossier">
+                                   class="action-btn patient-module-icon-btn patient-module-icon-btn--view"
+                                   title="Voir dossier"
+                                   aria-label="Voir le dossier de {{ $patient->nom_complet }}">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <a href="{{ route('patients.edit', $patient->id) }}"
-                                   class="action-btn edit action-tone-edit"
-                                   title="Modifier">
+                                   class="action-btn patient-module-icon-btn patient-module-icon-btn--edit"
+                                   title="Modifier"
+                                   aria-label="Modifier le dossier de {{ $patient->nom_complet }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <a href="{{ route('rendezvous.create', ['patient_id' => $patient->id]) }}"
-                                   class="action-btn action-tone-rdv"
-                                   title="Prendre rendez-vous">
+                                   class="action-btn patient-module-icon-btn patient-module-icon-btn--schedule"
+                                   title="Prendre rendez-vous"
+                                   aria-label="Planifier un rendez-vous pour {{ $patient->nom_complet }}">
                                     <i class="fas fa-calendar-plus"></i>
                                 </a>
                                 <form action="{{ route('patients.destroy', $patient->id) }}"
@@ -1812,8 +1793,9 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            class="action-btn delete action-tone-delete"
-                                            title="Archiver">
+                                            class="action-btn patient-module-icon-btn patient-module-icon-btn--archive"
+                                            title="Archiver"
+                                            aria-label="Archiver le dossier de {{ $patient->nom_complet }}">
                                         <i class="fas fa-archive"></i>
                                     </button>
                                 </form>
@@ -1831,8 +1813,9 @@
                                 @else
                                     <p>Commencez par ajouter votre premier patient</p>
                                 @endif
-                                <a href="{{ route('patients.create') }}" class="btn-custom btn-success-custom mt-2">
-                                    <i class="fas fa-user-plus"></i> Ajouter un patient
+                                <a href="{{ route('patients.create') }}" class="btn-custom btn-success-custom patient-module-btn patient-module-btn--primary mt-2">
+                                    <span class="patient-module-btn__icon"><i class="fas fa-user-plus"></i></span>
+                                    <span>Ajouter un patient</span>
                                 </a>
                             </div>
                         </td>
@@ -1872,25 +1855,29 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Auto-submit filters on change
-        document.getElementById('statusFilter').addEventListener('change', function() {
-            document.getElementById('searchForm').submit();
+        const searchForm = document.getElementById('searchForm');
+        const statusFilter = document.getElementById('statusFilter');
+        const genderFilter = document.getElementById('genderFilter');
+
+        statusFilter?.addEventListener('change', function() {
+            searchForm?.submit();
         });
 
-        document.getElementById('genderFilter').addEventListener('change', function() {
-            document.getElementById('searchForm').submit();
+        genderFilter?.addEventListener('change', function() {
+            searchForm?.submit();
         });
 
         // Search functionality with debounce
         const searchInput = document.querySelector('input[name="search"]');
         let searchTimeout;
 
-        searchInput.addEventListener('input', function(e) {
+        searchInput?.addEventListener('input', function(e) {
             clearTimeout(searchTimeout);
 
             // Debounce search for better performance
             searchTimeout = setTimeout(() => {
                 if (this.value.length === 0 || this.value.length >= 3) {
-                    document.getElementById('searchForm').submit();
+                    searchForm?.submit();
                 }
             }, 500);
         });

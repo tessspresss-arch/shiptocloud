@@ -19,10 +19,12 @@ test.describe('Flux metier principal', () => {
     await page.fill('input[name="prenom"]', 'Patient');
     await page.fill('input[name="date_naissance"]', '1992-04-15');
     await page.check('input[name="genre"][value="M"]');
-    await page.fill('input[name="telephone"]', `+2126${unique}00`);
+    await page.fill('input[name="telephone"]', `6${unique.padStart(7, '0')}`);
     await page.fill('input[name="cin"]', `TT${unique}`);
     await page.fill('input[name="adresse"]', 'Adresse de test');
-    await page.fill('input[name="ville"]', 'Casablanca');
+    await page.selectOption('select[name="ville_selection"]', 'Casablanca').catch(async () => {
+      await page.fill('input[name="ville"]', 'Casablanca');
+    });
     await page.selectOption('select[name="assurance_medicale"]', { label: /CNSS|Aucune|CNOPS/i }).catch(() => null);
     await page.click('form[action*="/patients"] button[type="submit"]');
     await expect(page).toHaveURL(/\/patients/);

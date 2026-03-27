@@ -34,7 +34,7 @@ test.describe('Parcours critique patient -> consultation -> facturation -> rende
     const patientLabel = `${patientNom} ${patientPrenom}`;
     const patientEmail = `critical.${token}@medisys.test`;
     const patientCin = `CRIT-${token}`;
-    const patientPhone = `+2126${token.slice(-6)}`;
+    const patientPhone = `6${token.slice(-7)}`;
     const consultationDiagnostic = `Diagnostic critique ${token}`;
     const factureNote = `Flux critique ${token}`;
     const rendezVousNote = `Rendez-vous critique ${token}`;
@@ -65,7 +65,12 @@ test.describe('Parcours critique patient -> consultation -> facturation -> rende
       await page.fill('input[name="cin"]', patientCin);
       await fillIfVisible(page.locator('input[name="email"]'), patientEmail);
       await fillIfVisible(page.locator('textarea[name="adresse"], input[name="adresse"]'), '12 rue QA critique');
-      await fillIfVisible(page.locator('input[name="ville"]'), 'Casablanca');
+      const citySelect = page.locator('select[name="ville_selection"]');
+      if (await citySelect.count()) {
+        await citySelect.selectOption('Casablanca');
+      } else {
+        await fillIfVisible(page.locator('input[name="ville"]'), 'Casablanca');
+      }
       await fillIfVisible(page.locator('input[name="profession"]'), 'Analyste QA');
       await fillIfVisible(page.locator('textarea[name="notes"]'), `Patient de test critique ${token}`);
 

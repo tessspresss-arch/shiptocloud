@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\Security\PermissionResolver;
+use App\Services\Security\ClinicalAuthorizationService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,8 +21,8 @@ class PermissionAccessMiddleware
             return redirect()->route('login');
         }
 
-        $resolver = app(PermissionResolver::class);
-        if (!$resolver->hasPermission($user, $permissionCode)) {
+        $authorization = app(ClinicalAuthorizationService::class);
+        if (!$authorization->allowsCode($user, $permissionCode)) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Forbidden.'], 403);
             }

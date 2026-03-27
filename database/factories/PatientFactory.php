@@ -26,8 +26,8 @@ class PatientFactory extends Factory
             'El Jadida', 'Berkane', 'Safi', 'Taroudant', 'Ksar el Kebir'
         ];
 
-        // Generate Moroccan phone number: +212 6XX-XXXXXX
-        $phoneNumber = '+212 6' . rand(10, 99) . '-' . rand(100000, 999999);
+        // Generate local Moroccan phone number: 8 digits
+        $phoneNumber = '6' . str_pad((string) random_int(0, 9999999), 7, '0', STR_PAD_LEFT);
 
         // Email with occasional .ma domain
         $email = $this->faker->unique()->userName . '@' . ($this->faker->boolean(30) ? 'gmail.com' : 'yahoo.fr');

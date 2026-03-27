@@ -5,6 +5,7 @@ namespace Tests\Feature\Medisys;
 use App\Models\Medecin;
 use App\Models\Patient;
 use App\Models\RendezVous;
+use App\Models\SMSReminder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -144,5 +145,92 @@ class AgendaViewsFeatureTest extends TestCase
 
         $response->assertRedirect($agendaUrl);
         $this->assertSame('en_soins', $rdv->fresh()->statut);
+    }
+
+    public function test_day_view_renders_sms_modal_triggers_for_appointments(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'secretaire',
+            'module_permissions' => [
+                'planning' => true,
+                'patients' => true,
+                'consultations' => true,
+                'sms' => true,
+            ],
+        ]);
+
+        $medecin = Medecin::factory()->create(['nom' => 'Zarrik', 'prenom' => 'Mohammed']);
+        $patient = Patient::factory()->create([
+            'nom' => 'Bennani',
+            'prenom' => 'Ahmed',
+            'telephone' => '0612345678',
+        ]);
+
+        RendezVous::factory()->create([
+            'patient_id' => $patient->id,
+            'medecin_id' => $medecin->id,
+            'date_heure' => '2026-03-24 10:30:00',
+            'statut' => 'a_venir',
+            'type' => 'Consultation',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('agenda.index', [
+            'date' => '2026-03-24',
+            'view' => 'day',
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertSee('agendaSmsModal', false)
+            ->assertSee('data-agenda-sms-trigger', false)
+            ->assertSee(route('sms.store'), false);
+    }
+
+    public function test_sms_store_returns_json_for_agenda_modal_requests(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'secretaire',
+            'module_permissions' => [
+                'planning' => true,
+                'patients' => true,
+                'consultations' => true,
+                'sms' => true,
+            ],
+        ]);
+
+        $medecin = Medecin::factory()->create(['nom' => 'Zarrik', 'prenom' => 'Mohammed']);
+        $patient = Patient::factory()->create([
+            'nom' => 'Bennani',
+            'prenom' => 'Ahmed',
+            'telephone' => '0612345678',
+        ]);
+
+        $rdv = RendezVous::factory()->create([
+            'patient_id' => $patient->id,
+            'medecin_id' => $medecin->id,
+            'date_heure' => now()->addDay(),
+            'statut' => 'a_venir',
+            'type' => 'Consultation',
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('sms.store'), [
+            'rendezvous_id' => $rdv->id,
+            'telephone' => '0612345678',
+            'message_template' => 'Bonjour Ahmed, rappel de votre rendez-vous.',
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJson([
+                'success' => true,
+                'message' => 'Rappel SMS cree avec succes.',
+            ]);
+
+        $this->assertDatabaseHas((new SMSReminder())->getTable(), [
+            'rendezvous_id' => $rdv->id,
+            'patient_id' => $patient->id,
+            'telephone' => '0612345678',
+            'statut' => 'planifie',
+        ]);
     }
 }

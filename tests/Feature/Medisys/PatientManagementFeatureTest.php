@@ -22,7 +22,7 @@ class PatientManagementFeatureTest extends TestCase
             'nom' => 'Bennani',
             'prenom' => 'Karim',
             'cin' => 'AB123456',
-            'telephone' => '+212600000001',
+            'telephone' => '60000001',
             'email' => 'karim.bennani@medisys.test',
             'assurance' => 'CNSS',
         ]);
@@ -37,10 +37,10 @@ class PatientManagementFeatureTest extends TestCase
             'adresse' => '27 Rue Atlas',
             'ville' => 'Casablanca',
             'code_postal' => '20000',
-            'telephone' => '+212600000001',
+            'telephone' => '60000001',
             'email' => 'karim.updated@medisys.test',
             'contact_urgence' => 'Sara Bennani',
-            'telephone_urgence' => '+212600000999',
+            'telephone_urgence' => '60000999',
             'groupe_sanguin' => 'A+',
             'assurance_medicale' => 'Autre',
             'assurance_autre' => 'AXA',
@@ -72,7 +72,7 @@ class PatientManagementFeatureTest extends TestCase
         Patient::factory()->create([
             'nom' => 'El Idrissi',
             'prenom' => 'Amine',
-            'telephone' => '+212611111111',
+            'telephone' => '61111111',
             'email' => 'amine.idrissi@medisys.test',
             'is_draft' => false,
         ]);
@@ -80,7 +80,7 @@ class PatientManagementFeatureTest extends TestCase
         Patient::factory()->create([
             'nom' => 'Benali',
             'prenom' => 'Nora',
-            'telephone' => '+212622222222',
+            'telephone' => '62222222',
             'email' => 'nora.benali@medisys.test',
             'is_draft' => true,
         ]);
@@ -94,5 +94,51 @@ class PatientManagementFeatureTest extends TestCase
             ->assertOk()
             ->assertSee('EL IDRISSI')
             ->assertDontSee('BENALI');
+    }
+
+    public function test_authorized_user_can_update_patient_city_from_dropdown_selection(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'secretaire',
+            'module_permissions' => ['patients' => true],
+        ]);
+
+        $patient = Patient::factory()->create([
+            'nom' => 'Lahlou',
+            'prenom' => 'Imane',
+            'cin' => 'CD987654',
+            'telephone' => '60000077',
+            'email' => 'imane.lahlou@medisys.test',
+        ]);
+
+        $response = $this->actingAs($user)->put(route('patients.update', $patient), [
+            'nom' => 'Lahlou',
+            'prenom' => 'Imane',
+            'cin' => 'CD987654',
+            'date_naissance' => '1991-07-18',
+            'genre' => 'F',
+            'etat_civil' => 'celibataire',
+            'adresse' => '45 Rue Al Atlas',
+            'ville_selection' => 'Kenitra',
+            'code_postal' => '14000',
+            'telephone' => '60000077',
+            'email' => 'imane.lahlou@medisys.test',
+            'contact_urgence' => 'Yassine Lahlou',
+            'telephone_urgence' => '60000078',
+            'groupe_sanguin' => 'B+',
+            'assurance_medicale' => 'CNSS',
+            'allergies' => 'Aucune',
+            'antecedents' => 'RAS',
+            'traitements' => 'Aucun',
+            'notes' => 'Dossier mis a jour via select ville',
+        ]);
+
+        $response->assertRedirect(route('patients.show', $patient));
+
+        $this->assertDatabaseHas('patients', [
+            'id' => $patient->id,
+            'ville' => 'Kenitra',
+            'code_postal' => '14000',
+        ]);
     }
 }

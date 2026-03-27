@@ -595,6 +595,94 @@
         }
     }
 
+    @media (max-width: 840px) {
+        .doc-table-wrap {
+            overflow: visible;
+        }
+
+        .doc-table,
+        .doc-table tbody,
+        .doc-table tr,
+        .doc-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .doc-table thead {
+            display: none;
+        }
+
+        .doc-table tbody {
+            display: grid;
+            gap: 12px;
+        }
+
+        .doc-table tbody tr {
+            background: #ffffff;
+            border: 1px solid #dfe9f4;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 18px 26px -32px rgba(15, 45, 82, .38);
+        }
+
+        .doc-table td {
+            display: grid;
+            grid-template-columns: minmax(92px, 108px) minmax(0, 1fr);
+            gap: 10px;
+            align-items: start;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e8f0f8;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .doc-table td:last-child {
+            border-bottom: 0;
+        }
+
+        .doc-table td::before {
+            content: attr(data-label);
+            font-size: .72rem;
+            font-weight: 800;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: #6880a0;
+        }
+
+        .doc-actions {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .doc-actions form {
+            width: 100%;
+        }
+
+        .doc-actions .doc-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .doc-chip {
+            max-width: 100%;
+            white-space: normal;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .doc-table td {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .doc-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+
     body.dark-mode .documents-page {
         --doc-bg: linear-gradient(180deg, #0f1f31 0%, #0d1a2b 100%);
         --doc-card: #12243b;
@@ -758,6 +846,22 @@
     body.dark-mode .doc-empty {
         background: linear-gradient(180deg, #12243b 0%, #102033 100%);
     }
+
+    @media (max-width: 840px) {
+        body.dark-mode .doc-table tbody tr {
+            background: #102033;
+            border-color: #2c4f79;
+            box-shadow: none;
+        }
+
+        body.dark-mode .doc-table td {
+            border-bottom-color: #264770;
+        }
+
+        body.dark-mode .doc-table td::before {
+            color: #8ea9c6;
+        }
+    }
 </style>
 
 <div class="documents-page">
@@ -854,13 +958,13 @@
                         <tbody>
                             @foreach($documents as $document)
                                 <tr>
-                                    <td>
+                                    <td data-label="Nom">
                                         <div class="doc-name">{{ $document->nom_original }}</div>
                                         @if(!empty($document->description))
                                             <div class="doc-desc">{{ \Illuminate\Support\Str::limit($document->description, 70) }}</div>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td data-label="Patient">
                                         @if($document->display_patient_name)
                                             <div class="doc-name">{{ $document->display_patient_name }}</div>
                                             @if(!empty($document->display_patient_dossier))
@@ -870,18 +974,18 @@
                                             <span class="doc-chip">Non associe</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td data-label="Categorie">
                                         <span class="doc-chip">{{ $document->categorie->nom ?? 'Non classe' }}</span>
                                     </td>
-                                    <td>
+                                    <td data-label="Source">
                                         <span class="doc-chip">
                                             {{ ($document->source_document ?? 'telechargement') === 'scan_cabinet' ? 'Scan cabinet' : 'Televersement' }}
                                         </span>
                                     </td>
-                                    <td>{{ strtoupper($document->extension ?? pathinfo($document->nom_original, PATHINFO_EXTENSION)) }}</td>
-                                    <td>{{ $document->display_size_label }}</td>
-                                    <td>{{ optional($document->created_at)->format('d/m/Y H:i') }}</td>
-                                    <td>
+                                    <td data-label="Type">{{ strtoupper($document->extension ?? pathinfo($document->nom_original, PATHINFO_EXTENSION)) }}</td>
+                                    <td data-label="Taille">{{ $document->display_size_label }}</td>
+                                    <td data-label="Date">{{ optional($document->created_at)->format('d/m/Y H:i') }}</td>
+                                    <td data-label="Actions">
                                         <div class="doc-actions">
                                             <a href="{{ route('documents.show', $document) }}" class="doc-btn download" title="Télécharger" aria-label="Télécharger {{ $document->nom_original }}">
                                                 <i class="fas fa-download"></i>

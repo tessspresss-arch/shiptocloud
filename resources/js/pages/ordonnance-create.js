@@ -1,7 +1,21 @@
 function parsePayload(root) {
     const node = root.querySelector('#ordonnanceCreatePayload');
     if (!node) return null;
-    try { return JSON.parse(node.textContent || '{}'); } catch { return null; }
+
+    const raw = (node.textContent || '').trim();
+    if (!raw) return null;
+
+    try {
+        return JSON.parse(raw);
+    } catch {
+        // `Js::from(...)` renders a JavaScript expression, not always raw JSON.
+    }
+
+    try {
+        return Function(`"use strict"; return (${raw.replace(/;$/, '')});`)();
+    } catch {
+        return null;
+    }
 }
 
 export function initOrdonnanceCreate(root = document) {

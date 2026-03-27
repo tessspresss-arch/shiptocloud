@@ -38,8 +38,32 @@ export function initAgendaPage(root = document) {
     const miniCalendarDays = select(root, '#miniCalendarDays');
     const todayBtn = select(root, '#todayBtn');
     const newRdvBtn = select(root, '#newRdvBtn');
+    const smsModal = select(root, '#agendaSmsModal');
+    const smsFlash = select(root, '[data-agenda-sms-flash]');
+    const smsForm = smsModal ? select(smsModal, '[data-agenda-sms-form]') : null;
+    const smsErrorBox = smsModal ? select(smsModal, '[data-agenda-sms-errors]') : null;
+    const smsPatientName = smsModal ? select(smsModal, '[data-agenda-sms-patient]') : null;
+    const smsRendezvousLabel = smsModal ? select(smsModal, '[data-agenda-sms-rendezvous]') : null;
+    const smsRendezvousId = smsModal ? select(smsModal, '[data-agenda-sms-rendezvous-id]') : null;
+    const smsPhoneInput = smsModal ? select(smsModal, '[data-agenda-sms-phone]') : null;
+    const smsMessageInput = smsModal ? select(smsModal, '[data-agenda-sms-message]') : null;
+    const smsPreviewPhone = smsModal ? select(smsModal, '[data-agenda-sms-preview-phone]') : null;
+    const smsPreviewMessage = smsModal ? select(smsModal, '[data-agenda-sms-preview]') : null;
+    const smsCounter = smsModal ? select(smsModal, '[data-agenda-sms-counter]') : null;
+    const smsSubmitButton = smsModal ? select(smsModal, '[data-agenda-sms-submit]') : null;
+    const agendaMain = select(root, '.agenda-main');
+    const smsStoreUrl = payload.smsStoreUrl || (smsForm ? smsForm.getAttribute('action') : '');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    let smsFlashTimer = null;
+    let smsLastFocusedElement = null;
 
     const formatIsoDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const escapeHtml = (value = '') => String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
 
     function formatDateLabel(date) {
         if (currentView === 'month') {
@@ -80,6 +104,124 @@ export function initAgendaPage(root = document) {
     }
     function redirectToCreate(heure = '09:00', dateValue = currentDate) { window.location.href = buildCreateUrl(heure, dateValue); }
     function updateDateDisplay() { if (currentDateLabel) currentDateLabel.textContent = formatDateLabel(currentDate); syncCreateLinks(); }
+
+    function formatSmsRendezvousDate(isoDate) {
+        if (!isoDate) return '';
+        const date = new Date(isoDate);
+        if (Number.isNaN(date.getTime())) return '';
+        return date.toLocaleString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
+
+    function buildDefaultSmsMessage(data) {
+        const patientName = String(data.patientName || '').trim();
+        const firstName = patientName.split(/\s+/).filter(Boolean)[0] || 'Madame, Monsieur';
+        const dateLabel = formatSmsRendezvousDate(data.rendezvousDate);
+        const doctorName = String(data.doctorName || '').trim();
+        const doctorLabel = doctorName && doctorName !== 'Medecin inconnu' ? ` avec ${doctorName}` : '';
+
+        if (dateLabel) {
+            return `Bonjour ${firstName}, rappel de votre rendez-vous le ${dateLabel}${doctorLabel}. Merci.`;
+        }
+
+        return `Bonjour ${firstName}, rappel de votre rendez-vous${doctorLabel}. Merci.`;
+    }
+
+    function updateSmsPreview() {
+        if (!smsModal) return;
+
+        const phoneValue = (smsPhoneInput?.value || '').trim();
+        const messageValue = (smsMessageInput?.value || '').trim();
+
+        if (smsPreviewPhone) {
+            smsPreviewPhone.textContent = phoneValue || 'Numero non renseigne';
+        }
+
+        if (smsPreviewMessage) {
+            smsPreviewMessage.textContent = messageValue || 'Le contenu du SMS apparaitra ici.';
+            smsPreviewMessage.classList.toggle('is-empty', messageValue === '');
+        }
+
+        if (smsCounter) {
+            smsCounter.textContent = `${(smsMessageInput?.value || '').length}/160`;
+        }
+    }
+
+    function setSmsErrors(messages = []) {
+        if (!smsErrorBox) return;
+
+        if (!messages.length) {
+            smsErrorBox.hidden = true;
+            smsErrorBox.innerHTML = '';
+            return;
+        }
+
+        smsErrorBox.hidden = false;
+        smsErrorBox.innerHTML = messages.map((message) => `<div>${escapeHtml(message)}</div>`).join('');
+    }
+
+    function showSmsFlash(message, isError = false) {
+        if (!smsFlash || !message) return;
+
+        smsFlash.hidden = false;
+        smsFlash.textContent = message;
+        smsFlash.classList.toggle('is-error', isError);
+
+        if (smsFlashTimer) {
+            window.clearTimeout(smsFlashTimer);
+        }
+
+        smsFlashTimer = window.setTimeout(() => {
+            smsFlash.hidden = true;
+            smsFlash.textContent = '';
+            smsFlash.classList.remove('is-error');
+        }, 5000);
+    }
+
+    function closeSmsModal() {
+        if (!smsModal) return;
+        smsModal.classList.remove('is-open');
+        smsModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setSmsErrors([]);
+        if (smsForm) smsForm.reset();
+        if (smsRendezvousId) smsRendezvousId.value = '';
+        updateSmsPreview();
+        smsLastFocusedElement?.focus?.();
+        smsLastFocusedElement = null;
+    }
+
+    function openSmsModal(trigger) {
+        if (!smsModal || !smsForm) return;
+
+        closeDenseContextMenus();
+        smsLastFocusedElement = trigger;
+
+        const patientName = String(trigger.dataset.patientName || 'Patient inconnu').trim() || 'Patient inconnu';
+        const patientPhone = String(trigger.dataset.patientPhone || '').trim();
+        const rendezvousDate = String(trigger.dataset.rendezvousDate || '').trim();
+        const doctorName = String(trigger.dataset.doctorName || '').trim();
+        const rendezvousLabel = String(trigger.dataset.rendezvousLabel || '').trim() || formatSmsRendezvousDate(rendezvousDate) || 'Rendez-vous non selectionne';
+
+        if (smsRendezvousId) smsRendezvousId.value = String(trigger.dataset.rendezvousId || '');
+        if (smsPatientName) smsPatientName.textContent = patientName;
+        if (smsRendezvousLabel) smsRendezvousLabel.textContent = rendezvousLabel;
+        if (smsPhoneInput) smsPhoneInput.value = patientPhone;
+        if (smsMessageInput) smsMessageInput.value = buildDefaultSmsMessage({ patientName, rendezvousDate, doctorName });
+
+        setSmsErrors([]);
+        updateSmsPreview();
+
+        smsModal.classList.add('is-open');
+        smsModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        window.setTimeout(() => smsPhoneInput?.focus(), 40);
+    }
 
     function renderMiniCalendar() {
         if (!miniMonthLabel || !miniCalendarDays) return;
@@ -174,9 +316,85 @@ export function initAgendaPage(root = document) {
     window.addEventListener('resize', closeDenseContextMenus, { signal });
     newRdvBtn?.addEventListener('click', (event) => { event.preventDefault(); redirectToCreate('09:00'); });
 
+    if (smsFlash && agendaMain && smsFlash.parentElement !== agendaMain) {
+        agendaMain.prepend(smsFlash);
+    }
+
+    root.querySelectorAll('[data-agenda-sms-trigger]').forEach((trigger) => {
+        trigger.addEventListener('click', (event) => {
+            if (!smsModal || !smsStoreUrl) return;
+            event.preventDefault();
+            event.stopPropagation();
+            openSmsModal(trigger);
+        });
+    });
+
+    smsModal?.querySelectorAll('[data-close-agenda-sms-modal]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeSmsModal();
+        });
+    });
+
+    smsPhoneInput?.addEventListener('input', updateSmsPreview);
+    smsMessageInput?.addEventListener('input', updateSmsPreview);
+
+    smsForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!smsStoreUrl) return;
+
+        setSmsErrors([]);
+
+        const originalSubmitHtml = smsSubmitButton?.innerHTML || '';
+        if (smsSubmitButton) {
+            smsSubmitButton.disabled = true;
+            smsSubmitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi...';
+        }
+
+        try {
+            const response = await fetch(smsStoreUrl, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: new FormData(smsForm),
+            });
+
+            const contentType = response.headers.get('content-type') || '';
+            const data = contentType.includes('application/json')
+                ? await response.json()
+                : { message: 'Erreur lors de l enregistrement du SMS.' };
+
+            if (!response.ok) {
+                const validationErrors = data?.errors ? Object.values(data.errors).flat() : [];
+                setSmsErrors(validationErrors.length ? validationErrors : [data?.message || 'Erreur lors de l enregistrement du SMS.']);
+                return;
+            }
+
+            closeSmsModal();
+            showSmsFlash(data?.message || 'Rappel SMS cree avec succes.');
+        } catch {
+            setSmsErrors(['Impossible d envoyer le SMS pour le moment.']);
+        } finally {
+            if (smsSubmitButton) {
+                smsSubmitButton.disabled = false;
+                smsSubmitButton.innerHTML = originalSubmitHtml;
+            }
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && smsModal?.classList.contains('is-open')) {
+            closeSmsModal();
+        }
+    }, { signal });
+
     updateDateDisplay();
     renderMiniCalendar();
     syncCreateLinks();
+    updateSmsPreview();
     if (window.bootstrap?.Tooltip) {
         root.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((element) => window.bootstrap.Tooltip.getOrCreateInstance(element));
     }

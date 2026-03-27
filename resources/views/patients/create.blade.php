@@ -104,38 +104,59 @@
     flex-shrink: 0;
 }
 .photo-circle {
-    width: 152px;
-    height: 152px;
+    position: relative;
+    width: 168px;
+    height: 168px;
     border-radius: 50%;
-    border: 2px dashed rgba(44, 123, 229, 0.45);
+    border: 1.5px dashed rgba(44, 123, 229, 0.42);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(180deg, rgba(244, 248, 253, 0.96) 0%, rgba(234, 242, 249, 0.92) 100%);
+    background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.98) 0%, rgba(233, 242, 250, 0.94) 52%, rgba(225, 236, 247, 0.88) 100%);
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 16px 34px -28px rgba(15, 23, 42, 0.32);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.92), 0 24px 36px -32px rgba(15, 23, 42, 0.34);
     overflow: hidden;
+    isolation: isolate;
+}
+.photo-circle::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(191, 207, 223, 0.9);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.08) 100%);
+    z-index: 0;
+    transition: inherit;
 }
 .photo-circle:hover {
     border-color: #1f6fa3;
-    background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(234, 242, 249, 1) 100%);
+    background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.99) 0%, rgba(236, 245, 252, 0.96) 52%, rgba(226, 239, 250, 0.92) 100%);
     transform: translateY(-1px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.96), 0 28px 42px -30px rgba(31, 111, 163, 0.26);
+}
+.photo-circle:hover::before {
+    inset: 10px;
+    border-color: rgba(44, 123, 229, 0.22);
 }
 .photo-placeholder-icon {
-    font-size: 3.8rem;
+    position: relative;
+    z-index: 1;
+    font-size: 3.35rem;
     line-height: 1;
     color: #1f6fa3;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 84px;
-    height: 84px;
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.98) 0%, rgba(219, 234, 247, 0.92) 100%);
     box-shadow: 0 14px 28px -22px rgba(31, 111, 163, 0.4);
 }
 .photo-circle img {
+    position: relative;
+    z-index: 2;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -205,54 +226,171 @@ textarea.form-control {
 }
 .sidebar-card {
     background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248, 251, 255, 0.94) 100%);
+    position: relative;
+    overflow: hidden;
+}
+.sidebar-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at top right, rgba(44, 123, 229, 0.12) 0%, rgba(44, 123, 229, 0) 34%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+}
+.patient-create-sidebar-body {
+    position: relative;
+    z-index: 1;
+    padding: 24px 22px;
+}
+.sidebar-panel-head {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+.sidebar-kicker {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(44, 123, 229, 0.08);
+    border: 1px solid rgba(191, 207, 223, 0.94);
+    color: #1f6fa3;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 .sidebar-title {
     color: #16324d;
     font-size: 1.02rem;
     font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sidebar-title-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(44, 123, 229, 0.1);
+    color: #2c7be5;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+    flex-shrink: 0;
+}
+.sidebar-caption {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+.sidebar-section {
+    display: grid;
+    gap: 14px;
+}
+.sidebar-section-heading {
+    display: grid;
+    gap: 4px;
+    text-align: left;
+}
+.sidebar-section-label {
+    color: #16324d;
+    font-size: 0.77rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.sidebar-section-copy {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.5;
 }
 .sidebar-divider {
-    margin: 22px 0;
-    border-color: rgba(203, 213, 225, 0.72);
+    margin: 18px 0;
+    height: 1px;
+    border: 0;
+    background: linear-gradient(90deg, rgba(203, 213, 225, 0) 0%, rgba(203, 213, 225, 0.85) 18%, rgba(203, 213, 225, 0.85) 82%, rgba(203, 213, 225, 0) 100%);
 }
 .photo-meta {
-    margin-top: 14px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    background: rgba(44, 123, 229, 0.06);
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(203, 213, 225, 0.82);
+    background: linear-gradient(180deg, rgba(245, 249, 255, 0.94) 0%, rgba(238, 245, 252, 0.92) 100%);
     color: #48627d;
     font-size: 0.86rem;
+    display: grid;
+    gap: 10px;
+    text-align: left;
 }
-.btn-gradient-blue {
-    background: linear-gradient(135deg, #2c7be5 0%, #1f6fa3 100%);
-    border: none;
-    color: white;
+.photo-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.4;
     font-weight: 700;
-    min-height: 52px;
-    padding: 0 24px;
-    border-radius: 14px;
-    box-shadow: 0 10px 22px -16px rgba(44, 123, 229, 0.52);
-    transition: transform 0.2s, box-shadow 0.2s;
 }
-.btn-gradient-blue:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 24px -18px rgba(44, 123, 229, 0.58);
-    color: white;
+.photo-meta-item i {
+    width: 26px;
+    height: 26px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(44, 123, 229, 0.09);
+    color: #2c7be5;
+    flex-shrink: 0;
+}
+.sidebar-upload-trigger {
+    min-height: 56px;
+    justify-content: flex-start;
+    padding: 10px 14px;
+    text-align: left;
+}
+.sidebar-upload-trigger .patient-module-btn__icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+}
+.sidebar-upload-trigger__copy {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+.sidebar-upload-trigger__copy strong {
+    font-size: 0.92rem;
+    line-height: 1.2;
+    color: inherit;
+}
+.sidebar-upload-trigger__copy small {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #70859b;
+}
+.sidebar-actions {
+    display: grid;
+    gap: 12px;
+}
+.sidebar-actions .patient-module-btn {
+    min-height: 52px;
+    justify-content: flex-start;
+}
+.sidebar-actions .patient-module-btn > span:last-child {
+    flex: 1 1 auto;
+    text-align: left;
 }
 .sidebar-reset-btn {
     min-height: 52px;
-    border-radius: 14px;
-    font-weight: 700;
-    border-color: rgba(203, 213, 225, 0.92);
-    background: rgba(255,255,255,0.84);
     color: #48627d;
 }
 .sidebar-reset-btn:hover,
 .sidebar-reset-btn:focus {
     color: #1f6fa3;
-    border-color: rgba(44, 123, 229, 0.24);
-    background: rgba(242, 247, 253, 0.98);
-    transform: translateY(-1px);
 }
 .info-box {
     display: flex;
@@ -278,14 +416,56 @@ textarea.form-control {
     color: #2c7be5;
 }
 .help-box {
-    background: linear-gradient(180deg, rgba(240, 249, 255, 0.9) 0%, rgba(232, 245, 252, 0.88) 100%);
-    padding: 16px;
-    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(240, 249, 255, 0.94) 0%, rgba(232, 245, 252, 0.9) 100%);
+    padding: 18px;
+    border-radius: 20px;
     font-size: 13px;
     border: 1px solid rgba(190, 222, 244, 0.92);
+    box-shadow: 0 18px 30px -28px rgba(15, 23, 42, 0.22);
+    display: grid;
+    gap: 14px;
+    text-align: left;
+}
+.help-box-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.help-box-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(44, 123, 229, 0.12);
+    color: #2c7be5;
 }
 .help-box strong {
     color: #1f6fa3;
+    display: block;
+    font-size: 0.95rem;
+}
+.help-box p {
+    margin: 4px 0 0;
+    color: #5c738b;
+    line-height: 1.55;
+}
+.help-box-link {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #1f6fa3;
+    font-size: 0.84rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+.help-box-link:hover,
+.help-box-link:focus {
+    color: #174f75;
+    text-decoration: none;
 }
 .section-note {
     display: block;
@@ -331,7 +511,10 @@ body.dark-mode .patient-create-page .form-check-label {
 body.dark-mode .patient-create-page .page-subtitle,
 body.dark-mode .patient-create-page .patient-create-eyebrow,
 body.dark-mode .patient-create-page .photo-meta,
-body.dark-mode .patient-create-page .sidebar-title {
+body.dark-mode .patient-create-page .sidebar-title,
+body.dark-mode .patient-create-page .sidebar-caption,
+body.dark-mode .patient-create-page .sidebar-section-copy,
+body.dark-mode .patient-create-page .sidebar-kicker {
     color: #dbeafe !important;
 }
 body.dark-mode .patient-create-page .text-muted,
@@ -347,11 +530,22 @@ body.dark-mode .patient-create-header-block {
 body.dark-mode .patient-create-page .breadcrumb-bar,
 body.dark-mode .patient-create-page .filters-summary,
 body.dark-mode .patient-create-page .header-return-btn,
-body.dark-mode .patient-create-page .sidebar-reset-btn {
+body.dark-mode .patient-create-page .sidebar-reset-btn,
+body.dark-mode .patient-create-page .sidebar-upload-trigger {
     background: rgba(15, 23, 42, 0.9);
     border-color: #334155;
     color: #dbeafe;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+body.dark-mode .patient-create-page .header-return-btn:hover,
+body.dark-mode .patient-create-page .header-return-btn:focus,
+body.dark-mode .patient-create-page .sidebar-reset-btn:hover,
+body.dark-mode .patient-create-page .sidebar-reset-btn:focus,
+body.dark-mode .patient-create-page .sidebar-upload-trigger:hover,
+body.dark-mode .patient-create-page .sidebar-upload-trigger:focus {
+    background: rgba(22, 35, 56, 0.96);
+    border-color: #475569;
+    color: #f8fafc;
 }
 body.dark-mode .patient-create-page .header-return-btn-icon {
     background: rgba(93, 165, 255, 0.14);
@@ -395,6 +589,10 @@ body.dark-mode .patient-create-page .photo-circle {
     background: #1e293b;
     border-color: #38bdf8;
 }
+body.dark-mode .patient-create-page .photo-circle::before {
+    border-color: rgba(56, 189, 248, 0.24);
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.02) 100%);
+}
 body.dark-mode .patient-create-page .photo-circle:hover {
     background: #0f172a;
     border-color: #7dd3fc;
@@ -404,8 +602,35 @@ body.dark-mode .patient-create-page .photo-placeholder-icon {
     background: radial-gradient(circle at 30% 30%, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.92) 100%);
     box-shadow: 0 14px 28px -22px rgba(2, 6, 23, 0.72);
 }
+body.dark-mode .patient-create-page .photo-meta {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(19, 31, 52, 0.9) 100%);
+    border-color: #334155;
+}
+body.dark-mode .patient-create-page .photo-meta-item i,
+body.dark-mode .patient-create-page .sidebar-title-icon,
+body.dark-mode .patient-create-page .help-box-icon {
+    background: rgba(56, 189, 248, 0.16);
+    color: #7dd3fc;
+}
+body.dark-mode .patient-create-page .sidebar-kicker {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: #334155;
+}
+body.dark-mode .patient-create-page .sidebar-section-label,
+body.dark-mode .patient-create-page .sidebar-upload-trigger__copy strong {
+    color: #f8fafc;
+}
+body.dark-mode .patient-create-page .sidebar-upload-trigger__copy small,
+body.dark-mode .patient-create-page .help-box p,
+body.dark-mode .patient-create-page .help-box-link {
+    color: #cbd5e1;
+}
+body.dark-mode .patient-create-page .help-box-link:hover,
+body.dark-mode .patient-create-page .help-box-link:focus {
+    color: #7dd3fc;
+}
 body.dark-mode .patient-create-page .help-box {
-    background: #0f172a;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(19, 31, 52, 0.9) 100%);
     border: 1px solid #334155;
 }
 body.dark-mode .patient-create-page .help-box strong {
@@ -464,22 +689,33 @@ body.dark-mode .patient-create-page .btn-outline-secondary:hover {
     .form-card-body {
         padding: 16px;
     }
+    .patient-create-sidebar-body {
+        padding: 18px;
+    }
+    .sidebar-panel-head {
+        margin-bottom: 16px;
+    }
     .photo-circle {
-        width: 110px;
-        height: 110px;
+        width: 124px;
+        height: 124px;
     }
     .form-card {
         border-radius: 18px;
     }
     .form-control,
     .form-select,
-    .btn-gradient-blue,
+    .sidebar-upload-trigger,
     .sidebar-reset-btn,
     .header-return-btn {
         min-height: 50px;
     }
+    .photo-meta,
+    .help-box {
+        padding: 14px;
+    }
 }
 </style>
+@include('patients.partials.button-theme')
 
 <div class="container-fluid py-5 patient-create-page">
     <div class="patient-create-shell">
@@ -494,8 +730,8 @@ body.dark-mode .patient-create-page .btn-outline-secondary:hover {
                     </h1>
                     <p class="page-subtitle">Enregistrez un nouveau patient dans le syst&egrave;me avec une pr&eacute;sentation plus claire, mieux hi&eacute;rarchis&eacute;e et coh&eacute;rente avec l exp&eacute;rience MEDISYS Pro.</p>
                 </div>
-                <a href="{{ route('patients.index') }}" class="btn btn-outline-secondary header-return-btn">
-                    <span class="header-return-btn-icon"><i class="fas fa-arrow-left"></i></span>
+                <a href="{{ route('patients.index') }}" class="btn btn-outline-secondary header-return-btn patient-module-btn patient-module-btn--surface">
+                    <span class="header-return-btn-icon patient-module-btn__icon"><i class="fas fa-arrow-left"></i></span>
                     <span>Retour</span>
                 </a>
             </div>
@@ -527,36 +763,80 @@ body.dark-mode .patient-create-page .btn-outline-secondary:hover {
                 <!-- Left Sidebar - Photo -->
                 <div class="col-lg-3 mb-4">
                     <div class="form-card sticky-sidebar sidebar-card">
-                        <div class="form-card-body text-center">
-                            <h5 class="mb-4 sidebar-title"><i class="fas fa-camera me-2"></i> Photo</h5>
-                            
-                            <label class="photo-circle mx-auto mb-3 d-block" onclick="document.getElementById('photoInput').click()">
+                        <div class="form-card-body text-center patient-create-sidebar-body">
+                            <div class="sidebar-panel-head">
+                                <span class="sidebar-kicker">Panneau lateral</span>
+                                <h5 class="mb-0 sidebar-title">
+                                    <span class="sidebar-title-icon"><i class="fas fa-camera"></i></span>
+                                    <span>Photo et actions</span>
+                                </h5>
+                                <p class="sidebar-caption">Ajoutez un avatar patient propre, puis finalisez le dossier avec des actions plus lisibles et mieux hierarchisees.</p>
+                            </div>
+
+                            <div class="sidebar-section">
+                            <label for="photoInput" class="photo-circle mx-auto d-flex">
                                 <i id="photoIcon" class="fas fa-user photo-placeholder-icon"></i>
                                 <img id="photoPreview" src="" alt="Preview" style="display: none;">
                             </label>
                             
                             <input type="file" id="photoInput" name="photo" accept="image/*" class="d-none" onchange="previewPhoto(event)">
-                            
-                            <div class="photo-meta">JPG, PNG, GIF &bull; Taille maximale 2MB</div>
+
+                            <label for="photoInput" class="patient-module-btn patient-module-btn--surface patient-module-btn--wide sidebar-upload-trigger">
+                                <span class="patient-module-btn__icon"><i class="fas fa-cloud-arrow-up"></i></span>
+                                <span class="sidebar-upload-trigger__copy">
+                                    <strong>Ajouter une photo</strong>
+                                    <small>Cliquer pour choisir ou remplacer l avatar</small>
+                                </span>
+                            </label>
+
+                            <div class="photo-meta">
+                                <div class="photo-meta-item">
+                                    <i class="fas fa-images"></i>
+                                    <span>Formats acceptes : JPG, PNG, GIF</span>
+                                </div>
+                                <div class="photo-meta-item">
+                                    <i class="fas fa-weight-hanging"></i>
+                                    <span>Taille maximale : 2 MB</span>
+                                </div>
+                            </div>
                             @error('photo')
                                 <div class="text-danger small mt-2"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                             @enderror
+                            </div>
 
-                            <hr class="sidebar-divider">
+                            <div class="sidebar-divider" role="presentation"></div>
 
-                            <h6 class="mb-3 sidebar-title">Actions</h6>
-                            <button type="submit" class="btn btn-gradient-blue w-100 mb-2">
-                                <i class="fas fa-save me-2"></i> Enregistrer
-                            </button>
-                            <button type="reset" class="btn btn-outline-secondary sidebar-reset-btn w-100 mb-3">
-                                <i class="fas fa-redo me-2"></i> R&eacute;initialiser
-                            </button>
+                            <div class="sidebar-section">
+                                <div class="sidebar-section-heading">
+                                    <span class="sidebar-section-label">Actions</span>
+                                    <p class="sidebar-section-copy">Validez le dossier ou remettez le formulaire a zero sans perdre la structure de la page.</p>
+                                </div>
+                                <div class="sidebar-actions">
+                                    <button type="submit" class="btn patient-module-btn patient-module-btn--primary patient-module-btn--wide w-100">
+                                        <span class="patient-module-btn__icon"><i class="fas fa-save"></i></span>
+                                        <span>Enregistrer</span>
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary sidebar-reset-btn patient-module-btn patient-module-btn--surface patient-module-btn--wide w-100">
+                                        <span class="patient-module-btn__icon"><i class="fas fa-redo"></i></span>
+                                        <span>R&eacute;initialiser</span>
+                                    </button>
+                                </div>
+                            </div>
 
-                            <hr class="sidebar-divider">
+                            <div class="sidebar-divider" role="presentation"></div>
 
                             <div class="help-box">
-                                <strong><i class="fas fa-life-ring me-2"></i>Besoin d'aide ?</strong>
-                                <p class="mb-0 mt-2">Consultez notre <a href="#" class="text-decoration-none">guide d'utilisation</a></p>
+                                <div class="help-box-head">
+                                    <span class="help-box-icon"><i class="fas fa-life-ring"></i></span>
+                                    <div>
+                                        <strong>Besoin d'aide ?</strong>
+                                        <p>Consultez le guide d utilisation pour completer rapidement la fiche patient et garder un dossier propre.</p>
+                                    </div>
+                                </div>
+                                <a href="#" class="help-box-link">
+                                    <span>Ouvrir le guide</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -646,7 +926,14 @@ body.dark-mode .patient-create-page .btn-outline-secondary:hover {
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label required">T&eacute;l&eacute;phone</label>
                                     <input type="tel" name="telephone" value="{{ old('telephone') }}" required
-                                        class="form-control @error('telephone') is-invalid @enderror" placeholder="+212 6XX XXX XXX">
+                                        class="form-control @error('telephone') is-invalid @enderror"
+                                        placeholder="61234567"
+                                        inputmode="numeric"
+                                        pattern="[0-9]{8}"
+                                        minlength="8"
+                                        maxlength="8"
+                                        title="Saisir exactement 8 chiffres"
+                                        autocomplete="off">
                                     @error('telephone')
                                         <div class="invalid-feedback d-block mt-2"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                                     @enderror
@@ -668,12 +955,15 @@ body.dark-mode .patient-create-page .btn-outline-secondary:hover {
                                     @enderror
                                 </div>
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label">Ville</label>
-                                    <input type="text" name="ville" value="{{ old('ville') }}"
-                                        class="form-control @error('ville') is-invalid @enderror" placeholder="Casablanca">
-                                    @error('ville')
-                                        <div class="invalid-feedback d-block mt-2"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
-                                    @enderror
+                                    @include('patients.partials.city-field', [
+                                        'selectedCity' => old('ville', ''),
+                                        'selectId' => 'patientCreateVilleSelection',
+                                        'otherId' => 'patientCreateVilleAutre',
+                                        'selectClass' => 'form-select',
+                                        'otherInputClass' => 'form-control',
+                                        'feedbackClass' => 'invalid-feedback d-block mt-2',
+                                        'helperClass' => 'form-text text-muted mt-2',
+                                    ])
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label">Code Postal</label>

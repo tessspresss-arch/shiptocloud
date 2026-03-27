@@ -16,6 +16,9 @@ class AuthenticationTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200);
+        $response->assertSeeText('Bienvenue sur MEDISYS Pro');
+        $response->assertSeeText('Connexion securisee');
+        $response->assertSeeText('Reconnectez-vous a votre espace clinique.');
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void

@@ -1,23 +1,73 @@
 @props([
     'patient',
+    'consultation' => null,
     'medecins' => collect(),
     'currentMedecin' => null,
     'medicamentCatalogData' => [],
+    'existingOrdonnance' => null,
+    'existingOrdonnancesCount' => 0,
 ])
 
 @php
     $patientFullName = trim((string) $patient->prenom . ' ' . (string) $patient->nom) ?: 'Patient';
+    $isConsultationContext = filled($consultation?->id);
     $todayValue = now()->format('Y-m-d');
     $todayLabel = now()->format('d/m/Y');
-    $defaultMedecinId = (string) old('medecin_id', $currentMedecin?->id);
+    $catalogLabelMap = collect($medicamentCatalogData)
+        ->mapWithKeys(fn ($item) => [(string) data_get($item, 'id') => (string) data_get($item, 'label')]);
+    $existingMedicationRows = collect(old('medicaments', $existingOrdonnance?->medicaments ?? []))
+        ->map(function ($row) use ($catalogLabelMap): array {
+            $medicamentId = data_get($row, 'medicament_id');
+            $medicamentLabel = trim((string) (data_get($row, 'medicament_label') ?: $catalogLabelMap->get((string) $medicamentId, $medicamentId ? ('Medicament #' . $medicamentId) : '')));
+            $posologie = trim((string) data_get($row, 'posologie'));
+            $splitPosologie = str_contains($posologie, ' - ')
+                ? explode(' - ', $posologie, 2)
+                : [$posologie, ''];
+            $dosage = trim((string) (data_get($row, 'quantite') ?: ($splitPosologie[0] ?? '')));
+            $frequency = trim((string) (data_get($row, 'instructions') ?: ($splitPosologie[1] ?? '')));
+
+            return [
+                'medicament_id' => $medicamentId !== null && $medicamentId !== '' ? (string) $medicamentId : '',
+                'medicament_label' => $medicamentLabel,
+                'dosage' => $dosage,
+                'frequency' => $frequency,
+                'duree' => trim((string) data_get($row, 'duree')),
+            ];
+        })
+        ->filter(fn (array $row): bool => collect($row)->contains(fn ($value) => filled($value)))
+        ->values()
+        ->all();
+    $defaultMedecinId = (string) old(
+        'medecin_id',
+        $existingOrdonnance?->medecin_id
+            ?: $currentMedecin?->id
+            ?: $consultation?->medecin_id
+    );
+    $initialInstructions = (string) old('instructions', $existingOrdonnance?->instructions ?? '');
+    $contextCardLabel = $isConsultationContext ? ('Consultation #' . $consultation->id) : 'Patient concerne';
+    $contextSubtitle = $isConsultationContext
+        ? 'Creez une ordonnance depuis la consultation sans quitter le dossier. Le flux reste compatible avec le module standard des ordonnances.'
+        : 'Creez une ordonnance depuis la fiche patient, sans quitter le dossier. Le formulaire reste compatible avec le flux standard des ordonnances.';
+    $contextHelper = $isConsultationContext && $existingOrdonnance
+        ? 'La derniere ordonnance de cette consultation est prechargee pour accelerer la saisie.'
+        : ($isConsultationContext
+            ? 'Aucune ordonnance precedente n est liee a cette consultation pour le moment.'
+            : 'Le compteur patient est mis a jour automatiquement apres enregistrement.');
     $quickStoreUrl = route('ordonnances.store.quick');
     $modalPayload = [
         'storeUrl' => $quickStoreUrl,
         'modalName' => 'modal-ordonnance',
+        'contextType' => $isConsultationContext ? 'consultation' : 'patient',
         'patientId' => (int) $patient->id,
+        'consultationId' => $isConsultationContext ? (int) $consultation->id : null,
         'defaultMedecinId' => $defaultMedecinId,
+        'initialInstructions' => $initialInstructions,
+        'initialRows' => $existingMedicationRows,
         'todayValue' => $todayValue,
+        'patientOrdonnancesCount' => (int) ($patient->ordonnances_count ?? 0),
+        'consultationOrdonnancesCount' => $isConsultationContext ? (int) $existingOrdonnancesCount : null,
         'prescriptionsCount' => (int) ($patient->ordonnances_count ?? 0),
+        'hasExistingOrdonnance' => $existingOrdonnance !== null,
         'medicamentCatalog' => $medicamentCatalogData,
     ];
 @endphp
@@ -25,26 +75,38 @@
 @once
     @push('styles')
         <style>
-            [x-cloak] {
-                display: none !important;
+            .ord-quick-shell {
+                position: fixed;
+                inset: 0;
+                z-index: 1300;
+                display: none;
+                align-items: flex-start;
+                justify-content: center;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                padding: clamp(1rem, 2vw, 1.5rem);
+                padding-block: clamp(1.25rem, 4vh, 2.75rem);
+                box-sizing: border-box;
             }
 
-            .ord-quick-shell {
-                padding: 1.25rem;
+            .ord-quick-shell.is-open {
+                display: flex;
             }
 
             .ord-quick-backdrop {
                 position: fixed;
                 inset: 0;
+                z-index: 0;
                 background: rgba(15, 23, 42, 0.58);
                 backdrop-filter: blur(4px);
             }
 
             .ord-quick-window {
                 position: relative;
-                z-index: 2;
+                z-index: 1;
+                flex: 0 0 auto;
                 width: min(100%, 1080px);
-                margin: 0 auto;
+                margin: 0;
                 border-radius: 30px;
                 border: 1px solid rgba(203, 213, 225, 0.9);
                 background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.98) 100%);
@@ -492,6 +554,8 @@
             @media (max-width: 640px) {
                 .ord-quick-shell {
                     padding: 0.8rem;
+                    padding-top: max(0.8rem, env(safe-area-inset-top));
+                    padding-bottom: max(0.8rem, env(safe-area-inset-bottom));
                 }
 
                 .ord-quick-head {
@@ -583,45 +647,50 @@
     @endpush
 @endonce
 
+@once
+    @push('scripts')
+        <script>
+            (function bootstrapPatientOrdonnanceModal(attempt) {
+                if (typeof window.medisysInitPatientOrdonnanceModal === 'function') {
+                    window.medisysInitPatientOrdonnanceModal();
+                    return;
+                }
+
+                if ((attempt || 0) >= 20) {
+                    return;
+                }
+
+                window.requestAnimationFrame(function () {
+                    bootstrapPatientOrdonnanceModal((attempt || 0) + 1);
+                });
+            })(0);
+        </script>
+    @endpush
+@endonce
+
 <div
     id="modal-ordonnance"
-    x-data="{ open: false }"
-    x-cloak
-    x-on:open-modal.window="if ($event.detail === 'modal-ordonnance') { open = true; $nextTick(() => { document.getElementById('ordonnanceQuickMedecin')?.focus(); $el.dispatchEvent(new CustomEvent('ordonnance-quick:opened')); }); }"
-    x-on:close-modal.window="if ($event.detail === 'modal-ordonnance') { open = false; $el.dispatchEvent(new CustomEvent('ordonnance-quick:closed')); }"
-    x-on:keydown.escape.window="if (open) { open = false; $el.dispatchEvent(new CustomEvent('ordonnance-quick:closed')); }"
-    x-show="open"
     class="fixed inset-0 z-50 overflow-y-auto ord-quick-shell"
     style="display: none;"
     aria-modal="true"
     role="dialog"
     aria-labelledby="modal-ordonnance-title"
+    aria-hidden="true"
+    tabindex="-1"
 >
-    <div class="ord-quick-backdrop" x-show="open" x-transition.opacity x-on:click="open = false; $el.closest('#modal-ordonnance').dispatchEvent(new CustomEvent('ordonnance-quick:closed'))"></div>
+    <div class="ord-quick-backdrop" data-close-ordonnance-modal></div>
 
-    <div
-        class="ord-quick-window"
-        x-show="open"
-        x-transition:enter="ease-out duration-200"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave="ease-in duration-150"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:scale-95"
-        x-on:click.stop
-    >
+    <div class="ord-quick-window">
         <header class="ord-quick-head">
             <div>
                 <span class="ord-quick-kicker"><i class="fas fa-prescription"></i> Ordonnance rapide</span>
                 <h2 id="modal-ordonnance-title" class="ord-quick-title">{{ $patientFullName }}</h2>
-                <p class="ord-quick-subtitle">
-                    Creez une ordonnance depuis la fiche patient, sans quitter le dossier. Le formulaire reste compatible avec le flux standard des ordonnances.
-                </p>
+                <p class="ord-quick-subtitle">{{ $contextSubtitle }}</p>
             </div>
 
             <div class="ord-quick-head-aside">
                 <span class="ord-quick-date-chip"><i class="fas fa-calendar-day"></i> {{ $todayLabel }}</span>
-                <button type="button" class="ord-quick-close" x-on:click="open = false; $el.closest('#modal-ordonnance').dispatchEvent(new CustomEvent('ordonnance-quick:closed'))" aria-label="Fermer la modale ordonnance">
+                <button type="button" class="ord-quick-close" data-close-ordonnance-modal aria-label="Fermer la modale ordonnance">
                     <i class="fas fa-xmark"></i>
                 </button>
             </div>
@@ -630,6 +699,9 @@
         <form id="patientOrdonnanceModalForm" class="ord-quick-form" action="{{ $quickStoreUrl }}" method="POST">
             @csrf
             <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+            @if($isConsultationContext)
+                <input type="hidden" name="consultation_id" value="{{ $consultation->id }}">
+            @endif
             <input type="hidden" name="date_prescription" value="{{ $todayValue }}">
 
             <div id="ordonnanceQuickErrors" class="ord-quick-feedback ord-quick-feedback-error hidden" role="alert" aria-live="assertive"></div>
@@ -637,12 +709,16 @@
 
             <div class="ord-quick-top-grid">
                 <article class="ord-quick-patient-card">
-                    <span class="ord-quick-card-label">Patient concerne</span>
+                    <span class="ord-quick-card-label">{{ $contextCardLabel }}</span>
                     <h3 class="ord-quick-patient-name">{{ $patientFullName }}</h3>
                     <div class="ord-quick-patient-meta">
                         <div><strong>Dossier :</strong> {{ $patient->numero_dossier ?: 'Non renseigne' }}</div>
                         <div><strong>Telephone :</strong> {{ $patient->telephone ?: 'Non renseigne' }}</div>
                         <div><strong>Allergies :</strong> {{ $patient->allergies ?: 'Aucune allergie documentee' }}</div>
+                        @if($isConsultationContext)
+                            <div><strong>Ordonnances liees :</strong> <span data-consultation-ordonnances-count>{{ (int) $existingOrdonnancesCount }}</span></div>
+                        @endif
+                        <div><strong>Etat :</strong> {{ $contextHelper }}</div>
                     </div>
                 </article>
 
@@ -661,7 +737,7 @@
 
                     <div class="ord-quick-field">
                         <label for="ordonnanceQuickInstructions" class="ord-quick-label">Notes et instructions generales</label>
-                        <textarea id="ordonnanceQuickInstructions" name="instructions" class="ord-quick-textarea" placeholder="Conseils, recommandations, point d attention pour le patient..."></textarea>
+                        <textarea id="ordonnanceQuickInstructions" name="instructions" class="ord-quick-textarea" placeholder="Conseils, recommandations, point d attention pour le patient...">{{ $initialInstructions }}</textarea>
                     </div>
                 </div>
             </div>
@@ -683,11 +759,11 @@
 
             <footer class="ord-quick-footer">
                 <div class="ord-quick-footer-copy">
-                    <strong>Validation :</strong> au moins une ligne medicament est requise. La fiche patient reste ouverte et le compteur d ordonnances est mis a jour des l enregistrement.
+                    <strong>Validation :</strong> au moins une ligne medicament est requise. Le dossier reste ouvert et le compteur d ordonnances est mis a jour des l enregistrement.
                 </div>
 
                 <div class="ord-quick-actions">
-                    <button type="button" class="ord-quick-btn ord-quick-btn-muted" x-on:click="open = false; $el.closest('#modal-ordonnance').dispatchEvent(new CustomEvent('ordonnance-quick:closed'))">
+                    <button type="button" class="ord-quick-btn ord-quick-btn-muted" data-close-ordonnance-modal>
                         <i class="fas fa-ban"></i> Annuler
                     </button>
                     <button type="submit" id="ordonnanceQuickSubmit" class="ord-quick-btn ord-quick-btn-primary">
@@ -758,6 +834,6 @@
     </template>
 
     <script type="application/json" id="patientOrdonnanceModalPayload">
-        {{ \Illuminate\Support\Js::from($modalPayload) }}
+        @json($modalPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
     </script>
 </div>

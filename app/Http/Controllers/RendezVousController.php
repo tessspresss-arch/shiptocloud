@@ -7,13 +7,17 @@ use App\Models\RendezVousStatusHistory;
 use App\Models\Patient;
 use App\Models\Medecin;
 use App\Services\RendezVous\RendezVousAgendaViewService;
+use App\Services\Security\ClinicalAuthorizationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 
 class RendezVousController extends Controller
 {
-    public function __construct(private readonly RendezVousAgendaViewService $agendaViewService)
+    public function __construct(
+        private readonly RendezVousAgendaViewService $agendaViewService,
+        private readonly ClinicalAuthorizationService $access
+    )
     {
     }
 
@@ -41,11 +45,13 @@ class RendezVousController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', RendezVous::class);
+
         $perPage = max(10, min(100, (int) $request->integer('per_page', 20)));
         $selectedStatut = RendezVous::normalizeStatus($request->input('statut'));
         $selectedType = trim(mb_strtolower((string) $request->input('type', ''), 'UTF-8'));
 
-        $rendezvous = RendezVous::with([
+        $rendezvousQuery = RendezVous::with([
                 'patient:id,nom,prenom,telephone',
                 'medecin:id,nom,specialite',
             ])
@@ -78,9 +84,13 @@ class RendezVousController extends Controller
                         ->orWhereRaw('LOWER(motif) like ?', ['%' . $selectedType . '%']);
                 });
             })
-            ->orderBy('date_heure', 'desc')
-            ->paginate($perPage)
-            ->withQueryString();
+            ->orderBy('date_heure', 'desc');
+
+        if ($request->user()) {
+            $this->access->scopeRendezVous($rendezvousQuery, $request->user());
+        }
+
+        $rendezvous = $rendezvousQuery->paginate($perPage)->withQueryString();
 
         $rendezvous->getCollection()->transform(function (RendezVous $rdv) {
             [$statusClass, $statusLabel, $statusIcon] = $this->resolveRendezVousStatusPresentation((string) $rdv->statut);
@@ -91,16 +101,12 @@ class RendezVousController extends Controller
             return $rdv;
         });
 
-        $patients = Patient::query()
+        $patients = $this->patientsSelectionQuery($request)
             ->select('id', 'nom', 'prenom')
-            ->orderBy('nom')
-            ->orderBy('prenom')
             ->get();
 
-        $medecins = Medecin::query()
+        $medecins = $this->medecinsSelectionQuery($request)
             ->select('id', 'nom', 'prenom')
-            ->orderBy('nom')
-            ->orderBy('prenom')
             ->get();
 
         return view('rendezvous.index', compact('rendezvous', 'patients', 'medecins'));
@@ -111,6 +117,8 @@ class RendezVousController extends Controller
      */
     public function agenda(Request $request)
     {
+        $this->authorize('viewAny', RendezVous::class);
+
         $requestedView = (string) $request->get('view', 'day');
         $currentView = in_array($requestedView, ['day', 'week', 'month'], true)
             ? $requestedView
@@ -138,7 +146,8 @@ class RendezVousController extends Controller
             $selectedDate,
             $selectedMedecinId,
             $selectedStatut,
-            $searchTerm
+            $searchTerm,
+            $request->user()
         ));
     }
 
@@ -217,7 +226,12 @@ class RendezVousController extends Controller
      */
     public function create(Request $request)
     {
-        $medecins = Medecin::select('id', 'nom', 'prenom', 'specialite')->actif()->get();
+        $this->authorize('create', RendezVous::class);
+
+        $medecins = $this->medecinsSelectionQuery($request)
+            ->select('id', 'nom', 'prenom', 'specialite')
+            ->actif()
+            ->get();
 
         // Vérifier que des médecins sont disponibles
         if ($medecins->isEmpty()) {
@@ -226,9 +240,8 @@ class RendezVousController extends Controller
         }
 
         $selectedPatientId = $request->integer('patient_id');
-        $patients = Patient::select('id', 'nom', 'prenom', 'telephone', 'cin', 'date_naissance')
-            ->orderBy('nom')
-            ->orderBy('prenom')
+        $patients = $this->patientsSelectionQuery($request)
+            ->select('id', 'nom', 'prenom', 'telephone', 'cin', 'date_naissance')
             ->get();
 
         $selectedPatient = $selectedPatientId
@@ -273,6 +286,8 @@ class RendezVousController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', RendezVous::class);
+
         $normalizedDate = $this->normalizeDateInput($request->input('date'));
         if ($normalizedDate === null) {
             return back()
@@ -300,6 +315,8 @@ class RendezVousController extends Controller
         ], [
             'date.date_format' => 'La date selectionnee est invalide.',
         ]);
+
+        $this->assertRendezVousPayloadAccess($request, $validated);
 
         // Valeurs par defaut pour la nouvelle interface simplifiee
         $duree = 30; // Duree fixe de 30 minutes
@@ -370,7 +387,8 @@ class RendezVousController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $rendezvous = RendezVous::with(['patient', 'medecin'])->findOrFail($id);
+        $rendezvous = $this->findAuthorizedRendezVous($request, $id, ['patient', 'medecin']);
+        $this->authorize('view', $rendezvous);
 
         [$badgeClass, $statusLabel, $statusIcon] = $this->resolveRendezVousStatusPresentation((string) $rendezvous->statut);
         $patientName = trim(($rendezvous->patient->prenom ?? '') . ' ' . ($rendezvous->patient->nom ?? ''));
@@ -417,20 +435,18 @@ class RendezVousController extends Controller
      */
     public function edit($id)
     {
-        $rendezvous = RendezVous::with([
+        $request = request();
+        $rendezvous = $this->findAuthorizedRendezVous($request, $id, [
             'patient:id,nom,prenom,email,telephone',
             'medecin:id,nom,prenom,specialite,email',
-        ])->findOrFail($id);
+        ]);
+        $this->authorize('update', $rendezvous);
         $oldStatus = RendezVous::normalizeStatus($rendezvous->statut) ?? self::STATUS_A_VENIR;
-        $patients = Patient::query()
+        $patients = $this->patientsSelectionQuery($request)
             ->select(['id', 'nom', 'prenom'])
-            ->orderBy('nom')
-            ->orderBy('prenom')
             ->get();
-        $medecins = Medecin::query()
+        $medecins = $this->medecinsSelectionQuery($request)
             ->select(['id', 'nom', 'prenom', 'specialite'])
-            ->orderBy('nom')
-            ->orderBy('prenom')
             ->get();
         $patientName = trim(($rendezvous->patient->prenom ?? '') . ' ' . ($rendezvous->patient->nom ?? ''));
         $patientName = $patientName !== '' ? $patientName : 'Patient inconnu';
@@ -455,7 +471,8 @@ class RendezVousController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $rendezvous = RendezVous::findOrFail($id);
+        $rendezvous = $this->findAuthorizedRendezVous($request, $id);
+        $this->authorize('update', $rendezvous);
         $oldStatus = RendezVous::normalizeStatus($rendezvous->statut) ?? self::STATUS_A_VENIR;
 
         $validated = $request->validate([
@@ -475,6 +492,8 @@ class RendezVousController extends Controller
                 'statut' => 'Le statut selectionne est invalide.',
             ]);
         }
+
+        $this->assertRendezVousPayloadAccess($request, $validated);
 
         $dateHeure = Carbon::parse($validated['date_heure'], $this->appTimezone())
             ->setTimezone($this->appTimezone());
@@ -542,7 +561,8 @@ class RendezVousController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $rendezvous = RendezVous::findOrFail($id);
+        $rendezvous = $this->findAuthorizedRendezVous($request, $id);
+        $this->authorize('delete', $rendezvous);
         $rendezvous->delete();
 
         if ($request->expectsJson()) {
@@ -561,6 +581,8 @@ class RendezVousController extends Controller
      */
     public function apiEvents(Request $request)
     {
+        $this->authorize('viewAny', RendezVous::class);
+
         $timezone = $this->appTimezone();
 
         $query = RendezVous::with(['patient' => function($q) {
@@ -568,6 +590,10 @@ class RendezVousController extends Controller
         }, 'medecin' => function($q) {
             $q->withTrashed(); // Include soft deleted doctors
         }]);
+
+        if ($request->user()) {
+            $this->access->scopeRendezVous($query, $request->user());
+        }
 
         $medecinId = $request->get('medecin_id');
         if ($medecinId && $medecinId !== 'all') {
@@ -641,18 +667,25 @@ class RendezVousController extends Controller
      */
     public function statistiques()
     {
+        $this->authorize('viewAny', RendezVous::class);
+
         try {
             $today = Carbon::today();
             $weekStart = Carbon::now()->startOfWeek();
             $weekEnd = Carbon::now()->endOfWeek();
 
+            $statsQuery = RendezVous::query();
+            if (auth()->check()) {
+                $this->access->scopeRendezVous($statsQuery, auth()->user());
+            }
+
             $data = [
-                'today' => RendezVous::whereBetween('date_heure', $this->dayBounds($today))->count(),
-                'week' => RendezVous::whereBetween('date_heure', [$weekStart, $weekEnd])->count(),
-                'pending' => RendezVous::whereIn('statut', [self::STATUS_A_VENIR, self::STATUS_EN_ATTENTE])->count(),
-                'confirmed' => RendezVous::where('statut', self::STATUS_EN_SOINS)->count(),
-                'cancelled' => RendezVous::where('statut', self::STATUS_ANNULE)->count(),
-                'completed' => RendezVous::where('statut', self::STATUS_VU)->count()
+                'today' => (clone $statsQuery)->whereBetween('date_heure', $this->dayBounds($today))->count(),
+                'week' => (clone $statsQuery)->whereBetween('date_heure', [$weekStart, $weekEnd])->count(),
+                'pending' => (clone $statsQuery)->whereIn('statut', [self::STATUS_A_VENIR, self::STATUS_EN_ATTENTE])->count(),
+                'confirmed' => (clone $statsQuery)->where('statut', self::STATUS_EN_SOINS)->count(),
+                'cancelled' => (clone $statsQuery)->where('statut', self::STATUS_ANNULE)->count(),
+                'completed' => (clone $statsQuery)->where('statut', self::STATUS_VU)->count()
             ];
 
             return response()->json($data);
@@ -660,7 +693,6 @@ class RendezVousController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => "Erreur lors de la r\u{00E9}cup\u{00E9}ration des statistiques",
-                'message' => $e->getMessage()
             ], 500);
         }
     }
@@ -714,10 +746,12 @@ class RendezVousController extends Controller
      */
     public function searchPatients(Request $request)
     {
+        $this->authorize('viewAny', RendezVous::class);
+
         $query = $request->get('q', '');
         $limit = $request->get('limit', 10);
 
-        $patients = Patient::where(function ($q) use ($query) {
+        $patients = $this->patientsSelectionQuery($request)->where(function ($q) use ($query) {
             $q->where('nom', 'LIKE', "%{$query}%")
               ->orWhere('prenom', 'LIKE', "%{$query}%")
               ->orWhere('telephone', 'LIKE', "%{$query}%")
@@ -749,10 +783,12 @@ class RendezVousController extends Controller
      */
     public function getDoctorAvailability(Request $request)
     {
-        $medecinId = $request->get('medecin_id');
+        $this->authorize('viewAny', RendezVous::class);
+
+        $medecinId = $request->route('medecin') ?? $request->get('medecin_id');
         $date = $request->get('date');
 
-        $medecin = Medecin::findOrFail($medecinId);
+        $medecin = $this->medecinsSelectionQuery($request)->findOrFail($medecinId);
 
         // Vérifier si le médecin travaille ce jour
         $jourSemaine = strtolower(Carbon::parse($date, $this->appTimezone())->format('l'));
@@ -982,11 +1018,79 @@ class RendezVousController extends Controller
         return $colors[$status] ?? '#95A5A6';
     }
 
+    private function patientsSelectionQuery(Request $request)
+    {
+        $query = Patient::query()
+            ->orderBy('nom')
+            ->orderBy('prenom');
+
+        if ($request->user()) {
+            $this->access->scopePatients($query, $request->user());
+        }
+
+        return $query;
+    }
+
+    private function medecinsSelectionQuery(Request $request)
+    {
+        $query = Medecin::query()
+            ->orderBy('nom')
+            ->orderBy('prenom');
+
+        if ($request->user()?->hasRole('medecin')) {
+            $query->whereKey($this->access->currentMedecinId($request->user()) ?? 0);
+        }
+
+        return $query;
+    }
+
+    private function findAuthorizedRendezVous(Request $request, int|string $id, array $relations = []): RendezVous
+    {
+        $query = RendezVous::query();
+
+        if ($relations !== []) {
+            $query->with($relations);
+        }
+
+        if ($request->user()) {
+            $this->access->scopeRendezVous($query, $request->user());
+        }
+
+        return $query->findOrFail($id);
+    }
+
+    private function assertRendezVousPayloadAccess(Request $request, array $validated): void
+    {
+        if (!$request->user()) {
+            return;
+        }
+
+        $patient = Patient::query()->findOrFail($validated['patient_id']);
+        abort_unless($this->access->canAccessPatient($request->user(), $patient), 403);
+
+        if (!$request->user()->hasRole('medecin')) {
+            return;
+        }
+
+        $currentMedecinId = $this->access->currentMedecinId($request->user());
+        if ($currentMedecinId === null) {
+            abort(403);
+        }
+
+        if ((int) $validated['medecin_id'] !== $currentMedecinId) {
+            throw ValidationException::withMessages([
+                'medecin_id' => 'Vous ne pouvez gerer que les rendez-vous de votre propre agenda.',
+            ]);
+        }
+    }
+
     /**
      * API JSON pour la gestion de la salle d'attente (flux des patients)
      */
     public function waitingRoomData(Request $request)
     {
+        $this->authorize('viewAny', RendezVous::class);
+
         $date = $request->get('date', now($this->appTimezone())->toDateString());
         $medecinId = $request->get('medecin_id');
         $motif = trim((string) $request->get('motif', ''));
@@ -1000,6 +1104,10 @@ class RendezVousController extends Controller
             ])
             ->whereDate('date_heure', $date)
             ->where('statut', '!=', self::STATUS_ANNULE);
+
+        if ($request->user()) {
+            $this->access->scopeRendezVous($query, $request->user());
+        }
 
         if ($medecinId && $medecinId !== 'all') {
             $query->where('medecin_id', $medecinId);
@@ -1168,7 +1276,8 @@ class RendezVousController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $rdv = RendezVous::findOrFail($id);
+        $rdv = $this->findAuthorizedRendezVous($request, $id);
+        $this->authorize('update', $rdv);
         $oldStatus = RendezVous::normalizeStatus($rdv->statut) ?? self::STATUS_A_VENIR;
 
         $newStatus = RendezVous::normalizeStatus($request->input('statut', $request->input('status')));
@@ -1263,6 +1372,8 @@ class RendezVousController extends Controller
      */
     public function waitingRoomPage(Request $request)
     {
+        $this->authorize('viewAny', RendezVous::class);
+
         try {
             $selectedDate = Carbon::parse($request->get('date', now($this->appTimezone())->toDateString()), $this->appTimezone())->startOfDay();
         } catch (\Throwable $e) {
@@ -1278,9 +1389,8 @@ class RendezVousController extends Controller
         $selectedMotif = trim((string) $request->get('motif', ''));
         $displayMode = $request->get('display') === 'tv' ? 'tv' : 'default';
 
-        $medecins = Medecin::select('id', 'nom', 'prenom')
-            ->orderBy('nom')
-            ->orderBy('prenom')
+        $medecins = $this->medecinsSelectionQuery($request)
+            ->select('id', 'nom', 'prenom')
             ->get();
 
         return view('agenda.waiting_room', compact(

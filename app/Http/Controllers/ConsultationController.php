@@ -5,15 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Consultation;
 use App\Models\ConsultationAiGeneration;
 use App\Models\Medecin;
+use App\Models\Medicament;
+use App\Models\Ordonnance;
 use App\Models\Patient;
 use App\Models\RendezVous;
 use App\Services\Exports\Utf8CsvExporter;
+use App\Services\Security\ClinicalAuthorizationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ConsultationController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Consultation::class, 'consultation');
+    }
+
     public function index(Request $request)
     {
         $perPage = max(10, min(100, (int) $request->integer('per_page', 10)));
@@ -81,6 +90,8 @@ class ConsultationController extends Controller
 
     public function export(Request $request, Utf8CsvExporter $csvExporter): StreamedResponse
     {
+        $this->authorize('export', Consultation::class);
+
         $consultations = $this->buildIndexQuery($request)
             ->orderByDesc('date_consultation')
             ->orderByDesc('id')
@@ -110,7 +121,7 @@ class ConsultationController extends Controller
 
     private function buildIndexQuery(Request $request)
     {
-        return Consultation::query()
+        $query = Consultation::query()
             ->select([
                 'id',
                 'patient_id',
@@ -158,6 +169,12 @@ class ConsultationController extends Controller
                     $query->whereBetween('date_consultation', [$today->copy()->startOfYear(), $today->copy()->endOfYear()]);
                 }
             });
+
+        if ($request->user()) {
+            app(ClinicalAuthorizationService::class)->scopeConsultations($query, $request->user());
+        }
+
+        return $query;
     }
 
     private function resolveConsultationStatus(Consultation $consultation): array
@@ -270,6 +287,9 @@ class ConsultationController extends Controller
         $nextVisitDate = $consultation->date_prochaine_visite ? Carbon::parse($consultation->date_prochaine_visite) : null;
         $patient = $consultation->patient;
         $medecin = $consultation->medecin;
+        if ($patient) {
+            $patient->loadCount('ordonnances');
+        }
         $patientName = $patient ? trim(strtoupper((string) $patient->nom) . ' ' . (string) $patient->prenom) : 'Patient non renseigne';
         $medecinName = $medecin ? trim(((string) ($medecin->civilite ?? 'Dr.')) . ' ' . (string) $medecin->prenom . ' ' . (string) $medecin->nom) : 'Medecin non renseigne';
         $patientAge = $patient && $patient->date_naissance ? Carbon::parse($patient->date_naissance)->age : null;
@@ -316,6 +336,57 @@ class ConsultationController extends Controller
 
         $cabinetName = config('app.name', 'Cabinet Medical');
         $prescriptionsCount = $consultation->prescriptions->count();
+        $medecins = Medecin::query()
+            ->select(['id', 'civilite', 'nom', 'prenom', 'specialite', 'email'])
+            ->orderBy('prenom')
+            ->orderBy('nom')
+            ->get();
+        $currentMedecin = $medecin ?: $this->resolveCurrentMedecin($medecins);
+        $medicamentCatalogData = Medicament::query()
+            ->select([
+                'id',
+                'nom_commercial',
+                'dci',
+                'presentation',
+                'posologie',
+                'voie_administration',
+                'classe_therapeutique',
+            ])
+            ->orderBy('nom_commercial')
+            ->get()
+            ->map(function (Medicament $medicament): array {
+                return [
+                    'id' => $medicament->id,
+                    'label' => trim($medicament->nom_commercial . ' ' . ($medicament->presentation ? '(' . $medicament->presentation . ')' : '')),
+                    'search' => Str::lower(implode(' ', array_filter([
+                        $medicament->nom_commercial,
+                        $medicament->dci,
+                        $medicament->presentation,
+                        $medicament->classe_therapeutique,
+                    ]))),
+                    'nom_commercial' => $medicament->nom_commercial,
+                    'dci' => $medicament->dci,
+                    'presentation' => $medicament->presentation,
+                    'posologie' => $medicament->posologie,
+                    'voie_administration' => $medicament->voie_administration,
+                    'classe_therapeutique' => $medicament->classe_therapeutique,
+                ];
+            })
+            ->values();
+        $consultationOrdonnancesCount = Ordonnance::query()
+            ->where('consultation_id', $consultation->id)
+            ->count();
+        $latestConsultationOrdonnance = Ordonnance::query()
+            ->where('consultation_id', $consultation->id)
+            ->latest('date_prescription')
+            ->latest('id')
+            ->first();
+        $aiGenerations = $consultation->aiGenerations()
+            ->with('user:id,name')
+            ->latest()
+            ->limit((int) config('medical_ai.history_limit', 8))
+            ->get();
+        $aiGenerationsCount = $consultation->aiGenerations()->count();
 
         return view('consultations.show', compact(
             'consultation',
@@ -334,7 +405,14 @@ class ConsultationController extends Controller
             'statusClass',
             'statusLabel',
             'cabinetName',
-            'prescriptionsCount'
+            'prescriptionsCount',
+            'medecins',
+            'currentMedecin',
+            'medicamentCatalogData',
+            'consultationOrdonnancesCount',
+            'latestConsultationOrdonnance',
+            'aiGenerations',
+            'aiGenerationsCount'
         ));
     }
 
@@ -343,11 +421,6 @@ class ConsultationController extends Controller
         $consultation->load(['patient', 'medecin', 'rendezvous']);
         $patients = $this->patientSelectionQuery()->get();
         $medecins = $this->medecinSelectionQuery()->get();
-        $aiGenerations = $consultation->aiGenerations()
-            ->with('user:id,name')
-            ->latest()
-            ->limit((int) config('medical_ai.history_limit', 8))
-            ->get();
 
         $consultationDate = $consultation->date_consultation ? Carbon::parse($consultation->date_consultation) : null;
         $statusClass = 'pending';
@@ -363,13 +436,12 @@ class ConsultationController extends Controller
             }
         }
 
-        $aiGenerationsCount = $aiGenerations->count();
+        $aiGenerationsCount = $consultation->aiGenerations()->count();
 
         return view('consultations.edit', compact(
             'consultation',
             'patients',
             'medecins',
-            'aiGenerations',
             'consultationDate',
             'statusClass',
             'statusLabel',
@@ -379,7 +451,7 @@ class ConsultationController extends Controller
 
     public function update(Request $request, Consultation $consultation)
     {
-        $request->validate([
+        $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
             'medecin_id' => 'required|exists:medecins,id',
             'date_consultation' => 'required|date',
@@ -396,7 +468,12 @@ class ConsultationController extends Controller
             'date_prochaine_visite' => 'nullable|date',
         ]);
 
-        $consultation->update($request->all());
+        $consultation->update($validated);
+
+        if ($request->boolean('redirect_to_show')) {
+            return redirect()->route('consultations.show', $consultation)
+                ->with('success', 'Consultation mise a jour avec succes.');
+        }
 
         return redirect()->route('consultations.index')
             ->with('success', 'Consultation mise a jour avec succes.');
@@ -429,5 +506,39 @@ class ConsultationController extends Controller
             ->select(['id', 'nom', 'prenom', 'specialite'])
             ->orderBy('nom')
             ->orderBy('prenom');
+    }
+
+    private function resolveCurrentMedecin($medecins): ?Medecin
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return null;
+        }
+
+        $medecinId = $user->getAttribute('medecin_id');
+        if ($medecinId) {
+            $direct = $medecins->firstWhere('id', (int) $medecinId);
+            if ($direct) {
+                return $direct;
+            }
+        }
+
+        $emailMatch = $medecins->firstWhere('email', $user->email);
+        if ($emailMatch) {
+            return $emailMatch;
+        }
+
+        $parts = preg_split('/\s+/', trim((string) $user->name)) ?: [];
+        if (count($parts) >= 2) {
+            $prenom = $parts[0];
+            $nom = $parts[count($parts) - 1];
+
+            return $medecins->first(function (Medecin $medecin) use ($prenom, $nom): bool {
+                return strcasecmp((string) $medecin->prenom, (string) $prenom) === 0
+                    && strcasecmp((string) $medecin->nom, (string) $nom) === 0;
+            });
+        }
+
+        return null;
     }
 }

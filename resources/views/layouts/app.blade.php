@@ -320,7 +320,7 @@
             $profileRoute = Route::has('profile.show') ? route('profile.show') : route('profile.2fa.show');
             $canAccessSettings = (bool) ($authUser?->isAdmin() && Route::has('parametres.index'));
             $settingsRoute = $canAccessSettings ? route('parametres.index') : '#';
-            $settingsIcon = 'fa-cog';
+$settingsIcon = 'fa-sliders';
         @endphp
 
         <x-page-header

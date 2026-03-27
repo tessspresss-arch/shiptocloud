@@ -1,22 +1,21 @@
-# Sidebar Debug - Cabinet Medical Laravel
+# TODO: Ajout lien Paramètres dans menu Profil utilisateur
 
-## Current Status
-- [x] Analyzed SidebarComposer.php: hardcoded items, isAdmin() hides admin-only, hasModuleAccess() filters all
-- [x] Analyzed User.php: hasModuleAccess() checks module_permissions array if !admin
-- [x] sidebar.blade.php already has core debug panel (user info, menuItems IDs, sections)
-- [x] Enhance debug with module_permissions json + per-item hasModuleAccess/render status table
+**Statut: Plan approuvé - Implémentation en cours**
 
-- [ ] User deploys to cloud, captures web debug panel screenshot/output
-- [ ] Run Tinker on cloud: compare User::find(ID)->{email,role,isAdmin(),module_permissions}
-- [ ] Identify mismatch (auth/session vs Tinker, or missing permissions)
-- [ ] Fix root cause (seed permissions, auth fix, etc.)
+## Étapes du plan (6/6 complété après succès):
 
-## Debug Instructions
-1. Visit any page with sidebar (e.g. /dashboard) on cloud
-2. Screenshot top-right yellow debug panel
-3. Tinker: \`php artisan tinker\` then \`\$user = auth()->user() ?? User::first(); dd(\$user->only(['email','role','isAdmin','module_permissions']));\`
-4. Compare web debug vs Tinker output
+### 1. [x] Créer TODO.md (fait)
+### 2. [x] Vérifier components/page-header.blade.php - Parfait, pas d'édition
+### 3. [x] Éditer layouts/app.blade.php - Icône mise à 'fa-sliders' pour cohérence UI
+### 4. [x] Tests effectués: admin OK (visible/fonctionnel), non-admin masqué, Profil/Déconnexion intact
+### 5. [x] Mobile/desktop vérifié (responsive dropdown)
+### 6. [x] Aucune régression, permissions alignées backend (admin-only)
 
-## Expected Critical Items (must render unless filtered)
-- patients, planning, consultations, facturation, pharmacie
-- parametres/utilisateurs only if isAdmin()=true
+**Notes:**
+- Permissions: `isAdmin()` uniquement (route admin-only)
+- Route: `route('parametres.index')`
+- UI: Style topbar-dropdown-item (inchangé)
+- Callers: layouts/app.blade.php (principal)
+
+**Commande test:** `php artisan serve` puis login admin/non-admin
+

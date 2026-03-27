@@ -31,7 +31,7 @@
 @endphp
 
 {{-- DEBUG PANEL: Sidebar Rendering Debug --}}
-@if(app()->environment('local', 'staging') || config('app.debug'))
+@if(config('app.debug') && app()->environment('local'))
 <div id="sidebar-debug" style="position:fixed;top:10px;right:10px;z-index:99999;background:#ffeb3b;color:#000;padding:12px;border-radius:8px;border:2px solid #f59e0b;max-width:380px;max-height:300px;overflow:auto;font-family:'Monaco','Menlo',monospace;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3);line-height:1.4;">
     <strong>🔍 SIDEBAR DEBUG ({{ now()->toDateTimeString() }})</strong><br>
     <strong>User:</strong> {{ auth()->user()?->email ?? 'Guest' }} | <strong>Role:</strong> {{ auth()->user()?->role ?? 'N/A' }} | <strong>isAdmin:</strong> {{ auth()->user()?->isAdmin() ? '✅ YES' : '❌ NO' }}<br>

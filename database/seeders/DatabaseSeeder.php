@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace Database\Seeders;
 
@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            AdminSeeder::class, // TOUJOURS en premier
+            AdminSeeder::class,
             SettingSeeder::class,
             RbacFoundationSeeder::class,
             PatientSeeder::class,
@@ -25,4 +25,3 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
-
